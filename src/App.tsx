@@ -11,37 +11,46 @@ import { ViewAllPayments } from "./app/pages/ViewAllPayments";
 import { CoachProfile } from "./app/pages/CoachProfile";
 import { StudentProfile } from "./app/pages/StudentProfile";
 import { MyProfilePage } from "./app/pages/MyProfilePage";
-import { ThemeProvider } from "./app/contexts/ThemeContext";
+import { SchedulePage } from "./app/pages/SchedulePage";
+import { RegistrationsPage } from "./app/pages/RegistrationsPage";
+import { RegistrationSessionsPage } from "./app/pages/RegistrationSessionsPage";
+import { RegistrationPaymentsPage } from "./app/pages/RegistrationPaymentsPage";
+import { PrivatePackagesPage } from "./app/pages/PrivatePackagesPage";
+import { PrivateSessionsPage } from "./app/pages/PrivateSessionsPage";
+import { PrivatePaymentsPage } from "./app/pages/PrivatePaymentsPage";
+import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter basename="/Mobilev1">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/programs" element={<ProgramsPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/students" element={<ViewAllStudents />} />
-          <Route path="/coaches" element={<ViewAllCoaches />} />
+    <BrowserRouter basename="/Mobilev1">
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/programs" element={<ProgramsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/students" element={<ViewAllStudents />} />
+        <Route path="/coaches" element={<ViewAllCoaches />} />
+        <Route path="/locations" element={<ViewAllLocations />} />
+        <Route path="/payments" element={<ViewAllPayments />} />
+        <Route path="/coach/:id" element={<CoachProfile />} />
+        <Route path="/student/:id" element={<StudentProfile />} />
+        <Route path="/profile" element={<MyProfilePage />} />
+        <Route path="/schedule" element={<SchedulePage />} />
 
-          {/* make these lowercase */}
-          <Route path="/locations" element={<ViewAllLocations />} />
-          <Route path="/payments" element={<ViewAllPayments />} />
+        {/* Student section pages */}
+        <Route path="/registrations" element={<RegistrationsPage />} />
+        <Route path="/registrations/:semesterId/sessions" element={<RegistrationSessionsPage />} />
+        <Route path="/registrations/:semesterId/payments" element={<RegistrationPaymentsPage />} />
+        <Route path="/private" element={<PrivatePackagesPage />} />
+        <Route path="/private/:packageId/sessions" element={<PrivateSessionsPage />} />
+        <Route path="/private/:packageId/payments" element={<PrivatePaymentsPage />} />
+        <Route path="/payment-history" element={<PaymentsHistoryPage />} />
 
-          <Route path="/coach/:id" element={<CoachProfile />} />
-          <Route path="/student/:id" element={<StudentProfile />} />
-          <Route path="/profile" element={<MyProfilePage />} />
-
-          {/* optional: redirect old uppercase URLs */}
-          <Route path="/Locations" element={<Navigate to="/locations" replace />} />
-          <Route path="/Payments" element={<Navigate to="/payments" replace />} />
-
-          {/* fallback so it never goes blank */}
-          <Route path="*" element={<LandingPage />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+        <Route path="/Locations" element={<Navigate to="/locations" replace />} />
+        <Route path="/Payments" element={<Navigate to="/payments" replace />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

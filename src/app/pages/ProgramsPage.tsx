@@ -13,19 +13,19 @@ export function ProgramsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+    <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Programs" />
 
       <div className="px-4 py-6">
         <div className="text-center mb-6">
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">Our Programs</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">All ages and skill levels</p>
+          <p className="text-2xl font-bold text-slate-900">Our Programs</p>
+          <p className="text-sm text-slate-500 mt-1">All ages and skill levels</p>
         </div>
 
         <div className="space-y-3">
           <ProgramCard
             icon={<Baby className="size-6 text-rose-500" />}
-            iconBg="bg-rose-50 dark:bg-rose-900/20"
+            iconBg="bg-rose-50"
             title="Aqua Baby"
             ageRange="3 – 22 months"
             color="rose"
@@ -37,7 +37,7 @@ export function ProgramsPage() {
 
           <ProgramCard
             icon={<Users className="size-6 text-sky-500" />}
-            iconBg="bg-sky-50 dark:bg-sky-900/20"
+            iconBg="bg-sky-50"
             title="Active Start"
             ageRange="3 – 6 years"
             color="sky"
@@ -49,7 +49,7 @@ export function ProgramsPage() {
 
           <ProgramCard
             icon={<User className="size-6 text-emerald-500" />}
-            iconBg="bg-emerald-50 dark:bg-emerald-900/20"
+            iconBg="bg-emerald-50"
             title="Fundamentals"
             ageRange="6 – 12 years"
             color="emerald"
@@ -61,7 +61,7 @@ export function ProgramsPage() {
 
           <ProgramCard
             icon={<Sparkles className="size-6 text-violet-500" />}
-            iconBg="bg-violet-50 dark:bg-violet-900/20"
+            iconBg="bg-violet-50"
             title="Competitive Team"
             ageRange="Advanced"
             color="violet"
@@ -73,37 +73,37 @@ export function ProgramsPage() {
         </div>
 
         <div className="mt-6 space-y-3">
-          <p className="text-base font-semibold text-slate-900 dark:text-white">Special Programs</p>
+          <p className="text-base font-semibold text-slate-900">Special Programs</p>
 
-          <div className="bg-white dark:bg-[#162032] rounded-2xl p-5 border border-slate-100 dark:border-[#1E2F45]">
-            <p className="text-base font-semibold mb-1.5 text-slate-900 dark:text-white">Private Lessons</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+          <div className="bg-white rounded-2xl p-5 border border-slate-100">
+            <p className="text-base font-semibold mb-1.5 text-slate-900">Private Lessons</p>
+            <p className="text-sm text-slate-600 mb-3 leading-relaxed">
               One-on-one sessions with a customised curriculum for personalised attention.
             </p>
             <div className="space-y-1.5">
-              <div className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <span className="text-[#0B4F8C] dark:text-blue-400 font-bold shrink-0">✓</span>
+              <div className="flex gap-2 text-sm text-slate-600">
+                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
                 <span>45-minute sessions</span>
               </div>
-              <div className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <span className="text-[#0B4F8C] dark:text-blue-400 font-bold shrink-0">✓</span>
+              <div className="flex gap-2 text-sm text-slate-600">
+                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
                 <span>Flexible scheduling</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#162032] rounded-2xl p-5 border border-slate-100 dark:border-[#1E2F45]">
-            <p className="text-base font-semibold mb-1.5 text-slate-900 dark:text-white">Aqua Mermaid</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+          <div className="bg-white rounded-2xl p-5 border border-slate-100">
+            <p className="text-base font-semibold mb-1.5 text-slate-900">Aqua Mermaid</p>
+            <p className="text-sm text-slate-600 mb-3 leading-relaxed">
               Unique monofin swimming experience. Burn up to 600 calories per hour!
             </p>
             <div className="space-y-1.5">
-              <div className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <span className="text-[#0B4F8C] dark:text-blue-400 font-bold shrink-0">✓</span>
+              <div className="flex gap-2 text-sm text-slate-600">
+                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
                 <span>Ages 6+ years</span>
               </div>
-              <div className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <span className="text-[#0B4F8C] dark:text-blue-400 font-bold shrink-0">✓</span>
+              <div className="flex gap-2 text-sm text-slate-600">
+                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
                 <span>Photoshoots available</span>
               </div>
             </div>
@@ -132,10 +132,10 @@ export function ProgramsPage() {
 type ProgramColor = 'rose' | 'sky' | 'emerald' | 'violet';
 
 const colorConfig: Record<ProgramColor, { border: string; check: string; tag: string; tagDark: string }> = {
-  rose:    { border: 'border-l-rose-400',    check: 'text-rose-500',    tag: 'bg-rose-100 text-rose-700',       tagDark: 'dark:bg-rose-900/30 dark:text-rose-300' },
-  sky:     { border: 'border-l-sky-400',     check: 'text-sky-600',     tag: 'bg-sky-100 text-sky-700',         tagDark: 'dark:bg-sky-900/30 dark:text-sky-300' },
-  emerald: { border: 'border-l-emerald-400', check: 'text-emerald-600', tag: 'bg-emerald-100 text-emerald-700', tagDark: 'dark:bg-emerald-900/30 dark:text-emerald-300' },
-  violet:  { border: 'border-l-violet-400',  check: 'text-violet-600',  tag: 'bg-violet-100 text-violet-700',   tagDark: 'dark:bg-violet-900/30 dark:text-violet-300' },
+  rose:    { border: 'border-l-rose-400',    check: 'text-rose-500',    tag: 'bg-rose-100 text-rose-700',       tagDark: 'dark:bg-rose-900/30' },
+  sky:     { border: 'border-l-sky-400',     check: 'text-sky-600',     tag: 'bg-sky-100 text-sky-700',         tagDark: 'dark:bg-sky-900/30' },
+  emerald: { border: 'border-l-emerald-400', check: 'text-emerald-600', tag: 'bg-emerald-100 text-emerald-700', tagDark: 'dark:bg-emerald-900/30' },
+  violet:  { border: 'border-l-violet-400',  check: 'text-violet-600',  tag: 'bg-violet-100 text-violet-700',   tagDark: 'dark:bg-violet-900/30' },
 };
 
 interface ProgramCardProps {
@@ -154,18 +154,18 @@ function ProgramCard({ icon, iconBg, title, ageRange, color, description, featur
   const cfg = colorConfig[color];
 
   return (
-    <div className={`bg-white dark:bg-[#162032] rounded-2xl border border-white dark:border-[#1E2F45] shadow-sm shadow-blue-100/50 dark:shadow-none border-l-4 ${cfg.border} overflow-hidden`}>
+    <div className={`bg-white rounded-2xl border border-white shadow-sm shadow-blue-100/50 border-l-4 ${cfg.border} overflow-hidden`}>
       <button
         onClick={onToggle}
-        className="w-full p-5 text-left active:bg-slate-50 dark:active:bg-[#0D2847]/50 transition-colors"
+        className="w-full p-5 text-left active:bg-slate-50 transition-colors"
       >
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
-              <p className="text-base font-semibold text-slate-900 dark:text-white">{title}</p>
+              <p className="text-base font-semibold text-slate-900">{title}</p>
               <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${cfg.tag} ${cfg.tagDark}`}>{ageRange}</span>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
+            <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
             <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
@@ -177,11 +177,11 @@ function ProgramCard({ icon, iconBg, title, ageRange, color, description, featur
       </button>
 
       {isExpanded && (
-        <div className="px-5 pb-5 border-t border-slate-100 dark:border-[#1E2F45] pt-4">
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">Key Features</p>
+        <div className="px-5 pb-5 border-t border-slate-100 pt-4">
+          <p className="text-xs font-semibold text-slate-500 mb-3">Key Features</p>
           <div className="space-y-2">
             {features.map((f, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div key={i} className="flex items-start gap-2 text-sm text-slate-600">
                 <span className={`${cfg.check} font-bold shrink-0`}>✓</span>
                 <span>{f}</span>
               </div>

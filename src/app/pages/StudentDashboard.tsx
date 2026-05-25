@@ -4,7 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import {
   Calendar, Clock, MapPin, Award, TrendingUp, Users, ChevronRight,
-  Target, AlertCircle, Loader2, BookOpen, Info, User
+  Target, AlertCircle, Loader2, BookOpen, User, CreditCard, Waves
 } from 'lucide-react';
 import { Progress } from '../components/Progress';
 import { SwimTimes } from '../components/SwimTimes';
@@ -63,12 +63,10 @@ const MOCK_COURSES: Record<string, MockCourse[]> = {
 };
 
 const QUICK_TILES = [
-  { icon: BookOpen, label: 'Programs',  href: '/programs',  bg: 'bg-sky-100 dark:bg-sky-900/30',      color: 'text-sky-600 dark:text-sky-400'   },
-  { icon: MapPin,   label: 'Locations', href: '/locations', bg: 'bg-emerald-100 dark:bg-emerald-900/30', color: 'text-emerald-600 dark:text-emerald-400' },
-  { icon: User,     label: 'Profile',   href: '/profile',   bg: 'bg-violet-100 dark:bg-violet-900/30', color: 'text-violet-600 dark:text-violet-400' },
-  { icon: Award,    label: 'Progress',  href: '/profile',   bg: 'bg-amber-100 dark:bg-amber-900/30',   color: 'text-amber-500 dark:text-amber-400'  },
-  { icon: Calendar, label: 'Schedule',  href: '/programs',  bg: 'bg-blue-100 dark:bg-blue-900/30',     color: 'text-[#0B4F8C] dark:text-blue-400'  },
-  { icon: Info,     label: 'About',     href: '/about',     bg: 'bg-rose-100 dark:bg-rose-900/30',     color: 'text-rose-500 dark:text-rose-400'    },
+  { icon: BookOpen,    label: 'Registrations', href: '/registrations',    bg: 'bg-sky-100',     color: 'text-sky-600',     labelMt: 8  },
+  { icon: Waves,       label: 'Private',       href: '/private',          bg: 'bg-violet-100',  color: 'text-violet-600',  labelMt: 8  },
+  { icon: CreditCard,  label: 'Payments',      href: '/payment-history',  bg: 'bg-emerald-100', color: 'text-emerald-600', labelMt: 8  },
+  { icon: User,        label: 'Profile',       href: '/profile',          bg: 'bg-amber-100',   color: 'text-amber-500',   labelMt: 8  },
 ];
 
 interface ApiCourse {
@@ -179,7 +177,7 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
   if (apiLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+      <div className="min-h-screen bg-[#F5F7FA] pb-20">
         <MobileHeader title="My Dashboard" showSignOut={true} />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
@@ -191,7 +189,7 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+    <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="My Dashboard" showSignOut={true} />
 
       {/* Welcome card */}
@@ -199,8 +197,8 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
         <div className="bg-[#0B4F8C] rounded-2xl px-5 py-5 relative overflow-hidden">
           <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
           <div className="absolute -bottom-6 -left-4 w-24 h-24 bg-white/5 rounded-full pointer-events-none" />
-          <p className="text-xs font-medium relative" style={{ color: "rgba(255,255,255,0.6)" }}>Welcome back</p>
-          <p className="text-2xl font-bold mt-0.5 relative" style={{ color: "#ffffff" }}>Hi, {firstName}! 👋</p>
+          <p className="text-base font-semibold relative" style={{ color: "rgba(255,255,255,0.6)" }}>Welcome back</p>
+          <p className="text-xl font-bold mt-0.5 relative" style={{ color: "#ffffff" }}>Hi, {firstName}! 👋</p>
           {currentLevel && (
             <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 rounded-full relative">
               <Award className="size-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
@@ -224,45 +222,45 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
       <div className="px-4 mt-4 space-y-4">
 
         {/* Floating stat card */}
-        <div className="bg-white dark:bg-[#162032] rounded-2xl shadow-sm border border-slate-100 dark:border-[#1E2F45] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           {isRealAuth ? (
-            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-[#1E2F45]">
+            <div className="grid grid-cols-3 divide-x divide-slate-100">
               <FloatStat
-                icon={<Award className="size-4 text-[#0B4F8C] dark:text-blue-400" />}
-                bg="bg-blue-50 dark:bg-blue-900/20"
+                icon={<Award className="size-6 text-[#0B4F8C]" />}
+                bg="bg-blue-50"
                 value={`${avgAttendance}%`}
                 label="Attendance"
               />
               <FloatStat
-                icon={<Calendar className="size-4 text-sky-500" />}
-                bg="bg-sky-50 dark:bg-sky-900/20"
+                icon={<Calendar className="size-6 text-sky-500" />}
+                bg="bg-sky-50"
                 value={activeCourses.toString()}
                 label="Active"
               />
               <FloatStat
-                icon={<TrendingUp className="size-4 text-violet-500" />}
-                bg="bg-violet-50 dark:bg-violet-900/20"
+                icon={<TrendingUp className="size-6 text-violet-500" />}
+                bg="bg-violet-50"
                 value={privatePackages.length.toString()}
                 label="Private"
               />
             </div>
           ) : (
-            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-[#1E2F45]">
+            <div className="grid grid-cols-3 divide-x divide-slate-100">
               <FloatStat
-                icon={<Award className="size-4 text-[#0B4F8C] dark:text-blue-400" />}
-                bg="bg-blue-50 dark:bg-blue-900/20"
+                icon={<Award className="size-6 text-[#0B4F8C]" />}
+                bg="bg-blue-50"
                 value={`${overallProgress}%`}
                 label="Progress"
               />
               <FloatStat
-                icon={<Calendar className="size-4 text-sky-500" />}
-                bg="bg-sky-50 dark:bg-sky-900/20"
+                icon={<Calendar className="size-6 text-sky-500" />}
+                bg="bg-sky-50"
                 value={mockCourses.length.toString()}
                 label="Courses"
               />
               <FloatStat
-                icon={<TrendingUp className="size-4 text-violet-500" />}
-                bg="bg-violet-50 dark:bg-violet-900/20"
+                icon={<TrendingUp className="size-6 text-violet-500" />}
+                bg="bg-violet-50"
                 value={mockCourses.reduce((s, c) => s + c.completedSkills.length, 0).toString()}
                 label="Skills"
               />
@@ -271,33 +269,47 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
         </div>
 
         {apiError && (
-          <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4">
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-2xl p-4">
             <AlertCircle className="size-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
+            <p className="text-sm text-red-700">{apiError}</p>
           </div>
         )}
 
         {/* Quick Access grid */}
         <div>
-          <p className="text-base font-semibold text-slate-900 dark:text-white mb-3">Quick Access</p>
-          <div className="grid grid-cols-3 gap-3">
-            {QUICK_TILES.map(({ icon: Icon, label, href, bg, color }) => (
+          <p className="text-base font-semibold text-slate-900 mb-3">Quick Access</p>
+          <div className="grid grid-cols-2 gap-3 px-8">
+            {QUICK_TILES.map(({ icon: Icon, label, href, color, labelMt }) => (
               <Link
                 key={label}
                 to={href}
-                className="bg-white dark:bg-[#162032] rounded-2xl py-4 px-2 flex flex-col items-center gap-2 border border-slate-100 dark:border-[#1E2F45] shadow-sm active:scale-95 transition-transform"
+                className="bg-white rounded-2xl flex flex-col items-center border border-slate-100 shadow-sm active:scale-95 transition-transform"
+                style={{ height: 100, paddingTop: 20, paddingBottom: 16 }}
               >
-                <div className={`w-12 h-12 rounded-2xl ${bg} flex items-center justify-center`}>
-                  <Icon className={`size-5 ${color}`} />
-                </div>
-                <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center leading-tight">{label}</span>
+                <Icon className={`size-7 ${color}`} />
+                <span className="text-base font-semibold text-slate-700 text-center leading-tight" style={{ marginTop: labelMt }}>{label}</span>
               </Link>
             ))}
           </div>
+
+          {/* Schedule — full-width card */}
+          <Link
+            to="/schedule"
+            className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 border border-slate-100 shadow-sm active:scale-[0.98] transition-transform mt-3"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
+              <Calendar className="size-6 text-[#0B4F8C]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-900">My Schedule</p>
+              <p className="text-xs text-slate-400 mt-0.5">View this week's classes</p>
+            </div>
+            <ChevronRight className="size-4 text-slate-300 shrink-0" />
+          </Link>
         </div>
 
         {/* Segmented tabs */}
-        <div className="bg-white dark:bg-[#162032] rounded-2xl p-1 flex gap-1 border border-slate-100 dark:border-[#1E2F45] shadow-sm">
+        <div className="bg-white rounded-2xl p-1 flex gap-1 border border-slate-100 shadow-sm">
           <TabButton active={activeTab === 'courses'} onClick={() => setActiveTab('courses')}>
             {isRealAuth ? 'Registrations' : 'My Courses'}
           </TabButton>
@@ -360,7 +372,7 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
         {activeTab === 'times' && !isRealAuth && (
           <div>
-            <p className="text-sm font-bold mb-4 text-[#0B4F8C] dark:text-white flex items-center gap-2">
+            <p className="text-sm font-bold mb-4 text-[#0B4F8C] flex items-center gap-2">
               <Target className="size-5 text-[#0B4F8C]" />
               Swim Times & PBs
             </p>
@@ -369,9 +381,9 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
         )}
 
         {activeTab === 'courses' && !isRealAuth && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-2xl p-5">
-            <p className="text-sm font-bold mb-2 text-blue-900 dark:text-blue-300">Progress Tips</p>
-            <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <p className="text-sm font-bold mb-2 text-blue-900">Progress Tips</p>
+            <ul className="space-y-2 text-sm text-blue-800">
               <li className="flex gap-2"><span>•</span><span>Practice regularly to improve faster</span></li>
               <li className="flex gap-2"><span>•</span><span>Focus on technique over speed</span></li>
               <li className="flex gap-2"><span>•</span><span>Ask your coach for feedback</span></li>
@@ -393,35 +405,35 @@ interface ApiCourseCardProps {
 
 function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
   return (
-    <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full p-5 text-left active:bg-blue-50 dark:active:bg-[#1E2F45] transition-colors"
+        className="w-full p-5 text-left active:bg-blue-50 transition-colors"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#0B4F8C] dark:text-white mb-1.5">
+            <p className="text-base font-semibold text-[#0B4F8C] mb-1.5">
               {course.names.join(' / ')}
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-block px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-[#0B4F8C] dark:text-blue-400 rounded-full text-xs font-medium">
+              <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#0B4F8C] rounded-full text-xs font-medium">
                 {course.semester}
               </span>
               {course.stopped && (
-                <span className="inline-block px-2 py-0.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-xs font-medium">
+                <span className="inline-block px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-xs font-medium">
                   Stopped
                 </span>
               )}
             </div>
           </div>
           <ChevronRight
-            className={`size-5 text-slate-300 dark:text-slate-500 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
+            className={`size-5 text-slate-300 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
           />
         </div>
 
         {course.location && (
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
-            <MapPin className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-slate-500 mb-3">
+            <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
             <span>{course.location}</span>
           </div>
         )}
@@ -429,8 +441,8 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
         {course.attendancePercent != null && (
           <div className="mt-1">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-slate-400 dark:text-slate-500">Attendance</span>
-              <span className="text-xs font-bold text-[#0B4F8C] dark:text-blue-400">
+              <span className="text-xs text-slate-400">Attendance</span>
+              <span className="text-xs font-bold text-[#0B4F8C]">
                 {course.attendancePercent}%
               </span>
             </div>
@@ -440,15 +452,15 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
       </button>
 
       {isExpanded && (
-        <div className="px-5 pb-5 border-t border-slate-100 dark:border-[#1E2F45] pt-4 space-y-2">
+        <div className="px-5 pb-5 border-t border-slate-100 pt-4 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400 dark:text-slate-500">Sessions attended</span>
-            <span className="text-slate-900 dark:text-white font-semibold">{course.attendedSessions} / {course.totalSessions}</span>
+            <span className="text-slate-400">Sessions attended</span>
+            <span className="text-slate-900 font-semibold">{course.attendedSessions} / {course.totalSessions}</span>
           </div>
           {course.location && (
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400 dark:text-slate-500">Location</span>
-              <span className="text-slate-900 dark:text-white font-semibold">{course.location}</span>
+              <span className="text-slate-400">Location</span>
+              <span className="text-slate-900 font-semibold">{course.location}</span>
             </div>
           )}
         </div>
@@ -458,46 +470,34 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
 }
 
 function PrivatePackageCard({ pkg }: { pkg: PrivatePackageDto }) {
-  const progress = pkg.packageNumberOfSessions > 0
-    ? Math.round((pkg.sessionsAttended / pkg.packageNumberOfSessions) * 100)
-    : 0;
-
   return (
-    <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] shadow-sm p-5 space-y-3">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-3">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-base font-semibold text-[#0B4F8C] dark:text-white">{pkg.packageName}</p>
+          <p className="text-base font-semibold text-[#0B4F8C]">{pkg.packageName}</p>
           {pkg.coachFullName && (
-            <p className="text-sm text-slate-400 dark:text-slate-500 mt-0.5">Coach: {pkg.coachFullName}</p>
+            <p className="text-sm text-slate-400 mt-0.5">Coach: {pkg.coachFullName}</p>
           )}
         </div>
         <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
           pkg.packageStatus === 'Active'
-            ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
-            : 'bg-slate-100 dark:bg-[#0D2847] text-slate-600 dark:text-slate-400'
+            ? 'bg-emerald-100 text-emerald-700'
+            : 'bg-slate-100 text-slate-600'
         }`}>
           {pkg.packageStatus}
         </span>
       </div>
 
       {pkg.locationNickName && (
-        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <MapPin className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
           <span>{pkg.locationNickName}</span>
         </div>
       )}
 
-      <div>
-        <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 mb-1.5">
-          <span>Sessions: {pkg.sessionsAttended} / {pkg.packageNumberOfSessions}</span>
-          <span>{pkg.sessionsRemaining} remaining</span>
-        </div>
-        <Progress value={progress} className="h-1.5" />
-      </div>
-
-      <div className="flex justify-between text-sm pt-1 border-t border-slate-100 dark:border-[#1E2F45]">
-        <span className="text-slate-400 dark:text-slate-500">Net to pay</span>
-        <span className="text-slate-900 dark:text-white font-bold">
+      <div className="flex justify-between text-sm pt-1 border-t border-slate-100">
+        <span className="text-slate-400">Net to pay</span>
+        <span className="text-slate-900 font-bold">
           {pkg.packageNetToPay} {pkg.packageCurrency}
         </span>
       </div>
@@ -515,30 +515,30 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
   const nextClassDate = new Date(course.nextClass);
 
   return (
-    <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full p-5 text-left active:bg-blue-50 dark:active:bg-[#1E2F45] transition-colors"
+        className="w-full p-5 text-left active:bg-blue-50 transition-colors"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#0B4F8C] dark:text-white mb-1.5">{course.name}</p>
-            <span className="inline-block px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-[#0B4F8C] dark:text-blue-400 rounded-full text-xs font-medium">
+            <p className="text-base font-semibold text-[#0B4F8C] mb-1.5">{course.name}</p>
+            <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#0B4F8C] rounded-full text-xs font-medium">
               {course.level}
             </span>
           </div>
           <ChevronRight
-            className={`size-5 text-slate-300 dark:text-slate-500 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
+            className={`size-5 text-slate-300 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
           />
         </div>
 
         <div className="space-y-1.5 mb-3">
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <Clock className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Clock className="size-4 text-[#0B4F8C] shrink-0" />
             <span>{course.schedule}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <Calendar className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Calendar className="size-4 text-[#0B4F8C] shrink-0" />
             <span>
               Next:{' '}
               {nextClassDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -548,28 +548,28 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
 
         <div>
           <div className="flex justify-between items-center mb-1.5">
-            <span className="text-xs text-slate-400 dark:text-slate-500">Progress</span>
-            <span className="text-xs font-bold text-[#0B4F8C] dark:text-blue-400">{course.progress}%</span>
+            <span className="text-xs text-slate-400">Progress</span>
+            <span className="text-xs font-bold text-[#0B4F8C]">{course.progress}%</span>
           </div>
           <Progress value={course.progress} className="h-1.5" />
         </div>
       </button>
 
       {isExpanded && (
-        <div className="px-5 pb-5 border-t border-slate-100 dark:border-[#1E2F45] pt-4">
+        <div className="px-5 pb-5 border-t border-slate-100 pt-4">
           <div className="mb-4 space-y-1.5">
-            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-              <MapPin className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
               <span>{course.location}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-              <Users className="size-4 text-[#0B4F8C] dark:text-blue-400 shrink-0" />
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Users className="size-4 text-[#0B4F8C] shrink-0" />
               <span>{course.instructor}</span>
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">Skills Progress</p>
+            <p className="text-xs font-semibold text-slate-500 mb-3">Skills Progress</p>
             <div className="space-y-2">
               {course.skills.map((skill, index) => {
                 const done = course.completedSkills.includes(skill);
@@ -578,14 +578,14 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
                     key={index}
                     className={`flex items-center gap-2.5 p-2.5 rounded-xl text-sm ${
                       done
-                        ? 'bg-blue-50 dark:bg-blue-900/20'
-                        : 'bg-slate-50 dark:bg-[#1E2F45]/30'
+                        ? 'bg-blue-50'
+                        : 'bg-slate-50'
                     }`}
                   >
-                    <span className={`text-sm font-bold shrink-0 ${done ? 'text-[#0B4F8C] dark:text-blue-400' : 'text-slate-300 dark:text-slate-600'}`}>
+                    <span className={`text-sm font-bold shrink-0 ${done ? 'text-[#0B4F8C]' : 'text-slate-300'}`}>
                       {done ? '✓' : '○'}
                     </span>
-                    <span className={done ? 'text-[#0B4F8C] dark:text-blue-300 font-medium' : 'text-slate-400 dark:text-slate-500'}>
+                    <span className={done ? 'text-[#0B4F8C] font-medium' : 'text-slate-400'}>
                       {skill}
                     </span>
                   </div>
@@ -608,12 +608,12 @@ interface FloatStatProps {
 
 function FloatStat({ icon, bg, value, label }: FloatStatProps) {
   return (
-    <div className="flex flex-col items-center py-4 px-2 gap-2">
-      <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
+    <div className="flex flex-col items-center py-6 px-2 gap-2.5">
+      <div className={`w-12 h-12 rounded-xl ${bg} flex items-center justify-center`}>
         {icon}
       </div>
-      <p className="text-lg font-extrabold text-[#0B4F8C] dark:text-white leading-none">{value}</p>
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">{label}</p>
+      <p className="text-2xl font-extrabold text-[#0B4F8C] leading-none">{value}</p>
+      <p className="text-sm text-slate-400 font-medium">{label}</p>
     </div>
   );
 }
@@ -631,7 +631,7 @@ function TabButton({ active, onClick, children }: TabButtonProps) {
       className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${
         active
           ? 'bg-[#0B4F8C] text-white shadow-sm'
-          : 'text-slate-400 dark:text-slate-500'
+          : 'text-slate-400'
       }`}
     >
       {children}

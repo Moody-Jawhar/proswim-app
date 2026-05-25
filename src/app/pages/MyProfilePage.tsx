@@ -41,7 +41,7 @@ export function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+      <div className="min-h-screen bg-[#F5F7FA] pb-20">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
@@ -54,7 +54,7 @@ export function MyProfilePage() {
 
   if (error || !student) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+      <div className="min-h-screen bg-[#F5F7FA] pb-20">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           <AlertCircle className="size-10 text-red-400" />
@@ -111,24 +111,24 @@ export function MyProfilePage() {
   const attendancePct = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : null;
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+    <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="My Profile" showBack showSignOut />
 
       <div className="px-4 py-5 space-y-4">
 
-        <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] shadow-sm overflow-hidden">
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] dark:from-[#08366A] dark:to-[#0B4F8C] px-5 pt-5 pb-12">
-            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 dark:bg-white/5 rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-[#0B4F8C]/3 dark:bg-white/3 rounded-full pointer-events-none" />
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] px-5 pt-5 pb-12">
+            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
+            <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-[#0B4F8C]/3 rounded-full pointer-events-none" />
             <div className="flex items-center gap-3 relative">
-              <div className="w-11 h-11 rounded-2xl bg-[#0B4F8C]/15 dark:bg-white/20 backdrop-blur flex items-center justify-center shrink-0 border border-[#0B4F8C]/20 dark:border-white/20">
-                <span className="text-[#0B4F8C] dark:text-white text-sm font-bold">{initials}</span>
+              <div className="w-11 h-11 rounded-2xl bg-[#0B4F8C]/15 backdrop-blur flex items-center justify-center shrink-0 border border-[#0B4F8C]/20">
+                <span className="text-[#0B4F8C] text-sm font-bold">{initials}</span>
               </div>
               <div>
-                <p className="text-lg font-bold text-black dark:text-white leading-snug">{fullName}</p>
-                {age && <p className="text-black/50 dark:text-white/70 text-xs mt-0.5">Age {age} • {student.studentGender || '—'}</p>}
+                <p className="text-lg font-bold text-black leading-snug">{fullName}</p>
+                {age && <p className="text-black/50 text-xs mt-0.5">Age {age} • {student.studentGender || '—'}</p>}
                 {student.studentActive && (
-                  <span className="mt-1.5 inline-block px-2 py-0.5 bg-emerald-100 dark:bg-emerald-400/25 text-emerald-700 dark:text-emerald-200 text-[10px] font-semibold rounded-full border border-emerald-200 dark:border-emerald-400/25">
+                  <span className="mt-1.5 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded-full border border-emerald-200">
                     Active
                   </span>
                 )}
@@ -136,7 +136,7 @@ export function MyProfilePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-[#1E2F45] -mt-5 bg-white dark:bg-[#162032] mx-3 rounded-xl shadow-sm border border-slate-100 dark:border-[#1E2F45] relative z-10">
+          <div className="grid grid-cols-3 divide-x divide-slate-100 -mt-5 bg-white mx-3 rounded-xl shadow-sm border border-slate-100 relative z-10">
             <StatChip label="Since" value={student.studentStartingDate
               ? new Date(student.studentStartingDate).getFullYear().toString()
               : '—'} />
@@ -151,7 +151,7 @@ export function MyProfilePage() {
           <Section title="Swimmer Type" icon={<Award className="size-4 text-[#0B4F8C]" />}>
             <div className="flex flex-wrap gap-2">
               {swimmerTypes.map(type => (
-                <span key={type} className="px-3 py-1 bg-[#0B4F8C]/10 dark:bg-blue-900/20 text-[#0B4F8C] dark:text-blue-300 rounded-full text-sm font-medium">
+                <span key={type} className="px-3 py-1 bg-[#0B4F8C]/10 text-[#0B4F8C] rounded-full text-sm font-medium">
                   {type}
                 </span>
               ))}
@@ -201,10 +201,10 @@ export function MyProfilePage() {
                 return (
                   <div key={a.registrationId}>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-sm text-slate-900 dark:text-white">{a.className || a.semesterName}</span>
+                      <span className="text-sm text-slate-900">{a.className || a.semesterName}</span>
                       <span className="text-xs text-slate-400">{a.attendedSessions}/{a.totalSessions}</span>
                     </div>
-                    <div className="h-2 bg-slate-100 dark:bg-[#1E2F45] rounded-full overflow-hidden">
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#0B4F8C] rounded-full transition-all"
                         style={{ width: `${pct}%` }}
@@ -225,12 +225,12 @@ export function MyProfilePage() {
 
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] shadow-sm p-5">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-[#EBF3FC] dark:bg-blue-900/20 flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg bg-[#EBF3FC] flex items-center justify-center">
           {icon}
         </div>
-        <p className="text-sm font-semibold text-slate-900 dark:text-white">{title}</p>
+        <p className="text-sm font-semibold text-slate-900">{title}</p>
       </div>
       <div className="space-y-3">{children}</div>
     </div>
@@ -242,8 +242,8 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
     <div className="flex items-start gap-3">
       <div className="mt-0.5 shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-400 dark:text-slate-500 mb-0.5">{label}</p>
-        <p className="text-sm text-slate-900 dark:text-white break-words">{value}</p>
+        <p className="text-xs text-slate-400 mb-0.5">{label}</p>
+        <p className="text-sm text-slate-900 break-words">{value}</p>
       </div>
     </div>
   );
@@ -252,8 +252,8 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 function StatChip({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center py-3 px-2">
-      <p className="text-lg font-bold text-[#0B4F8C] dark:text-white">{value}</p>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{label}</p>
+      <p className="text-lg font-bold text-[#0B4F8C]">{value}</p>
+      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
     </div>
   );
 }

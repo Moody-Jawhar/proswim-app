@@ -4,37 +4,37 @@ import { Target, Eye, Lightbulb } from 'lucide-react';
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0D1B2A] pb-20">
+    <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="About ProSwim" />
 
       <div className="px-4 py-6 space-y-4">
 
         <div className="text-center pb-2">
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">About ProSwim</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Swimming academy in Lebanon since 2000</p>
+          <p className="text-2xl font-bold text-slate-900">About ProSwim</p>
+          <p className="text-sm text-slate-500 mt-1">Swimming academy in Lebanon since 2000</p>
         </div>
 
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] dark:from-[#08366A] dark:to-[#0B4F8C] rounded-2xl p-6">
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 dark:bg-white/5 rounded-full pointer-events-none" />
-          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-[#0B4F8C]/5 dark:bg-white/5 rounded-full pointer-events-none" />
-          <p className="text-base font-semibold mb-3 relative text-black dark:text-white">Brand Story</p>
-          <p className="text-sm leading-relaxed mb-3 relative text-black/80 dark:text-white/90">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] rounded-2xl p-6">
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
+          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
+          <p className="text-base font-semibold mb-3 relative text-black">Brand Story</p>
+          <p className="text-sm leading-relaxed mb-3 relative text-black/80">
             Swimming is my passion! With 25 years as a swimmer and 20+ years as a coach,
             I believe any kid can be unstoppable with quality instruction and motivation.
           </p>
-          <p className="text-sm italic relative text-black/60 dark:text-white/70">"The small details make the BIG DIFFERENCE!"</p>
+          <p className="text-sm italic relative text-black/60">"The small details make the BIG DIFFERENCE!"</p>
         </div>
 
-        <div className="bg-white dark:bg-[#162032] rounded-2xl p-5 border border-slate-100 dark:border-[#1E2F45] shadow-sm">
-          <p className="text-base font-semibold mb-2 text-slate-900 dark:text-white">Our Philosophy</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <p className="text-base font-semibold mb-2 text-slate-900">Our Philosophy</p>
+          <p className="text-sm text-slate-600 leading-relaxed">
             We believe there is only one of you — and that's your superpower! We customise our
             teaching style for each individual's needs, abilities, and talents.
           </p>
         </div>
 
         <div className="space-y-3">
-          <p className="text-base font-semibold text-slate-900 dark:text-white">Why ProSwim?</p>
+          <p className="text-base font-semibold text-slate-900">Why ProSwim?</p>
           <div className="grid grid-cols-2 gap-3">
             {[
               { icon: '🛡️', title: 'Safety First', desc: 'Top priority in everything we do' },
@@ -44,17 +44,17 @@ export function AboutPage() {
               { icon: '🎉', title: 'Fun', desc: 'Games, toys & exciting drills' },
               { icon: '🏆', title: 'Recognition', desc: 'Certificates & medals' },
             ].map((f) => (
-              <div key={f.title} className="bg-white dark:bg-[#162032] rounded-2xl p-4 border border-slate-100 dark:border-[#1E2F45]">
+              <div key={f.title} className="bg-white rounded-2xl p-4 border border-slate-100">
                 <span className="text-2xl">{f.icon}</span>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white mt-2 mb-0.5">{f.title}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{f.desc}</p>
+                <p className="text-sm font-semibold text-slate-900 mt-2 mb-0.5">{f.title}</p>
+                <p className="text-xs text-slate-500 leading-snug">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
         <ValueCard
-          icon={<Target className="size-5 text-[#0B4F8C] dark:text-blue-400" />}
+          icon={<Target className="size-5 text-[#0B4F8C]" />}
           title="Mission"
           color="blue"
           content={['Teach correct techniques safely', 'Build confidence & self-esteem', 'Develop goal-setting skills', 'Promote swimming as life skill']}
@@ -72,12 +72,12 @@ export function AboutPage() {
           content={['Build united team', 'Teach life lessons', 'Make lifetime champions', 'Strong partnerships']}
         />
 
-        <div className="bg-white dark:bg-[#162032] rounded-2xl border border-slate-100 dark:border-[#1E2F45] overflow-hidden">
-          <div className="px-5 pt-5 pb-3 border-b border-slate-100 dark:border-[#1E2F45]">
-            <p className="text-base font-semibold text-slate-900 dark:text-white">Our Logo</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Every element has meaning</p>
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+          <div className="px-5 pt-5 pb-3 border-b border-slate-100">
+            <p className="text-base font-semibold text-slate-900">Our Logo</p>
+            <p className="text-xs text-slate-500 mt-0.5">Every element has meaning</p>
           </div>
-          <div className="divide-y divide-slate-100 dark:divide-[#1E2F45]">
+          <div className="divide-y divide-slate-100">
             {[
               { k: 'BLUE',   v: 'Sky & Sea',  desc: 'Limitless potential, depth, trust, freedom' },
               { k: 'CIRCLE', v: 'Unity',      desc: 'Wholeness, infinity, perfection, ongoing energy' },
@@ -87,31 +87,31 @@ export function AboutPage() {
               <details key={item.k} className="group px-5 py-3.5 cursor-pointer">
                 <summary className="flex items-center justify-between select-none [&::-webkit-details-marker]:hidden">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#0B4F8C] dark:text-blue-400 tracking-widest">{item.k}</span>
+                    <span className="text-xs font-bold text-[#0B4F8C] tracking-widest">{item.k}</span>
                     <span className="text-xs text-slate-400">—</span>
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">{item.v}</span>
+                    <span className="text-sm font-medium text-slate-900">{item.v}</span>
                   </div>
                   <span className="text-slate-400 text-xs group-open:hidden">+</span>
                   <span className="text-slate-400 text-xs hidden group-open:block">−</span>
                 </summary>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">{item.desc}</p>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">{item.desc}</p>
               </details>
             ))}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#162032] rounded-2xl p-5 border border-slate-100 dark:border-[#1E2F45] shadow-sm">
-          <p className="text-base font-semibold mb-4 text-slate-900 dark:text-white">ProSwim Stands For</p>
+        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <p className="text-base font-semibold mb-4 text-slate-900">ProSwim Stands For</p>
           <div className="space-y-2">
             {[
               ['P', 'Partnership'], ['R', 'Reliability'], ['O', 'Organization'],
               ['S', 'Synergy'],     ['W', 'Welcoming'],  ['I', 'Integrity'], ['M', 'Mutuality'],
             ].map(([letter, word]) => (
-              <div key={letter} className="flex items-center gap-4 py-2 border-b border-slate-50 dark:border-[#1E2F45]/50 last:border-0">
-                <div className="w-8 h-8 rounded-xl bg-[#0B4F8C]/10 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                  <span className="text-sm font-bold text-[#0B4F8C] dark:text-blue-400">{letter}</span>
+              <div key={letter} className="flex items-center gap-4 py-2 border-b border-slate-50 last:border-0">
+                <div className="w-8 h-8 rounded-xl bg-[#0B4F8C]/10 flex items-center justify-center shrink-0">
+                  <span className="text-sm font-bold text-[#0B4F8C]">{letter}</span>
                 </div>
-                <span className="text-sm text-slate-900 dark:text-white">{word}</span>
+                <span className="text-sm text-slate-900">{word}</span>
               </div>
             ))}
           </div>
@@ -133,23 +133,23 @@ interface ValueCardProps {
 
 function ValueCard({ icon, title, color, content }: ValueCardProps) {
   const iconBg = color === 'blue'
-    ? 'bg-blue-50 dark:bg-blue-900/20'
+    ? 'bg-blue-50'
     : color === 'violet'
-    ? 'bg-violet-50 dark:bg-violet-900/20'
-    : 'bg-amber-50 dark:bg-amber-900/20';
+    ? 'bg-violet-50'
+    : 'bg-amber-50';
 
   return (
-    <div className="bg-white dark:bg-[#162032] rounded-2xl p-5 border border-slate-100 dark:border-[#1E2F45] shadow-sm">
+    <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
           {icon}
         </div>
-        <p className="text-base font-semibold text-slate-900 dark:text-white">{title}</p>
+        <p className="text-base font-semibold text-slate-900">{title}</p>
       </div>
       <ul className="space-y-2">
         {content.map((item) => (
-          <li key={item} className="flex gap-2.5 text-sm text-slate-600 dark:text-slate-400">
-            <span className="text-[#0B4F8C] dark:text-blue-400 font-bold shrink-0 mt-px">•</span>
+          <li key={item} className="flex gap-2.5 text-sm text-slate-600">
+            <span className="text-[#0B4F8C] font-bold shrink-0 mt-px">•</span>
             <span>{item}</span>
           </li>
         ))}

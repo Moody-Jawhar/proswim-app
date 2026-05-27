@@ -48,16 +48,21 @@ export function PrivatePackagesPage() {
         <div className="space-y-3">
           {packages.map((pkg) => (
               <div key={pkg.packageId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-sm font-semibold text-slate-900">{pkg.packageName}</p>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                     pkg.packageStatus === 'Active'
                       ? 'bg-emerald-100 text-emerald-700'
+                      : pkg.packageStatus === 'Freeze'
+                      ? 'bg-amber-100 text-amber-700'
                       : 'bg-slate-100 text-slate-600'
                   }`}>
                     {pkg.packageStatus}
                   </span>
                 </div>
+                {pkg.packageNamewInfo && (
+                  <p className="text-[11px] text-slate-400 mb-2">{pkg.packageNamewInfo}</p>
+                )}
 
                 {pkg.coachFullName && (
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
@@ -72,7 +77,22 @@ export function PrivatePackagesPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-3 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
+                  <div>
+                    <p className="text-slate-400">Sessions</p>
+                    <p className="font-semibold text-slate-700">
+                      {pkg.countAttended} attended · {pkg.sessionsLeft} left
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-slate-400">Due</p>
+                    <p className={`font-semibold ${pkg.duePayment > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                      {pkg.duePayment.toLocaleString()} {pkg.packageCurrency}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-3 border-t border-slate-100 mt-3">
                   <Link
                     to={`/private/${pkg.packageId}/sessions`}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-violet-50 text-sm font-semibold text-violet-700"

@@ -4,6 +4,8 @@ import { MobileNav } from '../components/MobileNav';
 import { Loader2, AlertCircle, Waves, User } from 'lucide-react';
 import {
   getGroupPayments,
+  getGroupRegistrations,
+  getPrivatePackages,
   getPrivatePayments,
   type GroupPaymentDto,
   type PrivatePaymentDto,
@@ -24,15 +26,39 @@ export function PaymentsHistoryPage() {
 
   useEffect(() => {
     (async () => {
-      const [groupRes, privateRes] = await Promise.allSettled([
-        getGroupPayments(),
-        getPrivatePayments(),
+      const [regsRes, pkgsRes] = await Promise.allSettled([
+        getGroupRegistrations(),
+        getPrivatePackages(),
       ]);
-      if (groupRes.status === 'fulfilled') setGroupPayments(groupRes.value);
-      if (privateRes.status === 'fulfilled') setPrivatePayments(privateRes.value);
-      if (groupRes.status === 'rejected' && privateRes.status === 'rejected') {
+
+      const regs = regsRes.status === 'fulfilled' ? regsRes.value : [];
+      const pkgs = pkgsRes.status === 'fulfilled' ? pkgsRes.value : [];
+
+      const [groupResults, privateResults] = await Promise.all([
+        Promise.allSettled(regs.map((r) => getGroupPayments(r.registrationSemesterId))),
+        Promise.allSettled(pkgs.map((p) => getPrivatePayments(p.packageId))),
+      ]);
+
+      const groupOk = groupResults.filter((x): x is PromiseFulfilledResult<GroupPaymentDto[]> => x.status === 'fulfilled');
+      const privateOk = privateResults.filter((x): x is PromiseFulfilledResult<PrivatePaymentDto[]> => x.status === 'fulfilled');
+
+      const groupAll = groupOk.flatMap((x) => x.value);
+      const privateAll = privateOk.flatMap((x) => x.value);
+
+      const seenGroup = new Set<number>();
+      setGroupPayments(groupAll.filter((p) => (seenGroup.has(p.paymentId) ? false : (seenGroup.add(p.paymentId), true))));
+
+      const seenPrivate = new Set<number>();
+      setPrivatePayments(privateAll.filter((p) => (seenPrivate.has(p.privatePaymentId) ? false : (seenPrivate.add(p.privatePaymentId), true))));
+
+      const allGroupFailed = regs.length > 0 && groupOk.length === 0;
+      const allPrivateFailed = pkgs.length > 0 && privateOk.length === 0;
+      const nothingToLoad = regsRes.status === 'rejected' && pkgsRes.status === 'rejected';
+
+      if (nothingToLoad || (allGroupFailed && allPrivateFailed)) {
         setError('Could not load payment history.');
       }
+
       setLoading(false);
     })();
   }, []);

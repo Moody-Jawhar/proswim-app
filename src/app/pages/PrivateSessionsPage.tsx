@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat } from 'lucide-react';
 import { getPrivateSessions, type PrivateSessionDto } from '../api/pswmApi';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -20,11 +20,14 @@ export function PrivateSessionsPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const pid = packageId ? parseInt(packageId) : undefined;
-    getPrivateSessions()
-      .then((all) => {
-        setSessions(pid != null ? all.filter(s => s.packageId === pid) : all);
-      })
+    const pid = packageId ? parseInt(packageId) : NaN;
+    if (!Number.isFinite(pid)) {
+      setError('Missing package.');
+      setLoading(false);
+      return;
+    }
+    getPrivateSessions(pid)
+      .then(setSessions)
       .catch(() => setError('Could not load sessions.'))
       .finally(() => setLoading(false));
   }, [packageId]);
@@ -101,25 +104,47 @@ export function PrivateSessionsPage() {
                         <span>{s.coachFullName}</span>
                       </div>
                     )}
-                    {s.locationNickName && (
+                    {s.locationIcon && (
                       <div className="flex items-center gap-1.5 text-xs text-slate-500">
                         <MapPin className="size-3.5 shrink-0" />
-                        <span>{s.locationNickName}</span>
+                        <span>{s.locationIcon}</span>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="shrink-0">
+                <div className="shrink-0 flex flex-col items-end gap-1">
                   {s.privateSessionAttended === true && <CheckCircle2 className="size-5 text-emerald-500" />}
                   {s.privateSessionAttended === false && <XCircle className="size-5 text-red-400" />}
                   {s.privateSessionAttended === null && (
                     <div className="size-5 rounded-full border-2 border-slate-200" />
                   )}
+                  {s.privateSessionState && s.privateSessionState !== 'Regular' && (
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700">
+                      {s.privateSessionState}
+                    </span>
+                  )}
                 </div>
               </div>
-              {s.privateSessionStatus && (
+              {s.privateSessionState === 'Makeup' && (s.privateSessionMkupDate || s.privateSessionMkupTime || s.coachMkup) && (
+                <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-violet-700">
+                    <Repeat className="size-3.5 shrink-0" />
+                    <span>Makeup</span>
+                  </div>
+                  {s.privateSessionMkupDate && (
+                    <p className="text-xs text-slate-500 pl-5">
+                      {formatDate(s.privateSessionMkupDate)}
+                      {s.privateSessionMkupTime ? ` · ${s.privateSessionMkupTime}` : ''}
+                    </p>
+                  )}
+                  {s.coachMkup && (
+                    <p className="text-xs text-slate-500 pl-5">Coach: {s.coachMkup}</p>
+                  )}
+                </div>
+              )}
+              {s.privateSessionRemarks && (
                 <div className="mt-2 pt-2 border-t border-slate-100">
-                  <span className="text-xs text-slate-400">{s.privateSessionStatus}</span>
+                  <span className="text-xs text-slate-400">{s.privateSessionRemarks}</span>
                 </div>
               )}
             </div>

@@ -19,11 +19,14 @@ export function PrivatePaymentsPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const pid = packageId ? parseInt(packageId) : undefined;
-    getPrivatePayments()
-      .then((all) => {
-        setPayments(pid != null ? all.filter(p => p.privatePackageId === pid) : all);
-      })
+    const pid = packageId ? parseInt(packageId) : NaN;
+    if (!Number.isFinite(pid)) {
+      setError('Missing package.');
+      setLoading(false);
+      return;
+    }
+    getPrivatePayments(pid)
+      .then(setPayments)
       .catch(() => setError('Could not load payments.'))
       .finally(() => setLoading(false));
   }, [packageId]);

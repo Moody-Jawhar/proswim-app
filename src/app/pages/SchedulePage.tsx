@@ -4,8 +4,10 @@ import { MobileNav } from '../components/MobileNav';
 import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, Waves } from 'lucide-react';
 import {
   getStoredToken,
+  getGroupRegistrations,
   getGroupSessions,
-  getPrivateSessionsUpcoming,
+  getPrivatePackages,
+  getPrivateSessions,
   type SessionDto,
   type PrivateSessionDto,
 } from '../api/pswmApi';
@@ -73,14 +75,37 @@ export function SchedulePage() {
     (async () => {
       try {
         setLoading(true);
-        const [group, priv] = await Promise.allSettled([
-          getGroupSessions(),
-          getPrivateSessionsUpcoming(),
+
+        const [regsRes, pkgsRes] = await Promise.allSettled([
+          getGroupRegistrations(),
+          getPrivatePackages(),
         ]);
-        if (group.status === 'fulfilled') setGroupSessions(group.value);
-        if (priv.status === 'fulfilled') setPrivateSessions(priv.value);
-      } catch {
-        setError('Could not load schedule.');
+        const regs = regsRes.status === 'fulfilled' ? regsRes.value : [];
+        const pkgs = pkgsRes.status === 'fulfilled' ? pkgsRes.value : [];
+
+        const [groupResults, privateResults] = await Promise.all([
+          Promise.allSettled(regs.map((r) => getGroupSessions(r.registrationSemesterId))),
+          Promise.allSettled(pkgs.map((p) => getPrivateSessions(p.packageId))),
+        ]);
+
+        const seenG = new Set<number>();
+        const allG = groupResults
+          .filter((x): x is PromiseFulfilledResult<SessionDto[]> => x.status === 'fulfilled')
+          .flatMap((x) => x.value)
+          .filter((s) => (seenG.has(s.sessionId) ? false : (seenG.add(s.sessionId), true)));
+
+        const seenP = new Set<number>();
+        const allP = privateResults
+          .filter((x): x is PromiseFulfilledResult<PrivateSessionDto[]> => x.status === 'fulfilled')
+          .flatMap((x) => x.value)
+          .filter((s) => (seenP.has(s.privateSessionId) ? false : (seenP.add(s.privateSessionId), true)));
+
+        setGroupSessions(allG);
+        setPrivateSessions(allP);
+
+        if (regsRes.status === 'rejected' && pkgsRes.status === 'rejected') {
+          setError('Could not load schedule.');
+        }
       } finally {
         setLoading(false);
       }
@@ -313,16 +338,14 @@ function GroupSessionCard({ session, showDate }: { session: SessionDto; showDate
                 <span>{formatDate(date)}</span>
               </div>
             )}
-            {session.coachFullName && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <User className="size-3.5 shrink-0" />
-                <span>{session.coachFullName}</span>
-              </div>
+            {session.sessionDesc && (
+              <p className="text-xs text-slate-500">{session.sessionDesc}</p>
             )}
-            {session.locationNickName && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <MapPin className="size-3.5 shrink-0" />
-                <span>{session.locationNickName}</span>
+            {session.registered > 0 && (
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                <User className="size-3 shrink-0" />
+                <span>{session.attended}/{session.registered} attended</span>
+                {session.makeuped && <span className="ml-1">· makeup {session.makeuped}</span>}
               </div>
             )}
           </div>
@@ -334,6 +357,7 @@ function GroupSessionCard({ session, showDate }: { session: SessionDto; showDate
 
 function PrivateSessionCard({ session, showDate }: { session: PrivateSessionDto; showDate?: boolean }) {
   const date = session.privateSessionDate ? new Date(session.privateSessionDate) : null;
+  const isMakeup = session.privateSessionState === 'Makeup';
 
   return (
     <div className="bg-white border border-slate-100 rounded-2xl p-4">
@@ -343,10 +367,10 @@ function PrivateSessionCard({ session, showDate }: { session: PrivateSessionDto;
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold text-slate-900">{session.packageName || 'Private Session'}</p>
-            {session.privateSessionStatus && (
+            <p className="text-sm font-semibold text-slate-900">Private Session</p>
+            {session.privateSessionState && session.privateSessionState !== 'Regular' && (
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-violet-100 text-violet-600">
-                {session.privateSessionStatus}
+                {session.privateSessionState}
               </span>
             )}
           </div>
@@ -369,10 +393,22 @@ function PrivateSessionCard({ session, showDate }: { session: PrivateSessionDto;
                 <span>{session.coachFullName}</span>
               </div>
             )}
-            {session.locationNickName && (
+            {session.locationIcon && (
               <div className="flex items-center gap-1.5 text-xs text-slate-500">
                 <MapPin className="size-3.5 shrink-0" />
-                <span>{session.locationNickName}</span>
+                <span>{session.locationIcon}</span>
+              </div>
+            )}
+            {isMakeup && (session.privateSessionMkupDate || session.privateSessionMkupTime || session.coachMkup) && (
+              <div className="mt-1 pt-1 border-t border-slate-100 text-[11px] text-violet-700">
+                Makeup
+                {session.privateSessionMkupDate && (
+                  <span className="text-slate-500">
+                    {' · '}{formatDate(new Date(session.privateSessionMkupDate))}
+                    {session.privateSessionMkupTime ? ` ${session.privateSessionMkupTime}` : ''}
+                  </span>
+                )}
+                {session.coachMkup && <span className="text-slate-500"> · {session.coachMkup}</span>}
               </div>
             )}
           </div>

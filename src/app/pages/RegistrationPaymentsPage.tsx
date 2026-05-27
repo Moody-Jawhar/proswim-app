@@ -19,11 +19,14 @@ export function RegistrationPaymentsPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const sid = semesterId ? parseInt(semesterId) : undefined;
-    getGroupPayments()
-      .then((all) => {
-        setPayments(sid != null ? all.filter(p => p.paymentSemesterId === sid) : all);
-      })
+    const sid = semesterId ? parseInt(semesterId) : NaN;
+    if (!Number.isFinite(sid)) {
+      setError('Missing semester.');
+      setLoading(false);
+      return;
+    }
+    getGroupPayments(sid)
+      .then(setPayments)
       .catch(() => setError('Could not load payments.'))
       .finally(() => setLoading(false));
   }, [semesterId]);

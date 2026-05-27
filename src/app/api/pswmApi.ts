@@ -144,10 +144,11 @@ export interface SessionDto {
   sessionClassId: number;
   sessionDate: string | null;
   sessionStatus: string | null;
-  sessionRemarks: string | null;
   className: string | null;
-  coachFullName: string | null;
-  locationNickName: string | null;
+  sessionDesc: string | null;
+  attended: number;
+  registered: number;
+  makeuped: string | null;
 }
 
 export interface AttendanceDto {
@@ -199,32 +200,34 @@ export interface GroupPaymentDueDto {
 export interface PrivatePackageDto {
   packageId: number;
   packageName: string | null;
+  packageNamewInfo: string | null;
   packageStatus: string | null;
+  packageLevel: string | null;
   packageNumberOfSessions: number;
-  packageNetToPay: number;
+  packageCurrency: string | null;
   packageAmount: number;
-  packageDiscount: number;
+  packageNetToPay: number;
   packageStartDate: string | null;
   coachFullName: string | null;
   locationNickName: string | null;
-  packageLevel: string | null;
-  packageCurrency: string | null;
-  sessionsAttended: number;
-  sessionsRemaining: number;
+  duePayment: number;
+  amountPaid: number;
+  sessionsLeft: number;
+  countAttended: number;
 }
 
 export interface PrivateSessionDto {
   privateSessionId: number;
-  packageId: number;
   privateSessionDate: string | null;
   privateSessionTime: string | null;
-  privateSessionStatus: string | null;
   privateSessionState: string | null;
   privateSessionAttended: boolean | null;
   privateSessionRemarks: string | null;
   coachFullName: string | null;
-  locationNickName: string | null;
-  packageName: string | null;
+  locationIcon: string | null;
+  privateSessionMkupDate: string | null;
+  privateSessionMkupTime: string | null;
+  coachMkup: string | null;
 }
 
 export interface PrivatePaymentDto {
@@ -421,9 +424,8 @@ export async function getGroupRegistrations(): Promise<RegistrationDto[]> {
   return apiRequest<RegistrationDto[]>("/api/Group/Registrations");
 }
 
-export async function getGroupSessions(semesterId?: number): Promise<SessionDto[]> {
-  const q = semesterId != null ? `?semesterId=${semesterId}` : "";
-  return apiRequest<SessionDto[]>(`/api/Group/Sessions${q}`);
+export async function getGroupSessions(semesterId: number): Promise<SessionDto[]> {
+  return apiRequest<SessionDto[]>(`/api/Group/Sessions?semesterId=${semesterId}`);
 }
 
 export async function getGroupAttendance(semesterId?: number): Promise<AttendanceDto[]> {
@@ -436,8 +438,8 @@ export async function getGroupAttendanceSummary(semesterId?: number): Promise<At
   return apiRequest<AttendanceSummaryDto[]>(`/api/Group/AttendanceSummary${q}`);
 }
 
-export async function getGroupPayments(): Promise<GroupPaymentDto[]> {
-  return apiRequest<GroupPaymentDto[]>("/api/Payments/Group");
+export async function getGroupPayments(semesterId: number): Promise<GroupPaymentDto[]> {
+  return apiRequest<GroupPaymentDto[]>(`/api/Payments/Group?semesterId=${semesterId}`);
 }
 
 export async function getGroupPaymentsDue(): Promise<GroupPaymentDueDto[]> {
@@ -452,20 +454,12 @@ export async function getPrivatePackage(id: number): Promise<PrivatePackageDto> 
   return apiRequest<PrivatePackageDto>(`/api/Private/Packages/${id}`);
 }
 
-export async function getPrivateSessions(): Promise<PrivateSessionDto[]> {
-  return apiRequest<PrivateSessionDto[]>("/api/Private/Sessions");
+export async function getPrivateSessions(packageId: number): Promise<PrivateSessionDto[]> {
+  return apiRequest<PrivateSessionDto[]>(`/api/Private/Sessions?packageId=${packageId}`);
 }
 
-export async function getPrivateSessionsUpcoming(): Promise<PrivateSessionDto[]> {
-  return apiRequest<PrivateSessionDto[]>("/api/Private/Sessions/Upcoming");
-}
-
-export async function getPrivateSessionsHistory(): Promise<PrivateSessionDto[]> {
-  return apiRequest<PrivateSessionDto[]>("/api/Private/Sessions/History");
-}
-
-export async function getPrivatePayments(): Promise<PrivatePaymentDto[]> {
-  return apiRequest<PrivatePaymentDto[]>("/api/Payments/Private");
+export async function getPrivatePayments(packageId: number): Promise<PrivatePaymentDto[]> {
+  return apiRequest<PrivatePaymentDto[]>(`/api/Payments/Private?packageId=${packageId}`);
 }
 
 export async function getPrivatePaymentsDue(): Promise<PrivatePaymentDueDto[]> {

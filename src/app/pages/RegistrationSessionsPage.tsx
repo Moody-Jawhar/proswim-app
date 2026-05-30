@@ -103,32 +103,33 @@ export function RegistrationSessionsPage() {
         <div className="space-y-2">
           {sessions.map((s) => {
             const wasAttended = attendanceMap.get(s.sessionId);
-            const cardBg = wasAttended === true
-              ? 'bg-emerald-50 border-emerald-100'
-              : wasAttended === false
-              ? 'bg-red-50 border-red-100'
-              : 'bg-white border-slate-100';
+            const isAttended = wasAttended === true;
+            const isAbsent = wasAttended === false;
+            const cardBg = isAttended ? 'bg-emerald-500 border-emerald-500' : isAbsent ? 'bg-red-500 border-red-500' : 'bg-white border-slate-100';
+            const textColor = (isAttended || isAbsent) ? 'text-white' : 'text-slate-900';
+            const subColor = (isAttended || isAbsent) ? 'text-white/70' : 'text-slate-500';
+            const iconColor = (isAttended || isAbsent) ? 'text-white/80' : 'text-[#0B4F8C]';
 
             return (
               <div key={s.sessionId} className={`rounded-2xl border shadow-sm p-4 ${cardBg}`}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     {s.sessionDate && (
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900 mb-1">
-                        <Calendar className="size-3.5 text-[#0B4F8C] shrink-0" />
+                      <div className={`flex items-center gap-1.5 text-sm font-medium mb-1 ${textColor}`}>
+                        <Calendar className={`size-3.5 shrink-0 ${iconColor}`} />
                         <span>{formatDate(s.sessionDate)}</span>
                       </div>
                     )}
                     {s.className && (
-                      <p className="text-xs text-slate-500">{s.className}</p>
+                      <p className={`text-xs ${subColor}`}>{s.className}</p>
                     )}
                     {s.sessionStatus && (
-                      <p className="text-xs text-slate-400 mt-0.5">{s.sessionStatus}</p>
+                      <p className={`text-xs mt-0.5 ${subColor}`}>{s.sessionStatus}</p>
                     )}
                   </div>
                   <div className="shrink-0">
-                    {wasAttended === true && <CheckCircle2 className="size-5 text-emerald-500" />}
-                    {wasAttended === false && <XCircle className="size-5 text-red-400" />}
+                    {isAttended && <CheckCircle2 className="size-5 text-white" />}
+                    {isAbsent && <XCircle className="size-5 text-white" />}
                     {wasAttended === undefined && (
                       <div className="size-5 rounded-full border-2 border-slate-200" />
                     )}

@@ -19,6 +19,7 @@ import { PrivatePackagesPage } from "./app/pages/PrivatePackagesPage";
 import { PrivateSessionsPage } from "./app/pages/PrivateSessionsPage";
 import { PrivatePaymentsPage } from "./app/pages/PrivatePaymentsPage";
 import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
+import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/private/:packageId/sessions" element={<PrivateSessionsPage />} />
         <Route path="/private/:packageId/payments" element={<PrivatePaymentsPage />} />
         <Route path="/payment-history" element={<PaymentsHistoryPage />} />
+        <Route path="/checklist" element={<SkillsChecklistPage />} />
 
         <Route path="/Locations" element={<Navigate to="/locations" replace />} />
         <Route path="/Payments" element={<Navigate to="/payments" replace />} />

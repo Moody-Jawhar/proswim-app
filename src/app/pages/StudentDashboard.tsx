@@ -306,6 +306,23 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
             </div>
             <ChevronRight className="size-4 text-slate-300 shrink-0" />
           </Link>
+
+          {/* Skills Checklist — full-width card */}
+          {isRealAuth && (
+            <Link
+              to="/checklist"
+              className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 border border-slate-100 shadow-sm active:scale-[0.98] transition-transform"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <Target className="size-6 text-emerald-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-900">Skills Checklist</p>
+                <p className="text-xs text-slate-400 mt-0.5">Track your skill progress</p>
+              </div>
+              <ChevronRight className="size-4 text-slate-300 shrink-0" />
+            </Link>
+          )}
         </div>
 
         {/* Segmented tabs */}

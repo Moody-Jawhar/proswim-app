@@ -499,3 +499,17 @@ export async function updateStudentProfile(data: StudentProfileUpdateDto): Promi
     body: JSON.stringify(data),
   });
 }
+
+export interface ChecklistItemDto {
+  checklistItemId: number;
+  checklistItemText: string;
+  checklistItemLevelName: string;
+  checklistItemOrder: number;
+  isChecked: boolean;
+  dateChecked: string | null;
+  checkedByUserId: number | null;
+}
+
+export async function getChecklist(studentId: number): Promise<ChecklistItemDto[]> {
+  return apiRequest<ChecklistItemDto[]>(`/api/Students/GetChecklist?studentId=${studentId}`);
+}

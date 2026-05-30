@@ -145,12 +145,12 @@ export function StudentProfile() {
     : "";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       <MobileHeader title="Student Profile" showBack={true} showSignOut={true} />
 
       <div className="px-4 py-6 space-y-6">
         {/* Header Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="relative bg-gradient-to-br from-[#0B4F8C] to-[#1a6bb8] p-6 pb-16">
             <img
               src={proswimLogo}
@@ -173,15 +173,15 @@ export function StudentProfile() {
           {/* Quick info */}
           <div className="p-5 -mt-8">
             {error && (
-              <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-900 p-3">
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3">
                 <ShieldAlert className="size-5 text-red-600" />
-                <div className="text-sm text-red-700 dark:text-red-300">{error}</div>
+                <div className="text-sm text-red-700">{error}</div>
               </div>
             )}
             {success && (
-              <div className="mb-4 flex items-start gap-2 rounded-xl border border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-900 p-3">
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-green-200 bg-green-50 p-3">
                 <CheckCircle className="size-5 text-green-600" />
-                <div className="text-sm text-green-700 dark:text-green-300">{success}</div>
+                <div className="text-sm text-green-700">{success}</div>
               </div>
             )}
 
@@ -226,8 +226,8 @@ export function StudentProfile() {
 
         {/* Overview */}
         {activeTab === "overview" && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5 space-y-4">
-            <h3 className="text-lg text-gray-900 dark:text-white">Profile Details</h3>
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 space-y-4">
+            <h3 className="text-lg text-gray-900">Profile Details</h3>
 
             <InfoRow label="First Name" value={student?.studentFirstName || "-"} />
             <InfoRow label="Middle Name" value={student?.studentMiddleName || "-"} />
@@ -239,8 +239,8 @@ export function StudentProfile() {
             <InfoRow label="Nationality 2" value={student?.studentNationality2 || "-"} />
             <InfoRow label="Notes" value={student?.studentNotes || "-"} />
 
-            <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+            <div className="pt-2 border-t border-gray-200">
+              <h4 className="text-sm text-gray-700 mb-2">
                 Read-only flags (from system)
               </h4>
               <div className="grid grid-cols-2 gap-2">
@@ -257,16 +257,16 @@ export function StudentProfile() {
 
         {/* Edit */}
         {activeTab === "edit" && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5 space-y-5">
-            <h3 className="text-lg text-gray-900 dark:text-white">Edit Profile</h3>
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 space-y-5">
+            <h3 className="text-lg text-gray-900">Edit Profile</h3>
 
             {loading || !student || !form ? (
-              <div className="text-sm text-gray-600 dark:text-gray-400">Loading form…</div>
+              <div className="text-sm text-gray-600">Loading form…</div>
             ) : (
               <>
                 {/* Read-only section */}
-                <div className="rounded-xl bg-gray-50 dark:bg-gray-700 p-4 space-y-3">
-                  <h4 className="text-sm text-gray-700 dark:text-gray-200">Locked fields</h4>
+                <div className="rounded-xl bg-gray-50 p-4 space-y-3">
+                  <h4 className="text-sm text-gray-700">Locked fields</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <Input label="First Name" value={student.studentFirstName || ""} disabled />
                     <Input label="Last Name" value={student.studentLastName || ""} disabled />
@@ -292,7 +292,7 @@ export function StudentProfile() {
 
                 {/* Editable section */}
                 <div className="space-y-3">
-                  <h4 className="text-sm text-gray-700 dark:text-gray-200">Editable fields</h4>
+                  <h4 className="text-sm text-gray-700">Editable fields</h4>
 
                   <div className="grid grid-cols-2 gap-3">
                     <Input
@@ -403,8 +403,8 @@ export function StudentProfile() {
                     onChange={(v) => setForm({ ...form, studentNotes: v || null })}
                   />
 
-                  <div className="rounded-xl bg-gray-50 dark:bg-gray-700 p-4 space-y-3">
-                    <h4 className="text-sm text-gray-700 dark:text-gray-200">Flags (editable)</h4>
+                  <div className="rounded-xl bg-gray-50 p-4 space-y-3">
+                    <h4 className="text-sm text-gray-700">Flags (editable)</h4>
 
                     <div className="grid grid-cols-2 gap-2">
                       <Toggle
@@ -494,7 +494,7 @@ export function StudentProfile() {
         {/* Footer */}
         <div className="flex items-center justify-center gap-2 py-4 opacity-50">
           <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
-          <span className="text-sm text-gray-500 dark:text-gray-400">ProSwim-LB</span>
+          <span className="text-sm text-gray-500">ProSwim-LB</span>
         </div>
       </div>
 
@@ -520,7 +520,7 @@ function TabButton({
       className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
         active
           ? "bg-[#0B4F8C] text-white"
-          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 active:scale-95"
+          : "bg-gray-100 text-gray-600 active:scale-95"
       }`}
     >
       {children}
@@ -538,12 +538,12 @@ function InfoChip({
   value: string;
 }) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+    <div className="bg-gray-50 rounded-xl p-3">
       <div className="flex items-center gap-2 mb-1">
         {icon}
-        <div className="text-xs text-gray-500 dark:text-gray-300">{label}</div>
+        <div className="text-xs text-gray-500">{label}</div>
       </div>
-      <div className="text-sm text-gray-900 dark:text-white break-words">{value}</div>
+      <div className="text-sm text-gray-900 break-words">{value}</div>
     </div>
   );
 }
@@ -551,8 +551,8 @@ function InfoChip({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <div className="text-sm text-gray-500 dark:text-gray-400">{label}</div>
-      <div className="text-sm text-gray-900 dark:text-white text-right break-words max-w-[60%]">
+      <div className="text-sm text-gray-500">{label}</div>
+      <div className="text-sm text-gray-900 text-right break-words max-w-[60%]">
         {value}
       </div>
     </div>
@@ -565,8 +565,8 @@ function FlagBadge({ label, value }: { label: string; value: boolean | null | un
     <div
       className={`px-3 py-2 rounded-xl text-sm border ${
         on
-          ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-900 text-green-700 dark:text-green-300"
-          : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300"
+          ? "bg-green-50 border-green-200 text-green-700"
+          : "bg-gray-50 border-gray-200 text-gray-600"
       }`}
     >
       {label}: {on ? "Yes" : "No"}
@@ -589,7 +589,7 @@ function Input({
 }) {
   return (
     <label className="block">
-      <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">{label}</div>
+      <div className="text-xs text-gray-500 mb-1">{label}</div>
       <input
         type={type}
         value={value}
@@ -597,8 +597,8 @@ function Input({
         onChange={(e) => onChange?.(e.target.value)}
         className={`w-full rounded-xl px-3 py-2 text-sm border outline-none ${
           disabled
-            ? "bg-gray-100 dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700"
-            : "bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 focus:border-[#0B4F8C]"
+            ? "bg-gray-100 text-gray-500 border-gray-200"
+            : "bg-white text-gray-900 border-gray-200 focus:border-[#0B4F8C]"
         }`}
       />
     </label>
@@ -616,12 +616,12 @@ function TextArea({
 }) {
   return (
     <label className="block">
-      <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">{label}</div>
+      <div className="text-xs text-gray-500 mb-1">{label}</div>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={3}
-        className="w-full rounded-xl px-3 py-2 text-sm border outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 focus:border-[#0B4F8C]"
+        className="w-full rounded-xl px-3 py-2 text-sm border outline-none bg-white text-gray-900 border-gray-200 focus:border-[#0B4F8C]"
       />
     </label>
   );
@@ -644,14 +644,14 @@ function Toggle({
       onClick={() => !disabled && onChange?.(!checked)}
       className={`flex items-center justify-between gap-3 px-3 py-2 rounded-xl border text-sm ${
         disabled
-          ? "opacity-60 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-          : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 active:scale-[0.99]"
+          ? "opacity-60 bg-gray-100 border-gray-200"
+          : "bg-white border-gray-200 active:scale-[0.99]"
       }`}
     >
-      <span className="text-gray-700 dark:text-gray-200">{label}</span>
+      <span className="text-gray-700">{label}</span>
       <span
         className={`w-10 h-6 rounded-full relative transition ${
-          checked ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+          checked ? "bg-green-500" : "bg-gray-300"
         }`}
       >
         <span

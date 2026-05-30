@@ -84,12 +84,12 @@ export function CoachProfile() {
   const coach = coaches[id || '1'] || coaches['1'];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       <MobileHeader title="Coach Profile" showBack={true} showSignOut={true} />
       
       <div className="px-4 py-6 space-y-6">
         {/* Profile Header with Photo */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* ProSwim Logo Watermark */}
           <div className="relative bg-gradient-to-br from-[#0B4F8C] to-[#1a6bb8] p-6 pb-20">
             <img 
@@ -102,7 +102,7 @@ export function CoachProfile() {
           {/* Photo with removed background effect */}
           <div className="relative -mt-16 flex flex-col items-center px-6 pb-6">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl bg-white">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white">
                 {coach.photo ? (
                   <img 
                     src={coach.photo} 
@@ -120,16 +120,16 @@ export function CoachProfile() {
                 )}
               </div>
               {coach.status === 'active' && (
-                <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full"></div>
+                <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
               )}
             </div>
             
-            <h2 className="text-2xl mt-4 text-gray-900 dark:text-white text-center">{coach.name}</h2>
-            <p className="text-base text-gray-600 dark:text-gray-400 text-center mt-1">{coach.specialty}</p>
+            <h2 className="text-2xl mt-4 text-gray-900 text-center">{coach.name}</h2>
+            <p className="text-base text-gray-600 text-center mt-1">{coach.specialty}</p>
             <div className="flex items-center gap-2 mt-2">
               <Star className="size-5 text-yellow-500 fill-yellow-500" />
-              <span className="text-lg text-gray-900 dark:text-white">{coach.rating}</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">({coach.totalStudents} students)</span>
+              <span className="text-lg text-gray-900">{coach.rating}</span>
+              <span className="text-sm text-gray-500">({coach.totalStudents} students)</span>
             </div>
 
             {/* Quick Stats */}
@@ -179,19 +179,19 @@ export function CoachProfile() {
         {activeTab === 'overview' && (
           <>
             {/* Bio */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
-              <h3 className="text-lg mb-3 text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+              <h3 className="text-lg mb-3 text-gray-900 flex items-center gap-2">
                 <Award className="size-5 text-blue-600" />
                 About
               </h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 {coach.bio}
               </p>
             </div>
 
             {/* Experience & Info */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
-              <h3 className="text-lg mb-4 text-gray-900 dark:text-white">Professional Details</h3>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+              <h3 className="text-lg mb-4 text-gray-900">Professional Details</h3>
               <div className="space-y-3">
                 <InfoRow 
                   icon={<Clock className="size-4 text-blue-600" />}
@@ -212,8 +212,8 @@ export function CoachProfile() {
             </div>
 
             {/* Certifications */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
-              <h3 className="text-lg mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+              <h3 className="text-lg mb-4 text-gray-900 flex items-center gap-2">
                 <Award className="size-5 text-blue-600" />
                 Certifications
               </h3>
@@ -221,7 +221,7 @@ export function CoachProfile() {
                 {coach.certifications.map((cert, index) => (
                   <div 
                     key={index}
-                    className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-3 py-2 rounded-lg text-sm"
+                    className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm"
                   >
                     <CheckCircle className="size-4" />
                     {cert}
@@ -231,22 +231,22 @@ export function CoachProfile() {
             </div>
 
             {/* Contact Info */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
-              <h3 className="text-lg mb-4 text-gray-900 dark:text-white">Contact Information</h3>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+              <h3 className="text-lg mb-4 text-gray-900">Contact Information</h3>
               <div className="space-y-3">
                 <a 
                   href={`mailto:${coach.email}`}
-                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl active:bg-gray-100 dark:active:bg-gray-600 transition-colors"
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl active:bg-gray-100 transition-colors"
                 >
                   <Mail className="size-5 text-blue-600" />
-                  <span className="text-sm text-gray-900 dark:text-white">{coach.email}</span>
+                  <span className="text-sm text-gray-900">{coach.email}</span>
                 </a>
                 <a 
                   href={`tel:${coach.phone}`}
-                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl active:bg-gray-100 dark:active:bg-gray-600 transition-colors"
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl active:bg-gray-100 transition-colors"
                 >
                   <Phone className="size-5 text-blue-600" />
-                  <span className="text-sm text-gray-900 dark:text-white">{coach.phone}</span>
+                  <span className="text-sm text-gray-900">{coach.phone}</span>
                 </a>
               </div>
             </div>
@@ -255,27 +255,27 @@ export function CoachProfile() {
 
         {/* Students Tab */}
         {activeTab === 'students' && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg text-gray-900 dark:text-white">Current Students</h3>
-              <span className="text-sm text-gray-500 dark:text-gray-400">{coach.students.length} students</span>
+              <h3 className="text-lg text-gray-900">Current Students</h3>
+              <span className="text-sm text-gray-500">{coach.students.length} students</span>
             </div>
             <div className="space-y-3">
               {coach.students.map(student => (
                 <div 
                   key={student.id}
-                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"
+                  className="p-4 bg-gray-50 rounded-xl"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h4 className="text-base text-gray-900 dark:text-white">{student.name}</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{student.level}</p>
+                      <h4 className="text-base text-gray-900">{student.name}</h4>
+                      <p className="text-sm text-gray-600">{student.level}</p>
                     </div>
-                    <span className="text-sm text-blue-600 dark:text-blue-400">{student.progress}%</span>
+                    <span className="text-sm text-blue-600">{student.progress}%</span>
                   </div>
-                  <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-blue-600 dark:bg-blue-500 transition-all"
+                      className="h-full bg-blue-600 transition-all"
                       style={{ width: `${student.progress}%` }}
                     />
                   </div>
@@ -287,19 +287,19 @@ export function CoachProfile() {
 
         {/* Schedule Tab */}
         {activeTab === 'schedule' && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-5">
-            <h3 className="text-lg mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+            <h3 className="text-lg mb-4 text-gray-900 flex items-center gap-2">
               <Clock className="size-5 text-blue-600" />
               Weekly Schedule
             </h3>
             <div className="space-y-3">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                <p className="text-base text-gray-900 dark:text-white mb-1">{coach.schedule}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Regular coaching hours</p>
+              <div className="p-4 bg-blue-50 rounded-xl">
+                <p className="text-base text-gray-900 mb-1">{coach.schedule}</p>
+                <p className="text-sm text-gray-600">Regular coaching hours</p>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <strong className="text-gray-900 dark:text-white">Note:</strong> Schedule may vary during holidays and special events. Contact for private session bookings.
+              <div className="p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm text-gray-700">
+                  <strong className="text-gray-900">Note:</strong> Schedule may vary during holidays and special events. Contact for private session bookings.
                 </p>
               </div>
             </div>
@@ -313,7 +313,7 @@ export function CoachProfile() {
             alt="ProSwim"
             className="h-8 w-auto"
           />
-          <span className="text-sm text-gray-500 dark:text-gray-400">ProSwim-LB</span>
+          <span className="text-sm text-gray-500">ProSwim-LB</span>
         </div>
       </div>
 
@@ -335,7 +335,7 @@ function TabButton({ active, onClick, children }: TabButtonProps) {
       className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
         active 
           ? 'bg-[#0B4F8C] text-white' 
-          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 active:scale-95'
+          : 'bg-gray-100 text-gray-600 active:scale-95'
       }`}
     >
       {children}
@@ -351,10 +351,10 @@ interface StatBoxProps {
 
 function StatBox({ icon, value, label }: StatBoxProps) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+    <div className="bg-gray-50 rounded-xl p-3 text-center">
       <div className="flex justify-center mb-2">{icon}</div>
-      <div className="text-lg text-gray-900 dark:text-white mb-1">{value}</div>
-      <div className="text-xs text-gray-600 dark:text-gray-400">{label}</div>
+      <div className="text-lg text-gray-900 mb-1">{value}</div>
+      <div className="text-xs text-gray-600">{label}</div>
     </div>
   );
 }
@@ -370,8 +370,8 @@ function InfoRow({ icon, label, value }: InfoRowProps) {
     <div className="flex items-center gap-3">
       {icon}
       <div className="flex-1">
-        <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-        <p className="text-sm text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-sm text-gray-900">{value}</p>
       </div>
     </div>
   );

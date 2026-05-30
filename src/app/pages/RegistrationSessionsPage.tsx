@@ -105,31 +105,34 @@ export function RegistrationSessionsPage() {
             const wasAttended = attendanceMap.get(s.sessionId);
             const isAttended = wasAttended === true;
             const isAbsent = wasAttended === false;
-            const cardBg = isAttended ? 'bg-emerald-500 border-emerald-500' : isAbsent ? 'bg-red-500 border-red-500' : 'bg-white border-slate-100';
-            const textColor = (isAttended || isAbsent) ? 'text-white' : 'text-slate-900';
-            const subColor = (isAttended || isAbsent) ? 'text-white/70' : 'text-slate-500';
-            const iconColor = (isAttended || isAbsent) ? 'text-white/80' : 'text-[#0B4F8C]';
+            const cardStyle = isAttended
+              ? { backgroundColor: '#22c55e', borderColor: '#22c55e' }
+              : isAbsent
+              ? { backgroundColor: '#ef4444', borderColor: '#ef4444' }
+              : { backgroundColor: '#ffffff', borderColor: '#f1f5f9' };
+            const white = '#ffffff';
+            const whiteSubtle = 'rgba(255,255,255,0.75)';
 
             return (
-              <div key={s.sessionId} className={`rounded-2xl border shadow-sm p-4 ${cardBg}`}>
+              <div key={s.sessionId} className="rounded-2xl border shadow-sm p-4" style={cardStyle}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     {s.sessionDate && (
-                      <div className={`flex items-center gap-1.5 text-sm font-medium mb-1 ${textColor}`}>
-                        <Calendar className={`size-3.5 shrink-0 ${iconColor}`} />
-                        <span>{formatDate(s.sessionDate)}</span>
+                      <div className="flex items-center gap-1.5 text-sm font-medium mb-1">
+                        <Calendar className="size-3.5 shrink-0" style={{ color: (isAttended || isAbsent) ? white : '#0B4F8C' }} />
+                        <span style={{ color: (isAttended || isAbsent) ? white : '#0f172a' }}>{formatDate(s.sessionDate)}</span>
                       </div>
                     )}
                     {s.className && (
-                      <p className={`text-xs ${subColor}`}>{s.className}</p>
+                      <p className="text-xs" style={{ color: (isAttended || isAbsent) ? whiteSubtle : '#64748b' }}>{s.className}</p>
                     )}
                     {s.sessionStatus && (
-                      <p className={`text-xs mt-0.5 ${subColor}`}>{s.sessionStatus}</p>
+                      <p className="text-xs mt-0.5" style={{ color: (isAttended || isAbsent) ? whiteSubtle : '#94a3b8' }}>{s.sessionStatus}</p>
                     )}
                   </div>
                   <div className="shrink-0">
-                    {isAttended && <CheckCircle2 className="size-5 text-white" />}
-                    {isAbsent && <XCircle className="size-5 text-white" />}
+                    {isAttended && <CheckCircle2 className="size-5" style={{ color: white }} />}
+                    {isAbsent && <XCircle className="size-5" style={{ color: white }} />}
                     {wasAttended === undefined && (
                       <div className="size-5 rounded-full border-2 border-slate-200" />
                     )}

@@ -81,74 +81,88 @@ export function PrivateSessionsPage() {
         )}
 
         <div className="space-y-2">
-          {sessions.map((s) => (
-            <div key={s.privateSessionId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+          {sessions.map((s) => {
+            const attended = s.privateSessionAttended === true;
+            const absent = s.privateSessionAttended === false;
+            const cardStyle = attended
+              ? { backgroundColor: '#22c55e', borderColor: '#22c55e' }
+              : absent
+              ? { backgroundColor: '#ef4444', borderColor: '#ef4444' }
+              : { backgroundColor: '#ffffff', borderColor: '#f1f5f9' };
+            const w = '#ffffff';
+            const ws = 'rgba(255,255,255,0.75)';
+            const colored = attended || absent;
+
+            return (
+            <div key={s.privateSessionId} className="rounded-2xl border shadow-sm p-4" style={cardStyle}>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   {s.privateSessionDate && (
-                    <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900 mb-1.5">
-                      <Calendar className="size-3.5 text-violet-500 shrink-0" />
-                      <span>{formatDate(s.privateSessionDate)}</span>
+                    <div className="flex items-center gap-1.5 text-sm font-medium mb-1.5">
+                      <Calendar className="size-3.5 shrink-0" style={{ color: colored ? w : '#7c3aed' }} />
+                      <span style={{ color: colored ? w : '#0f172a' }}>{formatDate(s.privateSessionDate)}</span>
                     </div>
                   )}
                   <div className="space-y-1">
                     {s.privateSessionTime && (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <Clock className="size-3.5 shrink-0" />
-                        <span>{s.privateSessionTime}</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <Clock className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                        <span style={{ color: colored ? ws : '#64748b' }}>{s.privateSessionTime}</span>
                       </div>
                     )}
                     {s.coachFullName && (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <User className="size-3.5 shrink-0" />
-                        <span>{s.coachFullName}</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <User className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                        <span style={{ color: colored ? ws : '#64748b' }}>{s.coachFullName}</span>
                       </div>
                     )}
                     {s.locationIcon && (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <MapPin className="size-3.5 shrink-0" />
-                        <span>{s.locationIcon}</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <MapPin className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                        <span style={{ color: colored ? ws : '#64748b' }}>{s.locationIcon}</span>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="shrink-0 flex flex-col items-end gap-1">
-                  {s.privateSessionAttended === true && <CheckCircle2 className="size-5 text-emerald-500" />}
-                  {s.privateSessionAttended === false && <XCircle className="size-5 text-red-400" />}
+                  {attended && <CheckCircle2 className="size-5" style={{ color: w }} />}
+                  {absent && <XCircle className="size-5" style={{ color: w }} />}
                   {s.privateSessionAttended === null && (
                     <div className="size-5 rounded-full border-2 border-slate-200" />
                   )}
                   {s.privateSessionState && s.privateSessionState !== 'Regular' && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: colored ? w : '#6d28d9' }}>
                       {s.privateSessionState}
                     </span>
                   )}
                 </div>
               </div>
               {s.privateSessionState === 'Makeup' && (s.privateSessionMkupDate || s.privateSessionMkupTime || s.coachMkup) && (
-                <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-violet-700">
+                <div className="mt-2 pt-2 space-y-1" style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: colored ? w : '#6d28d9' }}>
                     <Repeat className="size-3.5 shrink-0" />
                     <span>Makeup</span>
                   </div>
                   {s.privateSessionMkupDate && (
-                    <p className="text-xs text-slate-500 pl-5">
+                    <p className="text-xs pl-5" style={{ color: colored ? ws : '#64748b' }}>
                       {formatDate(s.privateSessionMkupDate)}
                       {s.privateSessionMkupTime ? ` · ${s.privateSessionMkupTime}` : ''}
                     </p>
                   )}
                   {s.coachMkup && (
-                    <p className="text-xs text-slate-500 pl-5">Coach: {s.coachMkup}</p>
+                    <p className="text-xs pl-5" style={{ color: colored ? ws : '#64748b' }}>Coach: {s.coachMkup}</p>
                   )}
                 </div>
               )}
               {s.privateSessionRemarks && (
-                <div className="mt-2 pt-2 border-t border-slate-100">
-                  <span className="text-xs text-slate-400">{s.privateSessionRemarks}</span>
+                <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
+                  <span className="text-xs" style={{ color: colored ? ws : '#94a3b8' }}>{s.privateSessionRemarks}</span>
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <MobileNav />

@@ -270,57 +270,69 @@ function GroupSessionCard({ session, showDate }: { session: SessionDto; showDate
 function PrivateSessionCard({ session, showDate }: { session: PrivateSessionDto; showDate?: boolean }) {
   const date = session.privateSessionDate ? new Date(session.privateSessionDate) : null;
   const isMakeup = session.privateSessionState === 'Makeup';
+  const attended = session.privateSessionAttended === true;
+  const absent = session.privateSessionAttended === false;
+  const colored = attended || absent;
+  const cardStyle = attended
+    ? { backgroundColor: '#22c55e', borderColor: '#22c55e' }
+    : absent
+    ? { backgroundColor: '#ef4444', borderColor: '#ef4444' }
+    : { backgroundColor: '#ffffff', borderColor: '#f1f5f9' };
+  const w = '#ffffff';
+  const ws = 'rgba(255,255,255,0.75)';
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl p-4">
+    <div className="border rounded-2xl p-4" style={cardStyle}>
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-          <User className="size-5 text-violet-600" />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: colored ? 'rgba(255,255,255,0.2)' : '#ede9fe' }}>
+          <User className="size-5" style={{ color: colored ? w : '#7c3aed' }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold text-slate-900">Private Session</p>
+            <p className="text-sm font-semibold" style={{ color: colored ? w : '#0f172a' }}>Private Session</p>
             {session.privateSessionState && session.privateSessionState !== 'Regular' && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-violet-100 text-violet-600">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: colored ? w : '#7c3aed' }}>
                 {session.privateSessionState}
               </span>
             )}
           </div>
           <div className="mt-1.5 space-y-1">
             {showDate && date && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <Calendar className="size-3.5 shrink-0" />
-                <span>{formatDate(date)}</span>
+              <div className="flex items-center gap-1.5 text-xs">
+                <Calendar className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                <span style={{ color: colored ? ws : '#64748b' }}>{formatDate(date)}</span>
               </div>
             )}
             {session.privateSessionTime && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <Clock className="size-3.5 shrink-0" />
-                <span>{session.privateSessionTime}</span>
+              <div className="flex items-center gap-1.5 text-xs">
+                <Clock className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                <span style={{ color: colored ? ws : '#64748b' }}>{session.privateSessionTime}</span>
               </div>
             )}
             {session.coachFullName && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <User className="size-3.5 shrink-0" />
-                <span>{session.coachFullName}</span>
+              <div className="flex items-center gap-1.5 text-xs">
+                <User className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                <span style={{ color: colored ? ws : '#64748b' }}>{session.coachFullName}</span>
               </div>
             )}
             {session.locationIcon && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <MapPin className="size-3.5 shrink-0" />
-                <span>{session.locationIcon}</span>
+              <div className="flex items-center gap-1.5 text-xs">
+                <MapPin className="size-3.5 shrink-0" style={{ color: colored ? ws : '#64748b' }} />
+                <span style={{ color: colored ? ws : '#64748b' }}>{session.locationIcon}</span>
               </div>
             )}
             {isMakeup && (session.privateSessionMkupDate || session.privateSessionMkupTime || session.coachMkup) && (
-              <div className="mt-1 pt-1 border-t border-slate-100 text-[11px] text-violet-700">
+              <div className="mt-1 pt-1 text-[11px]" style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}`, color: colored ? w : '#6d28d9' }}>
                 Makeup
                 {session.privateSessionMkupDate && (
-                  <span className="text-slate-500">
+                  <span style={{ color: colored ? ws : '#64748b' }}>
                     {' · '}{formatDate(new Date(session.privateSessionMkupDate))}
                     {session.privateSessionMkupTime ? ` ${session.privateSessionMkupTime}` : ''}
                   </span>
                 )}
-                {session.coachMkup && <span className="text-slate-500"> · {session.coachMkup}</span>}
+                {session.coachMkup && <span style={{ color: colored ? ws : '#64748b' }}> · {session.coachMkup}</span>}
               </div>
             )}
           </div>

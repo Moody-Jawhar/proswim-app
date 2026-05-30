@@ -1,9 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const isCapacitor = process.env.BUILD_TARGET === "capacitor";
+
 export default defineConfig({
   plugins: [react()],
-  base: "/Mobilev1/",
+  base: isCapacitor ? "/" : "/Mobilev1/",
   server: {
     allowedHosts: true,
     proxy: {

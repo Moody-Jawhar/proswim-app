@@ -23,7 +23,7 @@ import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
 
 export default function App() {
   return (
-    <BrowserRouter basename="/Mobilev1">
+    <BrowserRouter basename={import.meta.env.VITE_BUILD_TARGET === "capacitor" ? "/" : "/Mobilev1"}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />

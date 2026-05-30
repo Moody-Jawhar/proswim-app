@@ -1,5 +1,8 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "/Proswim_API";
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.VITE_BUILD_TARGET === "capacitor"
+    ? "https://admin.proswim-lb.com/Proswim_API"
+    : "/Proswim_API");
 
 const API_KEY = import.meta.env.VITE_API_KEY || "dev-api-key-12345";
 

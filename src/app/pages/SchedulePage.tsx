@@ -161,136 +161,48 @@ export function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen bg-[#F5F7FA] pb-24">
       <MobileHeader title="My Schedule" showBack />
 
-      {/* Week strip */}
-      <div className="px-4 pt-4">
-        <div className="bg-white border border-slate-100 rounded-2xl p-3">
-          <div className="grid grid-cols-7 gap-1">
-            {weekDays.map((day) => {
-              const isToday = isSameDay(day, today);
-              const isSelected = isSameDay(day, selectedDay);
-              const hasDot = isRealAuth
-                ? groupSessions.some(s => s.sessionDate && isSameDay(new Date(s.sessionDate), day)) ||
-                  privateSessions.some(s => s.privateSessionDate && isSameDay(new Date(s.privateSessionDate), day))
-                : mockDaysWithClass(day);
-
-              return (
-                <button
-                  key={day.toISOString()}
-                  onClick={() => setSelectedDay(day)}
-                  className={`flex flex-col items-center py-2 rounded-xl transition-all ${
-                    isSelected
-                      ? 'bg-[#0B4F8C]'
-                      : isToday
-                      ? 'bg-[#EBF3FC]'
-                      : ''
-                  }`}
-                >
-                  <span className={`text-[10px] font-medium ${
-                    isSelected ? 'text-white/70' : 'text-slate-400'
-                  }`} style={isSelected ? { color: 'rgba(255,255,255,0.7)' } : {}}>
-                    {DAYS[day.getDay()]}
-                  </span>
-                  <span className={`text-sm font-bold mt-0.5 ${
-                    isSelected
-                      ? 'text-white'
-                      : isToday
-                      ? 'text-[#0B4F8C]'
-                      : 'text-slate-900'
-                  }`} style={isSelected ? { color: '#ffffff' } : {}}>
-                    {day.getDate()}
-                  </span>
-                  {hasDot && (
-                    <div className={`w-1.5 h-1.5 rounded-full mt-1 ${
-                      isSelected ? 'bg-white' : 'bg-[#0B4F8C]'
-                    }`} style={isSelected ? { backgroundColor: '#ffffff' } : {}} />
-                  )}
-                  {!hasDot && <div className="w-1.5 h-1.5 mt-1" />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Selected day sessions */}
-      <div className="px-4 mt-4">
-        <p className="text-sm font-semibold text-slate-900 mb-3">
-          {formatDate(selectedDay)}
-          {isSameDay(selectedDay, today) && (
-            <span className="ml-2 text-xs font-medium text-[#0B4F8C]">Today</span>
-          )}
-        </p>
-
+      <div className="px-4 pt-4 pb-4">
         {error && (
-          <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-3">
+          <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
 
-        {/* Real auth — day view */}
+        {/* Real auth — flat sessions list */}
         {isRealAuth && (
           <>
-            {dayGroupSessions.length === 0 && dayPrivateSessions.length === 0 ? (
-              <EmptyDay />
-            ) : (
-              <div className="space-y-2">
-                {dayGroupSessions.map(s => (
-                  <GroupSessionCard key={s.sessionId} session={s} />
-                ))}
-                {dayPrivateSessions.map(s => (
-                  <PrivateSessionCard key={s.privateSessionId} session={s} />
-                ))}
+            {upcoming.length === 0 && !error && (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-[#EBF3FC] flex items-center justify-center">
+                  <Waves className="size-7 text-[#0B4F8C]" />
+                </div>
+                <p className="text-sm font-medium text-slate-500">No upcoming sessions</p>
               </div>
             )}
+            <div className="space-y-2">
+              {upcoming.map((s, i) => {
+                if ('sessionDate' in s && s.sessionId !== undefined) {
+                  return <GroupSessionCard key={`g-${s.sessionId}`} session={s as SessionDto} />;
+                }
+                return <PrivateSessionCard key={`p-${i}`} session={s as PrivateSessionDto} />;
+              })}
+            </div>
           </>
         )}
 
-        {/* Mock — day view */}
+        {/* Mock — weekly schedule */}
         {!isRealAuth && (
-          <>
-            {mockDayClasses.length === 0 ? (
-              <EmptyDay />
-            ) : (
-              <div className="space-y-2">
-                {mockDayClasses.map(cls => (
-                  <MockClassCard key={cls.id} cls={cls} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Upcoming sessions */}
-      {isRealAuth && upcoming.length > 0 && (
-        <div className="px-4 mt-6">
-          <p className="text-base font-bold text-slate-900 mb-3">Upcoming</p>
-          <div className="space-y-2">
-            {upcoming.map((s, i) => {
-              if ('sessionDate' in s && s.sessionId !== undefined) {
-                return <GroupSessionCard key={`g-${s.sessionId}`} session={s as SessionDto} showDate />;
-              }
-              return <PrivateSessionCard key={`p-${i}`} session={s as PrivateSessionDto} showDate />;
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Mock — full weekly schedule */}
-      {!isRealAuth && (
-        <div className="px-4 mt-6">
-          <p className="text-base font-bold text-slate-900 mb-3">Weekly Schedule</p>
           <div className="space-y-2">
             {MOCK_SCHEDULE.map(cls => (
               <MockClassCard key={cls.id} cls={cls} showDays />
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <MobileNav />
     </div>

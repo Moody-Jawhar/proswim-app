@@ -14,7 +14,7 @@ export function ProgramsPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
-      <MobileHeader title="Programs" />
+      <MobileHeader title="Programs" showBack />
 
       <div className="px-4 py-6">
         <div className="text-center mb-6">

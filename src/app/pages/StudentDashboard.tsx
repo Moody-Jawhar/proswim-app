@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import {
-  Calendar, Clock, MapPin, Award, TrendingUp, Users, ChevronRight,
+  Calendar, Clock, MapPin, Award, Users, ChevronRight,
   Target, AlertCircle, Loader2, BookOpen, User, CreditCard, Waves
 } from 'lucide-react';
 import { Progress } from '../components/Progress';
@@ -161,19 +161,6 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
     ? profile.studentLatestLevelName
     : null;
 
-  const activeCourses = apiCourses.filter((c) => !c.stopped).length;
-  const avgAttendance = apiCourses.length > 0
-    ? Math.round(
-        apiCourses
-          .filter((c) => c.attendancePercent != null)
-          .reduce((s, c) => s + (c.attendancePercent ?? 0), 0) /
-          Math.max(1, apiCourses.filter((c) => c.attendancePercent != null).length)
-      )
-    : 0;
-
-  const overallProgress = mockCourses.length > 0
-    ? Math.round(mockCourses.reduce((s, c) => s + c.progress, 0) / mockCourses.length)
-    : 0;
 
   if (apiLoading) {
     return (
@@ -220,53 +207,6 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
       </div>
 
       <div className="px-4 mt-4 space-y-4">
-
-        {/* Floating stat card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          {isRealAuth ? (
-            <div className="grid grid-cols-3 divide-x divide-slate-100">
-              <FloatStat
-                icon={<Award className="size-6 text-[#0B4F8C]" />}
-                bg="bg-blue-50"
-                value={`${avgAttendance}%`}
-                label="Attendance"
-              />
-              <FloatStat
-                icon={<Calendar className="size-6 text-sky-500" />}
-                bg="bg-sky-50"
-                value={activeCourses.toString()}
-                label="Active"
-              />
-              <FloatStat
-                icon={<TrendingUp className="size-6 text-violet-500" />}
-                bg="bg-violet-50"
-                value={privatePackages.length.toString()}
-                label="Private"
-              />
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 divide-x divide-slate-100">
-              <FloatStat
-                icon={<Award className="size-6 text-[#0B4F8C]" />}
-                bg="bg-blue-50"
-                value={`${overallProgress}%`}
-                label="Progress"
-              />
-              <FloatStat
-                icon={<Calendar className="size-6 text-sky-500" />}
-                bg="bg-sky-50"
-                value={mockCourses.length.toString()}
-                label="Courses"
-              />
-              <FloatStat
-                icon={<TrendingUp className="size-6 text-violet-500" />}
-                bg="bg-violet-50"
-                value={mockCourses.reduce((s, c) => s + c.completedSkills.length, 0).toString()}
-                label="Skills"
-              />
-            </div>
-          )}
-        </div>
 
         {apiError && (
           <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-2xl p-4">
@@ -616,24 +556,6 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
   );
 }
 
-interface FloatStatProps {
-  icon: React.ReactNode;
-  bg: string;
-  value: string;
-  label: string;
-}
-
-function FloatStat({ icon, bg, value, label }: FloatStatProps) {
-  return (
-    <div className="flex flex-col items-center py-6 px-2 gap-2.5">
-      <div className={`w-12 h-12 rounded-xl ${bg} flex items-center justify-center`}>
-        {icon}
-      </div>
-      <p className="text-2xl font-extrabold text-[#0B4F8C] leading-none">{value}</p>
-      <p className="text-sm text-slate-400 font-medium">{label}</p>
-    </div>
-  );
-}
 
 interface TabButtonProps {
   active: boolean;

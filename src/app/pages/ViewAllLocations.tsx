@@ -49,8 +49,8 @@ export function ViewAllLocations() {
   }, [locations, searchQuery, filterStatus]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
-      <MobileHeader title="All Locations" />
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <MobileHeader title="All Locations" showBack />
 
       <div className="px-4 py-6 space-y-4">
         {/* Search + Refresh */}

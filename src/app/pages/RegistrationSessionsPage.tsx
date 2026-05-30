@@ -3,7 +3,12 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Calendar, Loader2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
-import { getGroupAttendance, type AttendanceDto } from '../api/pswmApi';
+import {
+  getGroupSessions,
+  getGroupAttendance,
+  type SessionDto,
+  type AttendanceDto,
+} from '../api/pswmApi';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -15,20 +20,40 @@ function formatDate(dateStr: string) {
 
 export function RegistrationSessionsPage() {
   const { semesterId } = useParams<{ semesterId: string }>();
-  const [sessions, setSessions] = useState<AttendanceDto[]>([]);
+  const [sessions, setSessions] = useState<SessionDto[]>([]);
+  const [attendanceMap, setAttendanceMap] = useState<Map<number, boolean | null>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const id = semesterId ? parseInt(semesterId) : undefined;
-    getGroupAttendance(id)
-      .then(setSessions)
-      .catch(() => setError('Could not load sessions.'))
-      .finally(() => setLoading(false));
+    const id = semesterId ? parseInt(semesterId) : NaN;
+    if (!Number.isFinite(id)) {
+      setError('Invalid registration.');
+      setLoading(false);
+      return;
+    }
+
+    Promise.allSettled([
+      getGroupSessions(id),
+      getGroupAttendance(id),
+    ]).then(([sessionsRes, attendanceRes]) => {
+      if (sessionsRes.status === 'fulfilled') {
+        setSessions(sessionsRes.value);
+      } else {
+        setError('Could not load sessions.');
+      }
+      if (attendanceRes.status === 'fulfilled') {
+        const map = new Map<number, boolean | null>();
+        (attendanceRes.value as AttendanceDto[]).forEach(a => {
+          map.set(a.attendanceSessionId, a.attendanceStudentAttended);
+        });
+        setAttendanceMap(map);
+      }
+    }).finally(() => setLoading(false));
   }, [semesterId]);
 
-  const attended = sessions.filter(s => s.attendanceStudentAttended === true).length;
-  const absent = sessions.filter(s => s.attendanceStudentAttended === false).length;
+  const attended = sessions.filter(s => attendanceMap.get(s.sessionId) === true).length;
+  const absent = sessions.filter(s => attendanceMap.get(s.sessionId) === false).length;
 
   if (loading) {
     return (
@@ -76,33 +101,42 @@ export function RegistrationSessionsPage() {
         )}
 
         <div className="space-y-2">
-          {sessions.map((s) => (
-            <div key={s.attendanceId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  {s.sessionDate && (
-                    <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900 mb-1">
-                      <Calendar className="size-3.5 text-[#0B4F8C] shrink-0" />
-                      <span>{formatDate(s.sessionDate)}</span>
-                    </div>
-                  )}
-                  {s.className && (
-                    <p className="text-xs text-slate-500">{s.className}</p>
-                  )}
-                  {s.attendanceStatus && (
-                    <p className="text-xs text-slate-400 mt-0.5">{s.attendanceStatus}</p>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  {s.attendanceStudentAttended === true && <CheckCircle2 className="size-5 text-emerald-500" />}
-                  {s.attendanceStudentAttended === false && <XCircle className="size-5 text-red-400" />}
-                  {s.attendanceStudentAttended === null && (
-                    <div className="size-5 rounded-full border-2 border-slate-200" />
-                  )}
+          {sessions.map((s) => {
+            const wasAttended = attendanceMap.get(s.sessionId);
+            const cardBg = wasAttended === true
+              ? 'bg-emerald-50 border-emerald-100'
+              : wasAttended === false
+              ? 'bg-red-50 border-red-100'
+              : 'bg-white border-slate-100';
+
+            return (
+              <div key={s.sessionId} className={`rounded-2xl border shadow-sm p-4 ${cardBg}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    {s.sessionDate && (
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900 mb-1">
+                        <Calendar className="size-3.5 text-[#0B4F8C] shrink-0" />
+                        <span>{formatDate(s.sessionDate)}</span>
+                      </div>
+                    )}
+                    {s.className && (
+                      <p className="text-xs text-slate-500">{s.className}</p>
+                    )}
+                    {s.sessionStatus && (
+                      <p className="text-xs text-slate-400 mt-0.5">{s.sessionStatus}</p>
+                    )}
+                  </div>
+                  <div className="shrink-0">
+                    {wasAttended === true && <CheckCircle2 className="size-5 text-emerald-500" />}
+                    {wasAttended === false && <XCircle className="size-5 text-red-400" />}
+                    {wasAttended === undefined && (
+                      <div className="size-5 rounded-full border-2 border-slate-200" />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <MobileNav />

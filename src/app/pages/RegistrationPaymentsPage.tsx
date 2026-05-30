@@ -32,7 +32,6 @@ export function RegistrationPaymentsPage() {
   }, [semesterId]);
 
   const totalPaid = payments.reduce((s, p) => s + p.paymentPaidAmount, 0);
-  const totalAmount = payments.reduce((s, p) => s + p.paymentTotalAmount, 0);
 
   if (loading) {
     return (
@@ -60,19 +59,10 @@ export function RegistrationPaymentsPage() {
 
         {payments.length > 0 && (
           <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4">
-            <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Payment Summary</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-2xl font-extrabold" style={{ color: '#ffffff' }}>{totalPaid.toLocaleString()}</p>
-                <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>Total paid</p>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold" style={{ color: totalAmount - totalPaid > 0 ? '#FCD34D' : '#ffffff' }}>
-                  {(totalAmount - totalPaid).toLocaleString()}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>Balance due</p>
-              </div>
-            </div>
+            <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
+            <p className="text-3xl font-extrabold" style={{ color: '#ffffff' }}>
+              {totalPaid.toLocaleString()} {payments[0]?.paymentPaidCurrency}
+            </p>
           </div>
         )}
 
@@ -100,12 +90,6 @@ export function RegistrationPaymentsPage() {
               {p.semesterName && (
                 <p className="text-xs text-slate-400">{p.semesterName}</p>
               )}
-              <div className="flex justify-between text-xs text-slate-500 mt-2 pt-2 border-t border-slate-100">
-                <span>Total amount</span>
-                <span className="font-medium text-slate-700">
-                  {p.paymentTotalAmount.toLocaleString()} {p.paymentPaidCurrency}
-                </span>
-              </div>
             </div>
           ))}
         </div>

@@ -1,4 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+
+const isCapacitor = import.meta.env.VITE_BUILD_TARGET === "capacitor";
+const Router = isCapacitor ? HashRouter : BrowserRouter;
 import { LandingPage } from "./app/pages/LandingPage";
 import { SignInPage } from "./app/pages/SignInPage";
 import { DashboardPage } from "./app/pages/DashboardPage";
@@ -23,7 +26,7 @@ import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.VITE_BUILD_TARGET === "capacitor" ? "/" : "/Mobilev1"}>
+    <Router {...(!isCapacitor && { basename: "/Mobilev1" })}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
@@ -53,6 +56,6 @@ export default function App() {
         <Route path="/Payments" element={<Navigate to="/payments" replace />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }

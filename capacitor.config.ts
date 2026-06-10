@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.proswim.app',
+  appId: 'com.proswimlb.app',
   appName: 'ProSwim',
   webDir: 'dist',
   server: {

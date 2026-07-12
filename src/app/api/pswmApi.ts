@@ -310,6 +310,15 @@ export interface LocationDto {
   locationActive: boolean;
 }
 
+export interface LocationDetailDto extends LocationDto {
+  locationPhone1: string | null;
+  locationPhone2: string | null;
+  locationEmail: string | null;
+  locationAddress: string | null;
+  locationLatitude: number | null;
+  locationLongitude: number | null;
+}
+
 export interface StudentDto {
   studentId: number;
   studentFirstName: string | null;
@@ -488,8 +497,8 @@ export async function getLocations(): Promise<LocationDto[]> {
   return apiRequest<LocationDto[]>("/api/Locations/GetLocations", {}, false);
 }
 
-export async function getLocationById(id: number): Promise<LocationDto> {
-  return apiRequest<LocationDto>(`/api/Locations/GetLocationById?id=${id}`, {}, false);
+export async function getLocationById(id: number): Promise<LocationDetailDto> {
+  return apiRequest<LocationDetailDto>(`/api/Locations/GetLocationById?id=${id}`, {}, false);
 }
 
 export async function getStudentById(id: number): Promise<StudentDto> {
@@ -515,4 +524,47 @@ export interface ChecklistItemDto {
 
 export async function getChecklist(studentId: number): Promise<ChecklistItemDto[]> {
   return apiRequest<ChecklistItemDto[]>(`/api/Students/GetChecklist?studentId=${studentId}`);
+}
+
+export interface NotificationDto {
+  pushNotificationId: number;
+  studentId: number;
+  date: string;
+  type: string | null;
+  desc: string | null;
+}
+
+export async function getNotifications(): Promise<NotificationDto[]> {
+  return apiRequest<NotificationDto[]>('/api/Notifications');
+}
+
+export interface GroupReceiptDto {
+  paymentId: number;
+  studentName: string | null;
+  semesterName: string | null;
+  paymentDate: string | null;
+  paymentPaidAmount: number;
+  paymentPaidCurrency: string | null;
+  paymentTotalAmount: number;
+  paymentNotes: string | null;
+}
+
+export interface PrivateReceiptDto {
+  privatePaymentId: number;
+  studentName: string | null;
+  packageName: string | null;
+  coachFullName: string | null;
+  privatePaymentDate: string | null;
+  privatePaymentPaidAmount: number;
+  privatePaymentPaidCurrency: string | null;
+  privatePaymentTotalAmount: number;
+  privatePaymentNotes: string | null;
+}
+
+export async function getGroupReceipt(paymentId: number): Promise<GroupReceiptDto> {
+  return apiRequest<GroupReceiptDto>(`/api/Payments/Group/${paymentId}/Receipt`);
+}
+
+export async function getPrivateReceipt(privatePaymentId: number): Promise<PrivateReceiptDto> {
+  return apiRequest<PrivateReceiptDto>(`/api/Payments/Private/${privatePaymentId}/Receipt`);
 }

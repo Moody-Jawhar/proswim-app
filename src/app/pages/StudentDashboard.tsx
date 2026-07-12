@@ -165,7 +165,7 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
   if (apiLoading) {
     return (
       <div className="min-h-screen bg-[#F5F7FA] pb-20">
-        <MobileHeader title="My Dashboard" showSignOut={true} />
+        <MobileHeader title="My Dashboard" showSignOut showBell />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
           <p className="text-sm text-slate-500">Loading your data...</p>
@@ -177,7 +177,7 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
-      <MobileHeader title="My Dashboard" showSignOut={true} />
+      <MobileHeader title="My Dashboard" showSignOut showBell />
 
       {/* Welcome card */}
       <div className="px-4 pt-4 pb-0">

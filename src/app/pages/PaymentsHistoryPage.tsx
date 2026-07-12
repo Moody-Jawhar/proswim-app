@@ -63,11 +63,6 @@ export function PaymentsHistoryPage() {
     })();
   }, []);
 
-  const totalGroupPaid = groupPayments.reduce((s, p) => s + p.paymentPaidAmount, 0);
-  const totalGroupDue = groupPayments.reduce((s, p) => s + (p.paymentTotalAmount - p.paymentPaidAmount), 0);
-  const totalPrivatePaid = privatePayments.reduce((s, p) => s + p.privatePaymentPaidAmount, 0);
-  const totalPrivateDue = privatePayments.reduce((s, p) => s + (p.privatePaymentTotalAmount - p.privatePaymentPaidAmount), 0);
-  const hasAny = groupPayments.length > 0 || privatePayments.length > 0;
 
   if (loading) {
     return (
@@ -91,40 +86,6 @@ export function PaymentsHistoryPage() {
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        {hasAny && (
-          <div className="bg-[#0B4F8C] rounded-2xl p-5">
-            <p className="text-xs font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>Overall Summary</p>
-            <div className="grid grid-cols-2 gap-3">
-              {groupPayments.length > 0 && (
-                <div className="bg-white/10 rounded-xl p-3">
-                  <p className="text-[10px] font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>Group Paid</p>
-                  <p className="text-lg font-extrabold" style={{ color: '#ffffff' }}>
-                    {totalGroupPaid.toLocaleString()}
-                  </p>
-                  {totalGroupDue > 0 && (
-                    <p className="text-[10px] mt-0.5" style={{ color: '#FCD34D' }}>
-                      {totalGroupDue.toLocaleString()} due
-                    </p>
-                  )}
-                </div>
-              )}
-              {privatePayments.length > 0 && (
-                <div className="bg-white/10 rounded-xl p-3">
-                  <p className="text-[10px] font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>Private Paid</p>
-                  <p className="text-lg font-extrabold" style={{ color: '#ffffff' }}>
-                    {totalPrivatePaid.toLocaleString()}
-                  </p>
-                  {totalPrivateDue > 0 && (
-                    <p className="text-[10px] mt-0.5" style={{ color: '#FCD34D' }}>
-                      {totalPrivateDue.toLocaleString()} due
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
           </div>
         )}
 
@@ -188,7 +149,7 @@ export function PaymentsHistoryPage() {
           </div>
         )}
 
-        {!hasAny && !error && (
+        {groupPayments.length === 0 && privatePayments.length === 0 && !error && (
           <div className="text-center py-16 text-slate-400 text-sm">No payment history found.</div>
         )}
       </div>

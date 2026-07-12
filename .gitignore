@@ -25,3 +25,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# iOS
+ios/App/Pods/
+*.xcworkspace
+*.xcuserstate
+DerivedData/

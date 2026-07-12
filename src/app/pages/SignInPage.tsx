@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ChevronDown } from 'lucide-react';
 import { MobileNav } from '../components/MobileNav';
 import { login, setStoredToken } from '../api/pswmApi';
+import { subscribeToStudentTopic } from '../utils/notifications';
 
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
 
@@ -42,6 +43,7 @@ export function SignInPage() {
         localStorage.setItem('currentUser', JSON.stringify({
           name: res.studentFullName, email: username, role: 'student', studentId: res.studentId,
         }));
+        if (res.studentId) subscribeToStudentTopic(res.studentId);
         navigate('/dashboard');
       } else {
         setError(res.message || 'Invalid credentials');

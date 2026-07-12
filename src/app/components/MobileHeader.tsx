@@ -1,5 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, ArrowLeft } from 'lucide-react';
+import { LogOut, ArrowLeft, Bell } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { getUnreadCount, unsubscribeFromStudentTopic } from '../utils/notifications';
+
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
 
 interface MobileHeaderProps {
@@ -7,12 +10,31 @@ interface MobileHeaderProps {
   showLogo?: boolean;
   showSignOut?: boolean;
   showBack?: boolean;
+  showBell?: boolean;
 }
 
-export function MobileHeader({ title, showLogo = false, showSignOut = false, showBack = false }: MobileHeaderProps) {
+export function MobileHeader({
+  title,
+  showLogo = false,
+  showSignOut = false,
+  showBack = false,
+  showBell = false,
+}: MobileHeaderProps) {
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!showBell) return;
+    setUnreadCount(getUnreadCount());
+    const interval = setInterval(() => setUnreadCount(getUnreadCount()), 10000);
+    return () => clearInterval(interval);
+  }, [showBell]);
 
   const handleSignOut = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (user.studentId) unsubscribeFromStudentTopic(user.studentId);
+    } catch { /* ignore */ }
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');
@@ -51,7 +73,22 @@ export function MobileHeader({ title, showLogo = false, showSignOut = false, sho
               {title || 'ProSwim'}
             </p>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
+              {showBell && (
+                <Link
+                  to="/notifications"
+                  className="relative p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="size-5 text-slate-500" />
+                  {unreadCount > 0 && (
+                    <span
+                      className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full border-2 border-white"
+                      style={{ backgroundColor: '#ef4444' }}
+                    />
+                  )}
+                </Link>
+              )}
               {showSignOut && (
                 <button
                   onClick={handleSignOut}
@@ -61,7 +98,7 @@ export function MobileHeader({ title, showLogo = false, showSignOut = false, sho
                   <LogOut className="size-5 text-slate-400" />
                 </button>
               )}
-              {!showSignOut && <div className="w-10" />}
+              {!showSignOut && !showBell && <div className="w-10" />}
             </div>
           </>
         )}

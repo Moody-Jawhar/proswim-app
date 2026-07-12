@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { CreditCard, User, Loader2, AlertCircle } from 'lucide-react';
-import { getPrivatePayments, type PrivatePaymentDto } from '../api/pswmApi';
+import { CreditCard, User, Loader2, AlertCircle, X, FileText } from 'lucide-react';
+import { getPrivatePayments, type PrivatePaymentDto, getPrivateReceipt, type PrivateReceiptDto } from '../api/pswmApi';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -17,6 +17,7 @@ export function PrivatePaymentsPage() {
   const [payments, setPayments] = useState<PrivatePaymentDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [receipt, setReceipt] = useState<{ data: PrivateReceiptDto | null; loading: boolean; paymentId: number | null }>({ data: null, loading: false, paymentId: null });
 
   useEffect(() => {
     const pid = packageId ? parseInt(packageId) : NaN;
@@ -30,6 +31,16 @@ export function PrivatePaymentsPage() {
       .catch(() => setError('Could not load payments.'))
       .finally(() => setLoading(false));
   }, [packageId]);
+
+  const openReceipt = async (paymentId: number) => {
+    setReceipt({ data: null, loading: true, paymentId });
+    try {
+      const data = await getPrivateReceipt(paymentId);
+      setReceipt({ data, loading: false, paymentId });
+    } catch {
+      setReceipt({ data: null, loading: false, paymentId: null });
+    }
+  };
 
   const totalPaid = payments.reduce((s, p) => s + p.privatePaymentPaidAmount, 0);
 
@@ -95,11 +106,71 @@ export function PrivatePaymentsPage() {
                   <span>{p.coachFullName}</span>
                 </div>
               )}
+              <div className="flex justify-end mt-2 pt-2 border-t border-slate-50">
+                <button
+                  onClick={() => openReceipt(p.privatePaymentId)}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-violet-600 active:opacity-60"
+                >
+                  <FileText className="size-3.5" />
+                  View Receipt
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
+      {receipt.paymentId !== null && (
+        <div className="fixed inset-0 z-50 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-bold text-slate-900">Receipt #{receipt.paymentId}</p>
+              <button onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
+                <X className="size-5 text-slate-400" />
+              </button>
+            </div>
+            {receipt.loading && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="size-6 text-violet-600 animate-spin" />
+              </div>
+            )}
+            {!receipt.loading && receipt.data && (() => {
+              const d = receipt.data;
+              const cur = d.privatePaymentPaidCurrency || '';
+              const balance = d.privatePaymentTotalAmount - d.privatePaymentPaidAmount;
+              return (
+                <div className="space-y-0">
+                  {d.studentName && <ReceiptRow label="Student" value={d.studentName} />}
+                  {d.packageName && <ReceiptRow label="Package" value={d.packageName} />}
+                  {d.coachFullName && <ReceiptRow label="Coach" value={d.coachFullName} />}
+                  {d.privatePaymentDate && <ReceiptRow label="Payment Date" value={new Date(d.privatePaymentDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />}
+                  <ReceiptRow label="Total Amount" value={`${d.privatePaymentTotalAmount.toLocaleString()} ${cur}`} />
+                  <ReceiptRow label="Amount Paid" value={`${d.privatePaymentPaidAmount.toLocaleString()} ${cur}`} highlight />
+                  <ReceiptRow
+                    label="Balance Due"
+                    value={balance <= 0 ? 'Paid in Full' : `${balance.toLocaleString()} ${cur}`}
+                    status={balance <= 0 ? 'paid' : 'due'}
+                  />
+                  {d.privatePaymentNotes && <ReceiptRow label="Notes" value={d.privatePaymentNotes} />}
+                </div>
+              );
+            })()}
+            {!receipt.loading && !receipt.data && (
+              <p className="text-sm text-slate-400 text-center py-4">Receipt not available</p>
+            )}
+          </div>
+        </div>
+      )}
       <MobileNav />
+    </div>
+  );
+}
+
+function ReceiptRow({ label, value, highlight, status }: { label: string; value: string; highlight?: boolean; status?: 'paid' | 'due' }) {
+  const valueColor = highlight ? 'text-emerald-600' : status === 'paid' ? 'text-emerald-600' : status === 'due' ? 'text-red-500' : 'text-slate-900';
+  return (
+    <div className="flex justify-between items-center py-2 border-b border-slate-100 last:border-b-0">
+      <span className="text-sm text-slate-400">{label}</span>
+      <span className={`text-sm font-semibold ${valueColor}`}>{value}</span>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { MobileHeader } from "../components/MobileHeader";
 import { MobileNav } from "../components/MobileNav";
 import { Search, RefreshCw } from "lucide-react";
@@ -96,7 +97,7 @@ export function ViewAllLocations() {
         {/* List */}
         <div className="space-y-3">
           {filtered.map((l) => (
-            <div key={l.locationId} className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+            <Link key={l.locationId} to={`/locations/${l.locationId}`} className="block active:scale-[0.98] transition-transform bg-white rounded-xl shadow-md border border-gray-100 p-4">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-base text-gray-900">{l.locationNickName}</div>
@@ -113,7 +114,7 @@ export function ViewAllLocations() {
                   {l.locationActive ? "Active" : "Inactive"}
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

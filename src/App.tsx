@@ -23,6 +23,8 @@ import { PrivateSessionsPage } from "./app/pages/PrivateSessionsPage";
 import { PrivatePaymentsPage } from "./app/pages/PrivatePaymentsPage";
 import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
 import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
+import { NotificationsPage } from "./app/pages/NotificationsPage";
+import { LocationDetailPage } from "./app/pages/LocationDetailPage";
 
 export default function App() {
   return (
@@ -36,6 +38,7 @@ export default function App() {
         <Route path="/students" element={<ViewAllStudents />} />
         <Route path="/coaches" element={<ViewAllCoaches />} />
         <Route path="/locations" element={<ViewAllLocations />} />
+        <Route path="/locations/:id" element={<LocationDetailPage />} />
         <Route path="/payments" element={<ViewAllPayments />} />
         <Route path="/coach/:id" element={<CoachProfile />} />
         <Route path="/student/:id" element={<StudentProfile />} />
@@ -51,6 +54,7 @@ export default function App() {
         <Route path="/private/:packageId/payments" element={<PrivatePaymentsPage />} />
         <Route path="/payment-history" element={<PaymentsHistoryPage />} />
         <Route path="/checklist" element={<SkillsChecklistPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
 
         <Route path="/Locations" element={<Navigate to="/locations" replace />} />
         <Route path="/Payments" element={<Navigate to="/payments" replace />} />

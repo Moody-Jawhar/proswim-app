@@ -7,6 +7,7 @@ import {
   getStoredNotifications,
   markAllRead,
   clearAllNotifications,
+  getFcmToken,
   type StoredNotification,
 } from '../utils/notifications';
 import { getNotifications, type NotificationDto } from '../api/pswmApi';
@@ -46,6 +47,22 @@ export function NotificationsPage() {
   const [items, setItems] = useState<DisplayNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [token, setToken] = useState('');
+  const [tokenVisible, setTokenVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const revealToken = async () => {
+    if (!tokenVisible) setToken(await getFcmToken());
+    setTokenVisible(v => !v);
+  };
+
+  const copyToken = async () => {
+    try {
+      await navigator.clipboard.writeText(token);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* clipboard unavailable */ }
+  };
 
   useEffect(() => {
     markAllRead();
@@ -149,6 +166,28 @@ export function NotificationsPage() {
             </div>
           </div>
         ))}
+
+        {/* Device token — for diagnosing push delivery */}
+        <div className="pt-6 pb-2">
+          <button onClick={revealToken} className="w-full text-center text-[11px] text-slate-300 active:text-slate-500 py-1">
+            {tokenVisible ? 'Hide device token' : 'Show device token'}
+          </button>
+          {tokenVisible && (
+            <button
+              onClick={copyToken}
+              className="mt-2 w-full bg-white border border-slate-100 rounded-xl p-3 text-left active:bg-slate-50"
+            >
+              <p className="text-[10px] text-slate-400 break-all font-mono leading-relaxed">
+                {token || 'No token — push may not be registered on this device'}
+              </p>
+              {token && (
+                <p className="text-[10px] font-semibold text-[#0B4F8C] mt-1.5">
+                  {copied ? 'Copied!' : 'Tap to copy'}
+                </p>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       <MobileNav />

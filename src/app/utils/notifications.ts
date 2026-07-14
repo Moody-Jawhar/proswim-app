@@ -69,6 +69,17 @@ export async function unsubscribeFromStudentTopic(studentId: number): Promise<vo
   }
 }
 
+export async function getFcmToken(): Promise<string> {
+  if (!Capacitor.isNativePlatform()) return '';
+  try {
+    const { token } = await FirebaseMessaging.getToken();
+    return token;
+  } catch (e) {
+    console.error('Get FCM token failed:', e);
+    return '';
+  }
+}
+
 // ─── Push registration & listeners ───────────────────────────────────────────
 
 export async function initPushNotifications(): Promise<void> {
@@ -109,6 +120,14 @@ export async function initPushNotifications(): Promise<void> {
         body: n.body || '',
         data: n.data as Record<string, string> | undefined,
       });
+    });
+
+    // Re-subscribe to the student topic whenever a token is issued or refreshed
+    FirebaseMessaging.addListener('tokenReceived', () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (user.studentId) subscribeToStudentTopic(user.studentId);
+      } catch { /* not logged in yet */ }
     });
 
     // Re-subscribe to the student topic if already logged in

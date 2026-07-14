@@ -10,6 +10,7 @@ import {
   type GroupPaymentDto,
   type PrivatePaymentDto,
 } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -80,7 +81,8 @@ export function PaymentsHistoryPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Payment History" showBack />
-      <div className="px-4 pt-4 pb-4 space-y-4">
+      <PageHero title="Payment History" subtitle="All your payments in one place" slide={2} tint="rgba(5,120,90,0.58)" />
+      <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">

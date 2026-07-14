@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { Loader2, AlertCircle, MapPin, Phone, Mail, Globe, Navigation } from 'lucide-react';
+import { Loader2, AlertCircle, MapPin, Phone, Mail, Navigation } from 'lucide-react';
+import { PageHero } from '../components/PageHero';
 import { getLocationById, type LocationDetailDto } from '../api/pswmApi';
 
 export function LocationDetailPage() {
@@ -65,31 +66,14 @@ export function LocationDetailPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title={location.locationNickName || 'Location'} showBack />
+      <PageHero
+        title={location.locationNickName || 'Location'}
+        subtitle={[location.locationCity, location.locationActive ? 'Active' : 'Inactive'].filter(Boolean).join(' · ')}
+        slide={2}
+        tint="rgba(11,100,180,0.58)"
+      />
 
-      <div className="px-4 pt-4 pb-4 space-y-3">
-        {/* Header card */}
-        <div className="bg-[#0B4F8C] rounded-2xl px-5 py-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xl font-bold" style={{ color: '#ffffff' }}>{location.locationNickName}</p>
-              {location.locationFullName && (
-                <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>{location.locationFullName}</p>
-              )}
-              {location.locationCity && (
-                <div className="flex items-center gap-1.5 mt-2">
-                  <MapPin className="size-3.5" style={{ color: 'rgba(255,255,255,0.6)' }} />
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{location.locationCity}</p>
-                </div>
-              )}
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{
-              backgroundColor: location.locationActive ? '#22c55e' : '#64748b',
-              color: '#ffffff'
-            }}>
-              {location.locationActive ? 'Active' : 'Inactive'}
-            </span>
-          </div>
-        </div>
+      <div className="px-4 pt-3 pb-4 space-y-3">
 
         {/* Details card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -148,16 +132,16 @@ function DetailRow({ icon, label, value, onTap, tapLabel }: {
   tapLabel?: string;
 }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100 last:border-b-0">
+    <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-100 last:border-b-0">
       <div className="shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-400">{label}</p>
-        <p className="text-sm font-medium text-slate-900 break-words">{value}</p>
+        <p className="text-sm text-slate-400">{label}</p>
+        <p className="text-base font-semibold text-slate-900 break-words">{value}</p>
       </div>
       {onTap && (
         <button
           onClick={onTap}
-          className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold"
+          className="shrink-0 px-4 py-2 rounded-xl text-sm font-semibold"
           style={{ backgroundColor: '#EBF3FC', color: '#0B4F8C' }}
         >
           {tapLabel}

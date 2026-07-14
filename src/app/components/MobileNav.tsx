@@ -20,8 +20,8 @@ export function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 pb-safe z-50"
-      style={{ boxShadow: '0 -1px 12px rgba(0,0,0,0.06)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50"
+      style={{ boxShadow: '0 -1px 12px rgba(0,0,0,0.06)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-stretch h-16 max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;

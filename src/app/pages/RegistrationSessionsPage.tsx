@@ -9,6 +9,7 @@ import {
   type SessionDto,
   type AttendanceDto,
 } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -71,7 +72,8 @@ export function RegistrationSessionsPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Sessions & Attendance" showBack />
-      <div className="px-4 pt-4 pb-4">
+      <PageHero title="Sessions & Attendance" subtitle="Your class attendance record" slide={1} tint="rgba(11,100,180,0.58)" />
+      <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -82,15 +84,15 @@ export function RegistrationSessionsPage() {
         {sessions.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-4 grid grid-cols-3 divide-x divide-slate-100">
             <div className="flex flex-col items-center py-4">
-              <p className="text-xl font-extrabold text-[#0B4F8C]">{sessions.length}</p>
+              <p className="num-stat text-xl font-extrabold text-[#0B4F8C]">{sessions.length}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">Total</p>
             </div>
             <div className="flex flex-col items-center py-4">
-              <p className="text-xl font-extrabold text-emerald-600">{attended}</p>
+              <p className="num-stat text-xl font-extrabold text-emerald-600">{attended}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">Attended</p>
             </div>
             <div className="flex flex-col items-center py-4">
-              <p className="text-xl font-extrabold text-red-500">{absent}</p>
+              <p className="num-stat text-xl font-extrabold text-red-500">{absent}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">Absent</p>
             </div>
           </div>

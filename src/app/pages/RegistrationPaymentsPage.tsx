@@ -4,6 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { CreditCard, Loader2, AlertCircle, X, FileText } from 'lucide-react';
 import { getGroupPayments, type GroupPaymentDto, getGroupReceipt, type GroupReceiptDto } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -60,7 +61,8 @@ export function RegistrationPaymentsPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Group Payments" showBack />
-      <div className="px-4 pt-4 pb-4">
+      <PageHero title="Group Payments" subtitle="Registration payment history" slide={2} tint="rgba(11,100,180,0.58)" />
+      <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -71,7 +73,7 @@ export function RegistrationPaymentsPage() {
         {payments.length > 0 && (
           <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4">
             <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
-            <p className="text-3xl font-extrabold" style={{ color: '#ffffff' }}>
+            <p className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
               {totalPaid.toLocaleString()} {payments[0]?.paymentPaidCurrency}
             </p>
           </div>

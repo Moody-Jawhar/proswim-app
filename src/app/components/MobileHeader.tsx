@@ -44,16 +44,12 @@ export function MobileHeader({
   return (
     <header
       className="sticky top-0 z-40 bg-white border-b border-slate-100"
-      style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}
+      style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)', paddingTop: 'env(safe-area-inset-top)' }}
     >
       <div className="flex items-center justify-between h-14 px-4">
         {showLogo ? (
-          <Link to="/" className="flex items-center gap-2.5">
+          <Link to="/" className="flex items-center">
             <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
-            <div className="leading-tight">
-              <p className="text-sm font-bold text-slate-900">ProSwim</p>
-              <p className="text-[10px] text-slate-400">Swim. Safe. Strong.</p>
-            </div>
           </Link>
         ) : (
           <>

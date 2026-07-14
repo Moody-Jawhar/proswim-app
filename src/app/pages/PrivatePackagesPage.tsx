@@ -4,6 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle } from 'lucide-react';
 import { getPrivatePackages, type PrivatePackageDto } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 export function PrivatePackagesPage() {
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
@@ -33,7 +34,8 @@ export function PrivatePackagesPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Private Packages" showBack />
-      <div className="px-4 pt-4 pb-4">
+      <PageHero title="Private Packages" subtitle="Personal coaching sessions" slide={4} tint="rgba(79,70,229,0.58)" />
+      <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -95,14 +97,16 @@ export function PrivatePackagesPage() {
                 <div className="flex gap-2 pt-3 border-t border-slate-100 mt-3">
                   <Link
                     to={`/private/${pkg.packageId}/sessions`}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-violet-50 text-sm font-semibold text-violet-700"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
+                    style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}
                   >
                     <Calendar className="size-4" />
                     Sessions
                   </Link>
                   <Link
                     to={`/private/${pkg.packageId}/payments`}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-violet-50 text-sm font-semibold text-violet-700"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
+                    style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}
                   >
                     <CreditCard className="size-4" />
                     Payments

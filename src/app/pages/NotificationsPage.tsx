@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Bell, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { PageHero } from '../components/PageHero';
 import {
   getStoredNotifications,
   markAllRead,
@@ -93,8 +94,8 @@ export function NotificationsPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Notifications" showBack />
-
-      <div className="px-4 pt-4 pb-4 space-y-3">
+      <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} tint="rgba(11,79,140,0.58)" />
+      <div className="px-4 pt-3 pb-4 space-y-3">
         {items.length > 0 && (
           <div className="flex justify-end">
             <button

@@ -4,6 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { CreditCard, User, Loader2, AlertCircle, X, FileText } from 'lucide-react';
 import { getPrivatePayments, type PrivatePaymentDto, getPrivateReceipt, type PrivateReceiptDto } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -60,7 +61,8 @@ export function PrivatePaymentsPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Private Payments" showBack />
-      <div className="px-4 pt-4 pb-4">
+      <PageHero title="Private Payments" subtitle="Private coaching payment history" slide={4} tint="rgba(79,70,229,0.58)" />
+      <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -71,7 +73,7 @@ export function PrivatePaymentsPage() {
         {payments.length > 0 && (
           <div className="bg-violet-600 rounded-2xl p-5 mb-4">
             <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
-            <p className="text-3xl font-extrabold" style={{ color: '#ffffff' }}>
+            <p className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
               {totalPaid.toLocaleString()} {payments[0]?.privatePaymentPaidCurrency}
             </p>
           </div>
@@ -83,35 +85,35 @@ export function PrivatePaymentsPage() {
 
         <div className="space-y-2">
           {payments.map((p) => (
-            <div key={p.privatePaymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-                    <CreditCard className="size-4 text-violet-600" />
+            <div key={p.privatePaymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+              <div className="flex items-start justify-between gap-2 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                    <CreditCard className="size-5 text-violet-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Receipt #{p.privatePaymentId}</p>
+                    <p className="text-base font-semibold text-slate-900">Receipt #{p.privatePaymentId}</p>
                     {p.privatePaymentDate && (
-                      <p className="text-xs text-slate-400">{formatDate(p.privatePaymentDate)}</p>
+                      <p className="text-sm text-slate-400 mt-0.5">{formatDate(p.privatePaymentDate)}</p>
                     )}
                   </div>
                 </div>
-                <p className="text-sm font-bold text-emerald-600">
+                <p className="text-base font-bold text-emerald-600">
                   {p.privatePaymentPaidAmount.toLocaleString()} {p.privatePaymentPaidCurrency}
                 </p>
               </div>
               {p.coachFullName && (
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-2">
-                  <User className="size-3.5 shrink-0" />
+                <div className="flex items-center gap-1.5 text-sm text-slate-500 mb-3">
+                  <User className="size-4 shrink-0" />
                   <span>{p.coachFullName}</span>
                 </div>
               )}
-              <div className="flex justify-end mt-2 pt-2 border-t border-slate-50">
+              <div className="flex justify-end pt-3 border-t border-slate-100">
                 <button
                   onClick={() => openReceipt(p.privatePaymentId)}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-violet-600 active:opacity-60"
+                  className="flex items-center gap-2 text-sm font-semibold text-violet-600 active:opacity-60"
                 >
-                  <FileText className="size-3.5" />
+                  <FileText className="size-4" />
                   View Receipt
                 </button>
               </div>

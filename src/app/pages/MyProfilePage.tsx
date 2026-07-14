@@ -7,6 +7,18 @@ import {
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { getStudentById, getGroupAttendanceSummary, type StudentDto, type AttendanceSummaryDto } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
+
+const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
+  Elite:     { bg: 'rgba(249,115,22,0.15)',  color: '#9A3412' },
+  Gifted:    { bg: 'rgba(236,72,153,0.15)',  color: '#9D174D' },
+  Group:     { bg: 'rgba(91,173,255,0.18)',  color: '#1A6FBF' },
+  Private:   { bg: 'rgba(139,92,246,0.18)',  color: '#6D28D9' },
+  School:    { bg: 'rgba(52,211,153,0.18)',  color: '#065F46' },
+  'Aqua Baby': { bg: 'rgba(56,189,248,0.18)', color: '#0369A1' },
+  'Aqua Gym':  { bg: 'rgba(251,191,36,0.20)', color: '#92600A' },
+  Others:    { bg: 'rgba(148,163,184,0.18)', color: '#475569' },
+};
 
 export function MyProfilePage() {
   const navigate = useNavigate();
@@ -18,10 +30,8 @@ export function MyProfilePage() {
   useEffect(() => {
     const userData = localStorage.getItem('currentUser');
     if (!userData) { navigate('/signin'); return; }
-
     const user = JSON.parse(userData);
     if (!user.studentId) { navigate('/dashboard'); return; }
-
     (async () => {
       try {
         const [studentData, attendanceData] = await Promise.allSettled([
@@ -67,45 +77,29 @@ export function MyProfilePage() {
 
   const fullName = [student.studentFirstName, student.studentMiddleName, student.studentLastName]
     .filter(Boolean).join(' ');
-
   const initials = [student.studentFirstName, student.studentLastName]
     .filter(Boolean).map(n => n![0]).join('');
-
   const dob = student.studentDateOfBirth
     ? new Date(student.studentDateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : null;
-
   const age = student.studentDateOfBirth
     ? Math.floor((Date.now() - new Date(student.studentDateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
     : null;
-
   const phone1 = student.studentPhoneNumber1
-    ? `+${student.studentPhoneNumberCode1 || ''} ${student.studentPhoneNumber1}`.trim()
-    : null;
-
+    ? `+${student.studentPhoneNumberCode1 || ''} ${student.studentPhoneNumber1}`.trim() : null;
   const phone2 = student.studentPhoneNumber2
-    ? `+${student.studentPhoneNumberCode2 || ''} ${student.studentPhoneNumber2}`.trim()
-    : null;
-
+    ? `+${student.studentPhoneNumberCode2 || ''} ${student.studentPhoneNumber2}`.trim() : null;
   const address = [
     student.studentAddressBuilding && `Bldg ${student.studentAddressBuilding}`,
     student.studentAddressFloor && `Floor ${student.studentAddressFloor}`,
-    student.studentAddressStreet,
-    student.studentAddressRegion,
-    student.studentAddressCity,
+    student.studentAddressStreet, student.studentAddressRegion, student.studentAddressCity,
   ].filter(Boolean).join(', ');
-
   const swimmerTypes = [
-    student.studentEliteSwimmer && 'Elite',
-    student.studentGiftedSwimmer && 'Gifted',
-    student.studentGroupSwimmer && 'Group',
-    student.studentPrivateSwimmer && 'Private',
-    student.studentSchoolSwimmer && 'School',
-    student.studentAquaBabySwimmer && 'Aqua Baby',
-    student.studentAquaGymSwimmer && 'Aqua Gym',
-    student.studentOthersSwimmer && 'Others',
+    student.studentEliteSwimmer && 'Elite', student.studentGiftedSwimmer && 'Gifted',
+    student.studentGroupSwimmer && 'Group', student.studentPrivateSwimmer && 'Private',
+    student.studentSchoolSwimmer && 'School', student.studentAquaBabySwimmer && 'Aqua Baby',
+    student.studentAquaGymSwimmer && 'Aqua Gym', student.studentOthersSwimmer && 'Others',
   ].filter(Boolean) as string[];
-
   const totalSessions = attendance.reduce((s, a) => s + a.totalSessions, 0);
   const attendedSessions = attendance.reduce((s, a) => s + a.attendedSessions, 0);
   const attendancePct = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : null;
@@ -113,22 +107,25 @@ export function MyProfilePage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="My Profile" showBack showSignOut />
+      <PageHero title="My Profile" subtitle="Your swimmer details & attendance" slide={3} tint="rgba(14,100,144,0.58)" />
+      <div className="px-4 pt-3 pb-5 space-y-4">
 
-      <div className="px-4 py-5 space-y-4">
-
+        {/* Hero card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] px-5 pt-5 pb-12">
-            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-[#0B4F8C]/3 rounded-full pointer-events-none" />
+          <div className="relative overflow-hidden px-5 pt-5 pb-12"
+            style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.22) 0%,rgba(176,138,255,0.18) 100%)' }}>
+            <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.10)' }} />
             <div className="flex items-center gap-3 relative">
-              <div className="w-11 h-11 rounded-2xl bg-[#0B4F8C]/15 backdrop-blur flex items-center justify-center shrink-0 border border-[#0B4F8C]/20">
-                <span className="text-[#0B4F8C] text-sm font-bold">{initials}</span>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                style={{ background: 'rgba(11,79,140,0.15)', border: '1.5px solid rgba(11,79,140,0.20)' }}>
+                <span className="text-[#0B4F8C] text-base font-bold">{initials}</span>
               </div>
               <div>
-                <p className="text-lg font-bold text-black leading-snug">{fullName}</p>
-                {age && <p className="text-black/50 text-xs mt-0.5">Age {age} • {student.studentGender || '—'}</p>}
+                <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
+                {age !== null && <p className="text-slate-500 text-xs mt-0.5">Age {age} • {student.studentGender || '—'}</p>}
                 {student.studentActive && (
-                  <span className="mt-1.5 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded-full border border-emerald-200">
+                  <span className="mt-1.5 inline-block px-3 py-0.5 text-xs font-bold rounded-full text-white"
+                    style={{ background: '#22C55E' }}>
                     Active
                   </span>
                 )}
@@ -138,77 +135,81 @@ export function MyProfilePage() {
 
           <div className="grid grid-cols-3 divide-x divide-slate-100 -mt-5 bg-white mx-3 rounded-xl shadow-sm border border-slate-100 relative z-10">
             <StatChip label="Since" value={student.studentStartingDate
-              ? new Date(student.studentStartingDate).getFullYear().toString()
-              : '—'} />
-            <StatChip label="Attendance" value={attendancePct != null ? `${attendancePct}%` : '—'} />
-            <StatChip label="Classes" value={attendance.length > 0 ? attendance.length.toString() : '—'} />
+              ? new Date(student.studentStartingDate).getFullYear().toString() : '—'}
+              color="#3B82F6" />
+            <StatChip label="Attendance" value={attendancePct != null ? `${attendancePct}%` : '—'} color="#10B981" />
+            <StatChip label="Classes" value={attendance.length > 0 ? attendance.length.toString() : '—'} color="#8B5CF6" />
           </div>
-
           <div className="h-4" />
         </div>
 
+        {/* Swimmer Type */}
         {swimmerTypes.length > 0 && (
-          <Section title="Swimmer Type" icon={<Award className="size-4 text-[#0B4F8C]" />}>
+          <Section title="Swimmer Type" icon={<Award className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(251,191,36,0.18)">
             <div className="flex flex-wrap gap-2">
-              {swimmerTypes.map(type => (
-                <span key={type} className="px-3 py-1 bg-[#0B4F8C]/10 text-[#0B4F8C] rounded-full text-sm font-medium">
-                  {type}
-                </span>
-              ))}
+              {swimmerTypes.map(type => {
+                const c = TYPE_COLORS[type] ?? { bg: 'rgba(91,173,255,0.15)', color: '#1A6FBF' };
+                return (
+                  <span key={type} className="px-3 py-1 rounded-full text-sm font-semibold"
+                    style={{ background: c.bg, color: c.color }}>
+                    {type}
+                  </span>
+                );
+              })}
             </div>
           </Section>
         )}
 
-        <Section title="Contact" icon={<Phone className="size-4 text-[#0B4F8C]" />}>
-          {student.studentEmail ? (
-            <InfoRow icon={<Mail className="size-4 text-slate-400" />} label="Email" value={student.studentEmail} />
-          ) : null}
-          {phone1 && <InfoRow icon={<Phone className="size-4 text-slate-400" />} label="Phone 1" value={phone1} />}
-          {phone2 && <InfoRow icon={<Phone className="size-4 text-slate-400" />} label="Phone 2" value={phone2} />}
-          {address && <InfoRow icon={<MapPin className="size-4 text-slate-400" />} label="Address" value={address} />}
+        {/* Contact */}
+        <Section title="Contact" icon={<Phone className="size-4" style={{ color: '#3B82F6' }} />} iconBg="rgba(91,173,255,0.18)">
+          {student.studentEmail && (
+            <InfoRow icon={<Mail className="size-4" style={{ color: '#3B82F6' }} />} label="Email" value={student.studentEmail} />
+          )}
+          {phone1 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label="Phone 1" value={phone1} />}
+          {phone2 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label="Phone 2" value={phone2} />}
+          {address && <InfoRow icon={<MapPin className="size-4" style={{ color: '#F59E0B' }} />} label="Address" value={address} />}
         </Section>
 
-        <Section title="Personal" icon={<User className="size-4 text-[#0B4F8C]" />}>
-          {dob && <InfoRow icon={<Calendar className="size-4 text-slate-400" />} label="Date of Birth" value={dob} />}
+        {/* Personal */}
+        <Section title="Personal" icon={<User className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.18)">
+          {dob && <InfoRow icon={<Calendar className="size-4" style={{ color: '#8B5CF6' }} />} label="Date of Birth" value={dob} />}
           {student.studentSchool && (
-            <InfoRow icon={<GraduationCap className="size-4 text-slate-400" />} label="School" value={student.studentSchool} />
+            <InfoRow icon={<GraduationCap className="size-4" style={{ color: '#F59E0B' }} />} label="School" value={student.studentSchool} />
           )}
           {student.studentNationality1 && (
-            <InfoRow icon={<Flag className="size-4 text-slate-400" />} label="Nationality" value={
-              [student.studentNationality1, student.studentNationality2].filter(Boolean).join(' / ')
-            } />
+            <InfoRow icon={<Flag className="size-4" style={{ color: '#EF4444' }} />} label="Nationality"
+              value={[student.studentNationality1, student.studentNationality2].filter(Boolean).join(' / ')} />
           )}
         </Section>
 
+        {/* Family */}
         {(student.studentMomOccupation || student.studentDadOccupation) && (
-          <Section title="Family" icon={<Shield className="size-4 text-[#0B4F8C]" />}>
+          <Section title="Family" icon={<Shield className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.18)">
             {student.studentMomOccupation && (
-              <InfoRow icon={<User className="size-4 text-slate-400" />} label="Mom's Occupation" value={student.studentMomOccupation} />
+              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label="Mom's Occupation" value={student.studentMomOccupation} />
             )}
             {student.studentDadOccupation && (
-              <InfoRow icon={<User className="size-4 text-slate-400" />} label="Dad's Occupation" value={student.studentDadOccupation} />
+              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label="Dad's Occupation" value={student.studentDadOccupation} />
             )}
           </Section>
         )}
 
+        {/* Attendance by Class */}
         {attendance.length > 0 && (
-          <Section title="Attendance by Class" icon={<Calendar className="size-4 text-[#0B4F8C]" />}>
+          <Section title="Attendance by Class" icon={<Calendar className="size-4" style={{ color: '#10B981' }} />} iconBg="rgba(52,211,153,0.18)">
             <div className="space-y-4">
-              {attendance.map(a => {
-                const pct = a.totalSessions > 0
-                  ? Math.round((a.attendedSessions / a.totalSessions) * 100)
-                  : 0;
+              {attendance.map((a, i) => {
+                const pct = a.totalSessions > 0 ? Math.round((a.attendedSessions / a.totalSessions) * 100) : 0;
+                const barColors = ['#3B82F6','#10B981','#8B5CF6','#F59E0B','#EF4444','#EC4899','#0EA5E9'];
+                const barColor = barColors[i % barColors.length];
                 return (
                   <div key={a.registrationId}>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-sm text-slate-900">{a.className || a.semesterName}</span>
-                      <span className="text-xs text-slate-400">{a.attendedSessions}/{a.totalSessions}</span>
+                      <span className="text-xs font-semibold" style={{ color: barColor }}>{a.attendedSessions}/{a.totalSessions}</span>
                     </div>
                     <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#0B4F8C] rounded-full transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: barColor }} />
                     </div>
                   </div>
                 );
@@ -218,23 +219,21 @@ export function MyProfilePage() {
         )}
 
         {/* Go to Dashboard */}
-        <Link
-          to="/dashboard"
-          className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors"
-        >
-          <span className="text-sm font-semibold text-[#0B4F8C]">Go to Dashboard</span>
+        <Link to="/dashboard"
+          className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
+          style={{ background: 'rgba(11,79,140,0.60)' }}>
+          <span className="text-sm font-semibold text-white">Go to Dashboard</span>
         </Link>
 
-        {/* Contact to edit profile */}
+        {/* Contact to edit */}
         <button
           onClick={() => window.open('https://wa.me/96170916503?text=Hello%20ProSwim%2C%20I%20would%20like%20to%20update%20my%20profile%20information.')}
           className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl active:scale-[0.98] transition-transform"
-          style={{ backgroundColor: '#25D366' }}
-        >
+          style={{ backgroundColor: '#25D366' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
           </svg>
-          <span className="text-sm font-bold" style={{ color: '#ffffff' }}>Contact Us to Edit Profile</span>
+          <span className="text-sm font-bold text-white">Contact Us to Edit Profile</span>
         </button>
 
       </div>
@@ -243,11 +242,11 @@ export function MyProfilePage() {
   );
 }
 
-function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+function Section({ title, icon, iconBg, children }: { title: string; icon: React.ReactNode; iconBg: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-[#EBF3FC] flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: iconBg }}>
           {icon}
         </div>
         <p className="text-sm font-semibold text-slate-900">{title}</p>
@@ -269,10 +268,10 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
   );
 }
 
-function StatChip({ label, value }: { label: string; value: string }) {
+function StatChip({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div className="flex flex-col items-center py-3 px-2">
-      <p className="text-lg font-bold text-[#0B4F8C]">{value}</p>
+      <p className="num-stat text-lg font-bold" style={{ color }}>{value}</p>
       <p className="text-xs text-slate-500 mt-0.5">{label}</p>
     </div>
   );

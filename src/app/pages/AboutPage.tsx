@@ -2,6 +2,25 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Target, Eye, Lightbulb } from 'lucide-react';
 
+const LETTER_COLORS = [
+  { bg: 'rgba(91,173,255,0.22)',  color: '#1A6FBF' },
+  { bg: 'rgba(176,138,255,0.22)', color: '#6D28D9' },
+  { bg: 'rgba(52,211,153,0.22)',  color: '#065F46' },
+  { bg: 'rgba(251,191,36,0.22)',  color: '#92600A' },
+  { bg: 'rgba(249,115,22,0.22)',  color: '#9A3412' },
+  { bg: 'rgba(236,72,153,0.22)',  color: '#9D174D' },
+  { bg: 'rgba(56,189,248,0.22)',  color: '#0369A1' },
+];
+
+const FEATURE_COLORS = [
+  { bg: 'rgba(239,68,68,0.13)',   icon: '🛡️', title: 'Safety First',  desc: 'Top priority in everything we do' },
+  { bg: 'rgba(91,173,255,0.18)',  icon: '👥', title: 'Small Classes', desc: 'Only 6 swimmers per coach' },
+  { bg: 'rgba(139,92,246,0.18)',  icon: '🎓', title: 'Certified',     desc: 'Trained & updated professionals' },
+  { bg: 'rgba(52,211,153,0.18)',  icon: '📍', title: 'Locations',     desc: 'Convenient across Lebanon' },
+  { bg: 'rgba(251,191,36,0.20)',  icon: '🎉', title: 'Fun',           desc: 'Games, toys & exciting drills' },
+  { bg: 'rgba(249,115,22,0.18)',  icon: '🏆', title: 'Recognition',   desc: 'Certificates & medals' },
+];
+
 export function AboutPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
@@ -9,85 +28,100 @@ export function AboutPage() {
 
       <div className="px-4 py-6 space-y-4">
 
+        {/* Header */}
         <div className="text-center pb-2">
           <p className="text-2xl font-bold text-slate-900">About ProSwim</p>
           <p className="text-sm text-slate-500 mt-1">Swimming academy in Lebanon since 2000</p>
         </div>
 
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#EEF5FF] to-[#D4E8FF] rounded-2xl p-6">
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
-          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-[#0B4F8C]/5 rounded-full pointer-events-none" />
-          <p className="text-base font-semibold mb-3 relative text-black">Brand Story</p>
-          <p className="text-sm leading-relaxed mb-3 relative text-black/80">
+        {/* Brand Story */}
+        <div
+          className="relative overflow-hidden rounded-2xl p-6"
+          style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.30) 0%,rgba(176,138,255,0.25) 100%)' }}
+        >
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.12)' }} />
+          <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full pointer-events-none" style={{ background: 'rgba(176,138,255,0.12)' }} />
+          <p className="text-base font-bold mb-3 relative" style={{ color: '#1A4F8C' }}>Brand Story</p>
+          <p className="text-sm leading-relaxed mb-3 relative text-slate-700">
             Swimming is my passion! With 25 years as a swimmer and 20+ years as a coach,
             I believe any kid can be unstoppable with quality instruction and motivation.
           </p>
-          <p className="text-sm italic relative text-black/60">"The small details make the BIG DIFFERENCE!"</p>
+          <p className="text-sm italic relative" style={{ color: '#6D28D9' }}>"The small details make the BIG DIFFERENCE!"</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <p className="text-base font-semibold mb-2 text-slate-900">Our Philosophy</p>
-          <p className="text-sm text-slate-600 leading-relaxed">
+        {/* Our Philosophy */}
+        <div
+          className="rounded-2xl p-5"
+          style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.20) 0%,rgba(56,189,248,0.18) 100%)' }}
+        >
+          <p className="text-base font-bold mb-2" style={{ color: '#065F46' }}>Our Philosophy</p>
+          <p className="text-sm leading-relaxed text-slate-700">
             We believe there is only one of you — and that's your superpower! We customise our
             teaching style for each individual's needs, abilities, and talents.
           </p>
         </div>
 
+        {/* Why ProSwim */}
         <div className="space-y-3">
-          <p className="text-base font-semibold text-slate-900">Why ProSwim?</p>
+          <p className="text-base font-bold text-slate-900">Why ProSwim?</p>
           <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: '🛡️', title: 'Safety First', desc: 'Top priority in everything we do' },
-              { icon: '👥', title: 'Small Classes', desc: 'Only 6 swimmers per coach' },
-              { icon: '🎓', title: 'Certified', desc: 'Trained & updated professionals' },
-              { icon: '📍', title: 'Locations', desc: 'Convenient across Lebanon' },
-              { icon: '🎉', title: 'Fun', desc: 'Games, toys & exciting drills' },
-              { icon: '🏆', title: 'Recognition', desc: 'Certificates & medals' },
-            ].map((f) => (
-              <div key={f.title} className="bg-white rounded-2xl p-4 border border-slate-100">
+            {FEATURE_COLORS.map((f) => (
+              <div key={f.title} className="rounded-2xl p-4 border border-white/60" style={{ background: f.bg }}>
                 <span className="text-2xl">{f.icon}</span>
                 <p className="text-sm font-semibold text-slate-900 mt-2 mb-0.5">{f.title}</p>
-                <p className="text-xs text-slate-500 leading-snug">{f.desc}</p>
+                <p className="text-xs text-slate-600 leading-snug">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Mission */}
         <ValueCard
-          icon={<Target className="size-5 text-[#0B4F8C]" />}
+          icon={<Target className="size-5" style={{ color: '#3B82F6' }} />}
           title="Mission"
-          color="blue"
+          bg="linear-gradient(135deg,rgba(91,173,255,0.20) 0%,rgba(59,130,246,0.15) 100%)"
+          titleColor="#1D4ED8"
+          dotColor="#3B82F6"
           content={['Teach correct techniques safely', 'Build confidence & self-esteem', 'Develop goal-setting skills', 'Promote swimming as life skill']}
         />
+
+        {/* Vision */}
         <ValueCard
-          icon={<Eye className="size-5 text-violet-500" />}
+          icon={<Eye className="size-5" style={{ color: '#8B5CF6' }} />}
           title="Vision"
-          color="violet"
+          bg="linear-gradient(135deg,rgba(176,138,255,0.22) 0%,rgba(139,92,246,0.18) 100%)"
+          titleColor="#6D28D9"
+          dotColor="#8B5CF6"
           content={['Expand across Lebanon', 'Set new standards', 'Best staff & team', 'Lasting impact on culture']}
         />
+
+        {/* Goals */}
         <ValueCard
-          icon={<Lightbulb className="size-5 text-amber-500" />}
+          icon={<Lightbulb className="size-5" style={{ color: '#F59E0B' }} />}
           title="Goals"
-          color="amber"
+          bg="linear-gradient(135deg,rgba(251,191,36,0.22) 0%,rgba(249,115,22,0.18) 100%)"
+          titleColor="#92600A"
+          dotColor="#F59E0B"
           content={['Build united team', 'Teach life lessons', 'Make lifetime champions', 'Strong partnerships']}
         />
 
-        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        {/* Our Logo */}
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-slate-100">
-            <p className="text-base font-semibold text-slate-900">Our Logo</p>
+            <p className="text-base font-bold text-slate-900">Our Logo</p>
             <p className="text-xs text-slate-500 mt-0.5">Every element has meaning</p>
           </div>
           <div className="divide-y divide-slate-100">
             {[
-              { k: 'BLUE',   v: 'Sky & Sea',  desc: 'Limitless potential, depth, trust, freedom' },
-              { k: 'CIRCLE', v: 'Unity',      desc: 'Wholeness, infinity, perfection, ongoing energy' },
-              { k: 'WATER',  v: 'Life',       desc: 'Power, strength, flexibility, embracing change' },
-              { k: 'SPLASH', v: 'Energy',     desc: 'Power, dominance, supreme energy' },
+              { k: 'BLUE',   v: 'Sky & Sea',  desc: 'Limitless potential, depth, trust, freedom',      color: '#3B82F6' },
+              { k: 'CIRCLE', v: 'Unity',      desc: 'Wholeness, infinity, perfection, ongoing energy', color: '#8B5CF6' },
+              { k: 'WATER',  v: 'Life',       desc: 'Power, strength, flexibility, embracing change',  color: '#0EA5E9' },
+              { k: 'SPLASH', v: 'Energy',     desc: 'Power, dominance, supreme energy',                color: '#10B981' },
             ].map((item) => (
               <details key={item.k} className="group px-5 py-3.5 cursor-pointer">
                 <summary className="flex items-center justify-between select-none [&::-webkit-details-marker]:hidden">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#0B4F8C] tracking-widest">{item.k}</span>
+                    <span className="text-xs font-bold tracking-widest" style={{ color: item.color }}>{item.k}</span>
                     <span className="text-xs text-slate-400">—</span>
                     <span className="text-sm font-medium text-slate-900">{item.v}</span>
                   </div>
@@ -100,18 +134,22 @@ export function AboutPage() {
           </div>
         </div>
 
+        {/* ProSwim Stands For */}
         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <p className="text-base font-semibold mb-4 text-slate-900">ProSwim Stands For</p>
+          <p className="text-base font-bold mb-4 text-slate-900">ProSwim Stands For</p>
           <div className="space-y-2">
-            {[
-              ['P', 'Partnership'], ['R', 'Reliability'], ['O', 'Organization'],
-              ['S', 'Synergy'],     ['W', 'Welcoming'],  ['I', 'Integrity'], ['M', 'Mutuality'],
-            ].map(([letter, word]) => (
+            {(
+              [['P', 'Partnership'], ['R', 'Reliability'], ['O', 'Organization'],
+               ['S', 'Synergy'],     ['W', 'Welcoming'],  ['I', 'Integrity'], ['M', 'Mutuality']]
+            ).map(([letter, word], i) => (
               <div key={letter} className="flex items-center gap-4 py-2 border-b border-slate-50 last:border-0">
-                <div className="w-8 h-8 rounded-xl bg-[#0B4F8C]/10 flex items-center justify-center shrink-0">
-                  <span className="text-sm font-bold text-[#0B4F8C]">{letter}</span>
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: LETTER_COLORS[i].bg }}
+                >
+                  <span className="text-sm font-black" style={{ color: LETTER_COLORS[i].color }}>{letter}</span>
                 </div>
-                <span className="text-sm text-slate-900">{word}</span>
+                <span className="text-sm font-medium text-slate-800">{word}</span>
               </div>
             ))}
           </div>
@@ -127,29 +165,25 @@ export function AboutPage() {
 interface ValueCardProps {
   icon: React.ReactNode;
   title: string;
-  color: 'blue' | 'violet' | 'amber';
+  bg: string;
+  titleColor: string;
+  dotColor: string;
   content: string[];
 }
 
-function ValueCard({ icon, title, color, content }: ValueCardProps) {
-  const iconBg = color === 'blue'
-    ? 'bg-blue-50'
-    : color === 'violet'
-    ? 'bg-violet-50'
-    : 'bg-amber-50';
-
+function ValueCard({ icon, title, bg, titleColor, dotColor, content }: ValueCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+    <div className="rounded-2xl p-5" style={{ background: bg }}>
       <div className="flex items-center gap-3 mb-3">
-        <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+        <div className="w-9 h-9 rounded-xl bg-white/50 flex items-center justify-center shrink-0">
           {icon}
         </div>
-        <p className="text-base font-semibold text-slate-900">{title}</p>
+        <p className="text-base font-bold" style={{ color: titleColor }}>{title}</p>
       </div>
       <ul className="space-y-2">
         {content.map((item) => (
-          <li key={item} className="flex gap-2.5 text-sm text-slate-600">
-            <span className="text-[#0B4F8C] font-bold shrink-0 mt-px">•</span>
+          <li key={item} className="flex gap-2.5 text-sm text-slate-700">
+            <span className="font-bold shrink-0 mt-px" style={{ color: dotColor }}>•</span>
             <span>{item}</span>
           </li>
         ))}

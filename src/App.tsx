@@ -25,10 +25,12 @@ import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
 import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
 import { NotificationsPage } from "./app/pages/NotificationsPage";
 import { LocationDetailPage } from "./app/pages/LocationDetailPage";
+import { PageTransition } from "./app/components/PageTransition";
 
 export default function App() {
   return (
     <Router {...(!isCapacitor && { basename: "/Mobilev1" })}>
+      <PageTransition>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
@@ -60,6 +62,7 @@ export default function App() {
         <Route path="/Payments" element={<Navigate to="/payments" replace />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
+      </PageTransition>
     </Router>
   );
 }

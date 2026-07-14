@@ -4,7 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import {
   Calendar, Clock, MapPin, Award, Users, ChevronRight,
-  Target, AlertCircle, Loader2, BookOpen, User, CreditCard, Waves
+  Target, AlertCircle, Loader2, BookOpen, Waves
 } from 'lucide-react';
 import { Progress } from '../components/Progress';
 import { SwimTimes } from '../components/SwimTimes';
@@ -62,12 +62,12 @@ const MOCK_COURSES: Record<string, MockCourse[]> = {
   ],
 };
 
+const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
+
 const QUICK_TILES = [
-  { icon: BookOpen,    label: 'Registrations', href: '/registrations',    bg: 'bg-sky-100',     color: 'text-sky-600',     labelMt: 8  },
-  { icon: Waves,       label: 'Private',       href: '/private',          bg: 'bg-violet-100',  color: 'text-violet-600',  labelMt: 8  },
-  { icon: CreditCard,  label: 'Payments',      href: '/payment-history',  bg: 'bg-emerald-100', color: 'text-emerald-600', labelMt: 8  },
-  { icon: User,        label: 'Profile',       href: '/profile',          bg: 'bg-amber-100',   color: 'text-amber-500',   labelMt: 8  },
-];
+  { icon: BookOpen, label: 'REGISTRATIONS', href: '/registrations', slide: 1 },
+  { icon: Waves,    label: 'PRIVATE',       href: '/private',       slide: 2 },
+] as const;
 
 interface ApiCourse {
   id: number;
@@ -181,25 +181,25 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
       {/* Welcome card */}
       <div className="px-4 pt-4 pb-0">
-        <div className="bg-[#0B4F8C] rounded-2xl px-5 py-5 relative overflow-hidden">
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
-          <div className="absolute -bottom-6 -left-4 w-24 h-24 bg-white/5 rounded-full pointer-events-none" />
-          <p className="text-base font-semibold relative" style={{ color: "rgba(255,255,255,0.6)" }}>Welcome back</p>
-          <p className="text-xl font-bold mt-0.5 relative" style={{ color: "#ffffff" }}>Hi, {firstName}! 👋</p>
+        <div className="rounded-3xl px-6 py-6 relative overflow-hidden" style={{ minHeight: 140 }}>
+          <img src={SLIDE(3)} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(6,30,60,0.88) 0%,rgba(11,79,140,0.72) 100%)' }} />
+          <p className="text-xs font-bold tracking-widest uppercase relative" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>Welcome back</p>
+          <p className="text-3xl font-black mt-1 relative" style={{ color: '#ffffff', letterSpacing: '-0.01em' }}>Hi, {firstName}! 👋</p>
           {currentLevel && (
-            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 rounded-full relative">
-              <Award className="size-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
-              <span className="text-xs font-semibold" style={{ color: "#ffffff" }}>{currentLevel}</span>
+            <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full relative" style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <Award className="size-3.5" style={{ color: '#7DD3FC' }} />
+              <span className="text-xs font-bold tracking-wide" style={{ color: '#7DD3FC' }}>{currentLevel}</span>
             </div>
           )}
           {isRealAuth && profile?.locationNickName && (
-            <p className="text-xs mt-2 relative flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
+            <p className="text-xs mt-2 relative flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
               <MapPin className="size-3.5" />
               {profile.locationNickName}
             </p>
           )}
           {!isRealAuth && (
-            <p className="text-sm mt-1.5 relative" style={{ color: "rgba(255,255,255,0.7)" }}>
+            <p className="text-sm mt-2 relative" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Track your progress and view upcoming classes
             </p>
           )}
@@ -217,17 +217,20 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
         {/* Quick Access grid */}
         <div>
-          <p className="text-base font-semibold text-slate-900 mb-3">Quick Access</p>
-          <div className="grid grid-cols-2 gap-3 px-8">
-            {QUICK_TILES.map(({ icon: Icon, label, href, color, labelMt }) => (
+          <div className="grid grid-cols-2 gap-3 mx-12">
+            {QUICK_TILES.map(({ icon: Icon, label, href, slide }) => (
               <Link
                 key={label}
                 to={href}
-                className="bg-white rounded-2xl flex flex-col items-center border border-slate-100 shadow-sm active:scale-95 transition-transform"
-                style={{ height: 100, paddingTop: 20, paddingBottom: 16 }}
+                className="rounded-2xl active:scale-95 transition-transform relative overflow-hidden"
+                style={{ height: 90 }}
               >
-                <Icon className={`size-7 ${color}`} />
-                <span className="text-base font-semibold text-slate-700 text-center leading-tight" style={{ marginTop: labelMt }}>{label}</span>
+                <img src={SLIDE(slide)} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,35,70,0.70)' }} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                  <Icon size={24} color="rgba(255,255,255,0.92)" strokeWidth={1.8} />
+                  <span className="text-[10px] font-black tracking-widest" style={{ color: '#ffffff', letterSpacing: '0.10em' }}>{label}</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -235,32 +238,32 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
           {/* Schedule — full-width card */}
           <Link
             to="/schedule"
-            className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 border border-slate-100 shadow-sm active:scale-[0.98] transition-transform mt-3"
+            className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-3 bg-white border border-slate-100 shadow-sm"
           >
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
-              <Calendar className="size-6 text-[#0B4F8C]" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(91,173,255,0.18)' }}>
+              <Calendar className="size-5 text-[#1A6FBF]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-900">My Schedule</p>
-              <p className="text-xs text-slate-400 mt-0.5">View this week's classes</p>
+              <p className="text-sm font-black tracking-wide uppercase text-slate-800">My Schedule</p>
+              <p className="text-xs mt-0.5 text-slate-400">View this week's classes</p>
             </div>
-            <ChevronRight className="size-4 text-slate-300 shrink-0" />
+            <ChevronRight className="size-4 shrink-0 text-slate-300" />
           </Link>
 
           {/* Skills Checklist — full-width card */}
           {isRealAuth && (
             <Link
               to="/checklist"
-              className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 border border-slate-100 shadow-sm active:scale-[0.98] transition-transform"
+              className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-2 bg-white border border-slate-100 shadow-sm"
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center shrink-0">
-                <Target className="size-6 text-emerald-600" />
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(52,211,153,0.18)' }}>
+                <Target className="size-5 text-emerald-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900">Skills Checklist</p>
-                <p className="text-xs text-slate-400 mt-0.5">Track your skill progress</p>
+                <p className="text-sm font-black tracking-wide uppercase text-slate-800">Skills Checklist</p>
+                <p className="text-xs mt-0.5 text-slate-400">Track your skill progress</p>
               </div>
-              <ChevronRight className="size-4 text-slate-300 shrink-0" />
+              <ChevronRight className="size-4 shrink-0 text-slate-300" />
             </Link>
           )}
         </div>
@@ -399,7 +402,7 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
           <div className="mt-1">
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-slate-400">Attendance</span>
-              <span className="text-xs font-bold text-[#0B4F8C]">
+              <span className="num-stat text-xs font-bold text-[#0B4F8C]">
                 {course.attendancePercent}%
               </span>
             </div>
@@ -569,9 +572,10 @@ function TabButton({ active, onClick, children }: TabButtonProps) {
       onClick={onClick}
       className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${
         active
-          ? 'bg-[#0B4F8C] text-white shadow-sm'
+          ? 'text-white shadow-sm'
           : 'text-slate-400'
       }`}
+      style={active ? { background: 'linear-gradient(135deg,rgba(91,173,255,0.55) 0%,rgba(59,130,246,0.55) 100%)' } : undefined}
     >
       {children}
     </button>

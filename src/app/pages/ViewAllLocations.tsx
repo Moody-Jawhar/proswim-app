@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { MobileHeader } from "../components/MobileHeader";
 import { MobileNav } from "../components/MobileNav";
 import { Search, RefreshCw } from "lucide-react";
+import { PageHero } from "../components/PageHero";
 import { getLocations, type LocationDto } from "../api/pswmApi";
 
 export function ViewAllLocations() {
@@ -52,8 +53,8 @@ export function ViewAllLocations() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <MobileHeader title="All Locations" showBack />
-
-      <div className="px-4 py-6 space-y-4">
+      <PageHero title="Our Locations" subtitle="Find a ProSwim pool near you" slide={2} tint="rgba(11,100,180,0.58)" />
+      <div className="px-4 pt-3 pb-6 space-y-4">
         {/* Search + Refresh */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />

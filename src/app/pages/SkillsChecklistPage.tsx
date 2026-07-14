@@ -3,6 +3,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Loader2, AlertCircle, CheckSquare, Square } from 'lucide-react';
 import { getChecklist, type ChecklistItemDto } from '../api/pswmApi';
+import { PageHero } from '../components/PageHero';
 
 function getStudentId(): number | null {
   try {
@@ -59,7 +60,8 @@ export function SkillsChecklistPage() {
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="Skills Checklist" showBack />
-      <div className="px-4 pt-4 pb-4 space-y-4">
+      <PageHero title="Skills Checklist" subtitle="Track your swimming progress" slide={3} tint="rgba(5,120,90,0.80)" />
+      <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
@@ -70,23 +72,23 @@ export function SkillsChecklistPage() {
 
         {/* Overall progress */}
         {items.length > 0 && (
-          <div className="bg-[#0B4F8C] rounded-2xl px-5 py-5">
-            <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>Overall Progress</p>
+          <div className="rounded-2xl px-5 py-5" style={{ background: 'rgba(91,173,255,0.18)' }}>
+            <p className="text-xs font-semibold text-slate-500">Overall Progress</p>
             <div className="flex items-end justify-between mt-1 mb-3">
-              <p className="text-3xl font-extrabold" style={{ color: '#ffffff' }}>
-                {totalChecked} <span className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>/ {items.length}</span>
+              <p className="num-stat text-3xl font-extrabold text-[#0B4F8C]">
+                {totalChecked} <span className="text-lg font-semibold text-slate-400">/ {items.length}</span>
               </p>
-              <p className="text-sm font-semibold mb-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              <p className="num-stat text-sm font-semibold mb-0.5 text-slate-500">
                 {Math.round((totalChecked / items.length) * 100)}% complete
               </p>
             </div>
             {/* Progress bar */}
-            <div className="h-2 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+            <div className="h-2 rounded-full" style={{ backgroundColor: 'rgba(11,79,140,0.12)' }}>
               <div
                 className="h-2 rounded-full transition-all"
                 style={{
                   width: `${Math.round((totalChecked / items.length) * 100)}%`,
-                  backgroundColor: '#7DD3FC',
+                  backgroundColor: '#0B4F8C',
                 }}
               />
             </div>
@@ -105,7 +107,7 @@ export function SkillsChecklistPage() {
               {/* Level header */}
               <div className="flex items-center justify-between mb-2 px-1">
                 <p className="text-sm font-bold text-slate-900">{group.level}</p>
-                <p className="text-xs font-semibold text-[#0B4F8C]">{groupChecked} / {group.items.length}</p>
+                <p className="num-stat text-xs font-semibold text-[#0B4F8C]">{groupChecked} / {group.items.length}</p>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">

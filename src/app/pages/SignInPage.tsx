@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ChevronDown } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { MobileNav } from '../components/MobileNav';
 import { login, setStoredToken } from '../api/pswmApi';
 import { subscribeToStudentTopic } from '../utils/notifications';
@@ -59,10 +59,10 @@ export function SignInPage() {
     <div className="min-h-screen bg-white flex flex-col pb-20">
 
       {/* Top brand area */}
-      <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100">
+      <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>
         <img src={proswimLogo} alt="ProSwim" className="h-16 w-auto mx-auto mb-6" />
         <p className="text-2xl font-bold text-slate-900">Welcome back</p>
-        <p className="text-sm text-slate-500 mt-1.5">Sign in to view your courses and progress</p>
+        <p className="mt-1.5 text-slate-500" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: 14, fontStyle: 'italic' }}>Sign in to view your courses and progress</p>
       </div>
 
       <div className="flex-1 px-4 pt-6 space-y-3">
@@ -109,26 +109,6 @@ export function SignInPage() {
           </form>
         </div>
 
-        {/* Demo accounts */}
-        <details className="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none [&::-webkit-details-marker]:hidden">
-            <span className="text-sm font-medium text-slate-600">Demo accounts</span>
-            <ChevronDown className="size-4 text-slate-400 group-open:rotate-180 transition-transform" />
-          </summary>
-          <div className="border-t border-slate-100 divide-y divide-slate-50">
-            {MOCK_USERS.map((u) => (
-              <button key={u.email} type="button"
-                onClick={() => { setUsername(u.email); setPassword(u.password); }}
-                className="w-full flex items-center justify-between px-5 py-3.5 active:bg-slate-50 transition-colors">
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-slate-900 capitalize">{u.role}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{u.email}</p>
-                </div>
-                <span className="text-xs text-[#0B4F8C] font-semibold">Use →</span>
-              </button>
-            ))}
-          </div>
-        </details>
 
       </div>
       <MobileNav />

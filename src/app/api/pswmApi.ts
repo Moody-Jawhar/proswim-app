@@ -22,6 +22,14 @@ export function clearAuth(): void {
   localStorage.removeItem("currentUser");
 }
 
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 // --- Core fetch helper ---
 
 async function apiRequest<T>(
@@ -47,7 +55,16 @@ async function apiRequest<T>(
 
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
-    throw new Error(`${res.status}: ${txt || res.statusText}`);
+    // Prefer the server's user-safe message when the body is JSON like { "message": "..." }
+    try {
+      const parsed = JSON.parse(txt);
+      if (parsed && typeof parsed.message === "string" && parsed.message) {
+        throw new ApiError(parsed.message, res.status);
+      }
+    } catch (e) {
+      if (e instanceof ApiError) throw e;
+    }
+    throw new ApiError(`${res.status}: ${txt || res.statusText}`, res.status);
   }
 
   const ct = res.headers.get("content-type") || "";
@@ -67,6 +84,20 @@ export interface LoginResponse {
   token: string;
   studentId: number;
   studentFullName: string;
+  message: string;
+  mustChangePassword: boolean;
+  verified: boolean;
+}
+
+export interface SendCodeResponse {
+  sent: boolean;
+  phone: string;
+  expiresInMinutes: number;
+  message: string;
+}
+
+export interface VerifyCodeResponse {
+  verified: boolean;
   message: string;
 }
 
@@ -418,6 +449,24 @@ export async function changePassword(oldPassword: string, newPassword: string): 
     method: "POST",
     body: JSON.stringify({ oldPassword, newPassword }),
   });
+}
+
+export async function sendVerificationCode(): Promise<SendCodeResponse> {
+  return apiRequest<SendCodeResponse>("/api/Auth/SendVerificationCode", { method: "POST" });
+}
+
+export async function verifyCode(code: string): Promise<VerifyCodeResponse> {
+  return apiRequest<VerifyCodeResponse>("/api/Auth/VerifyCode", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+}
+
+// Mirror of the server password policy — check before calling the API.
+export function validatePasswordPolicy(pw: string): string | null {
+  if (pw.length < 8) return "Password must be at least 8 characters.";
+  if (!/[^A-Za-z0-9]/.test(pw)) return "Password must contain at least one symbol (e.g. ! @ # $ % & *).";
+  return null;
 }
 
 export async function getProfile(): Promise<ProfileDto> {

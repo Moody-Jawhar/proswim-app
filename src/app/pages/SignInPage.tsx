@@ -44,7 +44,13 @@ export function SignInPage() {
           name: res.studentFullName, email: username, role: 'student', studentId: res.studentId,
         }));
         if (res.studentId) subscribeToStudentTopic(res.studentId);
-        navigate('/dashboard');
+        if (res.mustChangePassword) {
+          navigate('/change-password', { state: { required: true, verified: res.verified } });
+        } else if (res.verified === false) {
+          navigate('/verify');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         setError(res.message || 'Invalid credentials');
       }

@@ -27,6 +27,8 @@ function AndroidBackHandler() {
 }
 import { LandingPage } from "./app/pages/LandingPage";
 import { SignInPage } from "./app/pages/SignInPage";
+import { ChangePasswordPage } from "./app/pages/ChangePasswordPage";
+import { VerifyPage } from "./app/pages/VerifyPage";
 import { DashboardPage } from "./app/pages/DashboardPage";
 import { SwimLevelsPage } from "./app/pages/SwimLevelsPage";
 import { AboutPage } from "./app/pages/AboutPage";
@@ -58,6 +60,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
+        <Route path="/verify" element={<VerifyPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/programs" element={<Navigate to="/levels" replace />} />
         <Route path="/levels" element={<SwimLevelsPage />} />

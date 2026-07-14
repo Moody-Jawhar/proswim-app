@@ -225,6 +225,12 @@ export function MyProfilePage() {
           <span className="text-sm font-semibold text-white">Go to Dashboard</span>
         </Link>
 
+        {/* Change password */}
+        <Link to="/change-password"
+          className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors">
+          <span className="text-sm font-semibold text-[#0B4F8C]">Change Password</span>
+        </Link>
+
         {/* Contact to edit */}
         <button
           onClick={() => window.open('https://wa.me/96170916503?text=Hello%20ProSwim%2C%20I%20would%20like%20to%20update%20my%20profile%20information.')}

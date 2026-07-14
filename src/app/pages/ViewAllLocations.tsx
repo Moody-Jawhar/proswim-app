@@ -12,7 +12,6 @@ export function ViewAllLocations() {
   const [error, setError] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
 
   async function load() {
     setLoading(true);
@@ -34,21 +33,17 @@ export function ViewAllLocations() {
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return locations.filter((l) => {
-      const matchesSearch =
+      if (!l.locationActive) return false;
+
+      return (
         !q ||
         (l.locationNickName || "").toLowerCase().includes(q) ||
         (l.locationFullName || "").toLowerCase().includes(q) ||
         (l.locationCity || "").toLowerCase().includes(q) ||
-        String(l.locationId).includes(q);
-
-      const matchesStatus =
-        filterStatus === "all" ||
-        (filterStatus === "active" && l.locationActive) ||
-        (filterStatus === "inactive" && !l.locationActive);
-
-      return matchesSearch && matchesStatus;
+        String(l.locationId).includes(q)
+      );
     });
-  }, [locations, searchQuery, filterStatus]);
+  }, [locations, searchQuery]);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -73,17 +68,6 @@ export function ViewAllLocations() {
           </button>
         </div>
 
-        {/* Filters */}
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as any)}
-          className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm"
-        >
-          <option value="all">All</option>
-          <option value="active">Active only</option>
-          <option value="inactive">Inactive only</option>
-        </select>
-
         {/* Error */}
         {error && (
           <div className="bg-white border border-red-100 rounded-xl p-4 text-sm text-red-700">
@@ -92,28 +76,17 @@ export function ViewAllLocations() {
         )}
 
         <div className="text-sm text-gray-600">
-          Showing {filtered.length} of {locations.length} locations
+          {filtered.length} location{filtered.length === 1 ? "" : "s"}
         </div>
 
         {/* List */}
         <div className="space-y-3">
           {filtered.map((l) => (
             <Link key={l.locationId} to={`/locations/${l.locationId}`} className="block active:scale-[0.98] transition-transform bg-white rounded-xl shadow-md border border-gray-100 p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-base text-gray-900">{l.locationNickName}</div>
-                  <div className="text-sm text-gray-600">{l.locationFullName}</div>
-                  <div className="text-xs text-gray-500 mt-1">{l.locationCity}</div>
-                </div>
-                <span
-                  className={`px-2 py-1 rounded-lg text-xs border ${
-                    l.locationActive
-                      ? "bg-green-50 text-green-700 border-green-100"
-                      : "bg-gray-50 text-gray-700 border-gray-100"
-                  }`}
-                >
-                  {l.locationActive ? "Active" : "Inactive"}
-                </span>
+              <div>
+                <div className="text-base text-gray-900">{l.locationNickName}</div>
+                <div className="text-sm text-gray-600">{l.locationFullName}</div>
+                <div className="text-xs text-gray-500 mt-1">{l.locationCity}</div>
               </div>
             </Link>
           ))}

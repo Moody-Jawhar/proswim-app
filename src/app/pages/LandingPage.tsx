@@ -58,6 +58,16 @@ export function LandingPage() {
           <div className="absolute inset-0" style={{ background: 'rgba(220,235,255,0.55)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[#020D1A]/95 via-[#020D1A]/50 to-transparent" />
         </div>
+        <div className="pt-4 px-1">
+          <h1 className="text-xl font-bold text-slate-900 leading-snug">
+            Swim Safe. Build Confidence. Reach Your Potential.
+          </h1>
+          <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+            Learn to swim in a safe, enjoyable, and supportive environment. ProSwim offers
+            swimming programs for babies, children, adults, developing swimmers, and
+            competitive athletes.
+          </p>
+        </div>
       </div>
 
       {/* CTAs */}
@@ -72,16 +82,18 @@ export function LandingPage() {
           </Link>
         )}
         <div className="grid grid-cols-2 gap-2">
-          <Link to="/programs"
+          <Link to="/levels"
             className="flex items-center justify-center py-3 rounded-2xl font-semibold text-sm text-white"
-            style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.55) 0%,rgba(59,130,246,0.55) 100%)' }}>
-            Programs
+            style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}>
+            View Swim Levels
           </Link>
-          <Link to="/locations"
-            className="flex items-center justify-center py-3 rounded-2xl font-semibold text-sm text-white"
-            style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}>
-            Locations
-          </Link>
+          <a href="https://www.proswim-lb.com/"
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-3 rounded-2xl font-semibold text-sm text-white"
+            style={{ background: 'rgba(11,79,140,0.60)' }}>
+            For More Info
+            <ArrowRight className="size-4" />
+          </a>
         </div>
       </div>
 
@@ -125,17 +137,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Why it matters */}
-      <section className="px-3 mt-3">
-        <div className="rounded-2xl overflow-hidden border border-slate-100">
-          <div className="px-5 pt-5 pb-2">
-            <p className="text-base font-semibold text-slate-400">Why swimming matters</p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 px-3 pb-4">
-            <StatCell value="360K" label="Annual deaths"  bg="rgba(91,173,255,0.18)"  color="#1A6FBF" />
-            <StatCell value="1–14" label="High-risk ages" bg="rgba(251,191,36,0.18)"  color="#92600A" />
-            <StatCell value="100%" label="Preventable"    bg="rgba(52,211,153,0.18)"  color="#06754B" />
-          </div>
+      {/* Welcome to ProSwim */}
+      <section className="px-4 mt-3">
+        <div className="rounded-2xl border border-slate-100 p-5" style={{ background: 'rgba(91,173,255,0.10)' }}>
+          <p className="text-base font-bold text-slate-900 mb-1.5">Welcome to ProSwim</p>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            At ProSwim, every swimmer is unique. Teaching methods are adapted to each
+            swimmer's needs, abilities, goals, strengths, and areas for improvement.
+          </p>
+          <a href="https://www.proswim-lb.com/"
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B4F8C] mt-3">
+            Visit our website
+            <ArrowRight className="size-4" />
+          </a>
         </div>
       </section>
 
@@ -176,13 +191,5 @@ export function LandingPage() {
   );
 }
 
-function StatCell({ value, label, bg, color }: { value: string; label: string; bg: string; color: string }) {
-  return (
-    <div className="flex flex-col items-center py-5 px-2 rounded-xl" style={{ background: bg }}>
-      <p className="num-stat text-2xl font-bold" style={{ color }}>{value}</p>
-      <p className="text-[11px] mt-1 text-center text-slate-400">{label}</p>
-    </div>
-  );
-}
 
 

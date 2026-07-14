@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, User, Info } from 'lucide-react';
+import { Home, Waves, User, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function MobileNav() {
@@ -14,7 +14,7 @@ export function MobileNav() {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
-    { path: '/programs', icon: BookOpen, label: 'Programs' },
+    { path: '/levels', icon: Waves, label: 'Swim Levels' },
     { path: isAuthenticated ? '/profile' : '/signin', icon: User, label: isAuthenticated ? 'Profile' : 'Sign In' },
     { path: '/about', icon: Info, label: 'About' },
   ];

@@ -1,11 +1,34 @@
-import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
 
 const isCapacitor = import.meta.env.VITE_BUILD_TARGET === "capacitor";
 const Router = isCapacitor ? HashRouter : BrowserRouter;
+
+// Android hardware/gesture back: go back one page instead of exiting the app.
+function AndroidBackHandler() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const sub = CapacitorApp.addListener("backButton", () => {
+      if (location.pathname === "/") {
+        CapacitorApp.exitApp();
+      } else {
+        navigate(-1);
+      }
+    });
+    return () => { sub.then(s => s.remove()); };
+  }, [location.pathname, navigate]);
+
+  return null;
+}
 import { LandingPage } from "./app/pages/LandingPage";
 import { SignInPage } from "./app/pages/SignInPage";
 import { DashboardPage } from "./app/pages/DashboardPage";
-import { ProgramsPage } from "./app/pages/ProgramsPage";
+import { SwimLevelsPage } from "./app/pages/SwimLevelsPage";
 import { AboutPage } from "./app/pages/AboutPage";
 import { ViewAllStudents } from "./app/pages/ViewAllStudents";
 import { ViewAllCoaches } from "./app/pages/ViewAllCoaches";
@@ -30,12 +53,14 @@ import { PageTransition } from "./app/components/PageTransition";
 export default function App() {
   return (
     <Router {...(!isCapacitor && { basename: "/Mobilev1" })}>
+      <AndroidBackHandler />
       <PageTransition>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/programs" element={<ProgramsPage />} />
+        <Route path="/programs" element={<Navigate to="/levels" replace />} />
+        <Route path="/levels" element={<SwimLevelsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/students" element={<ViewAllStudents />} />
         <Route path="/coaches" element={<ViewAllCoaches />} />

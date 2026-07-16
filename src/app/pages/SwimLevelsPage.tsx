@@ -1,6 +1,6 @@
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { Baby, Waves, Fish, Star, Medal, Trophy, ChevronDown } from 'lucide-react';
+import { Baby, Waves, Fish, Star, Medal, Trophy, ChevronDown, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 type LevelColor = 'rose' | 'sky' | 'emerald' | 'amber' | 'violet' | 'blue';
@@ -12,6 +12,7 @@ interface SubLevel {
 
 interface Level {
   id: string;
+  url: string;
   title: string;
   ageRange: string;
   color: LevelColor;
@@ -24,6 +25,7 @@ interface Level {
 const LEVELS: Level[] = [
   {
     id: 'aqua-baby',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Aquababy',
     title: 'Aqua Baby',
     ageRange: '3 months – 3 years',
     color: 'rose',
@@ -55,6 +57,7 @@ const LEVELS: Level[] = [
   },
   {
     id: 'active-start',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Active_Start',
     title: 'Active Start',
     ageRange: '3 – 12 years',
     color: 'sky',
@@ -84,6 +87,7 @@ const LEVELS: Level[] = [
   },
   {
     id: 'learn-to-train',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Learn_to_Train',
     title: 'Learn to Train',
     ageRange: '6 – 12 years',
     color: 'emerald',
@@ -108,6 +112,7 @@ const LEVELS: Level[] = [
   },
   {
     id: 'train-to-train',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Train_to_Train',
     title: 'Train to Train',
     ageRange: 'Advanced',
     color: 'amber',
@@ -143,6 +148,7 @@ const LEVELS: Level[] = [
   },
   {
     id: 'train-to-compete',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Train_to_Compete',
     title: 'Train to Compete',
     ageRange: 'Pre-team',
     color: 'violet',
@@ -167,6 +173,7 @@ const LEVELS: Level[] = [
   },
   {
     id: 'competitive-team',
+    url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=CompetitiveTeam',
     title: 'Competitive Team',
     ageRange: 'Elite',
     color: 'blue',
@@ -261,6 +268,11 @@ export function SwimLevelsPage() {
                         </div>
                       </div>
                     ))}
+                    <a href={level.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0B4F8C]">
+                      For more information
+                      <ExternalLink className="size-3.5" />
+                    </a>
                   </div>
                 )}
               </div>

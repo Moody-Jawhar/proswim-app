@@ -171,6 +171,15 @@ export function AboutPage() {
           </div>
         </div>
 
+        {/* For more information */}
+        <a href="https://www.proswim-lb.com/WebsitePage.aspx?Page=About_US" target="_blank" rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors">
+          <span className="text-sm font-semibold text-[#0B4F8C]">For more information</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0B4F8C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          </svg>
+        </a>
+
         {/* Follow us */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
           <p className="text-sm font-semibold text-slate-900 mb-3 text-center">Follow ProSwim</p>

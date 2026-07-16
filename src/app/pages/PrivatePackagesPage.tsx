@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle } from 'lucide-react';
-import { getPrivatePackages, type PrivatePackageDto } from '../api/pswmApi';
+import { getPrivatePackages, formatMoney, type PrivatePackageDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
 export function PrivatePackagesPage() {
@@ -109,7 +109,7 @@ export function PrivatePackagesPage() {
                   <div className="text-right">
                     <p className="text-slate-400">Due</p>
                     <p className={`font-semibold ${pkg.duePayment > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                      {pkg.duePayment.toLocaleString()} {pkg.packageCurrency}
+                      {formatMoney(pkg.duePayment, pkg.packageCurrency)}
                     </p>
                   </div>
                 </div>

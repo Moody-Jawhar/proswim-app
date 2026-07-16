@@ -7,6 +7,7 @@ import {
   getGroupRegistrations,
   getPrivatePackages,
   getPrivatePayments,
+  formatMoney,
   type GroupPaymentDto,
   type PrivatePaymentDto,
 } from '../api/pswmApi';
@@ -112,7 +113,7 @@ export function PaymentsHistoryPage() {
                       </div>
                     </div>
                     <p className="text-sm font-bold text-emerald-600">
-                      {p.paymentPaidAmount.toLocaleString()} {p.paymentPaidCurrency}
+                      {formatMoney(p.paymentPaidAmount, p.paymentPaidCurrency)}
                     </p>
                   </div>
                 </div>
@@ -142,7 +143,7 @@ export function PaymentsHistoryPage() {
                       </div>
                     </div>
                     <p className="text-sm font-bold text-emerald-600">
-                      {p.privatePaymentPaidAmount.toLocaleString()} {p.privatePaymentPaidCurrency}
+                      {formatMoney(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency)}
                     </p>
                   </div>
                 </div>

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { CreditCard, User, Loader2, AlertCircle, X, FileText } from 'lucide-react';
-import { getPrivatePayments, type PrivatePaymentDto, getPrivateReceipt, type PrivateReceiptDto } from '../api/pswmApi';
+import { getPrivatePayments, type PrivatePaymentDto, getPrivateReceipt, type PrivateReceiptDto, formatMoney, effectiveCurrency } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -45,7 +45,7 @@ export function PrivatePaymentsPage() {
 
   // Payments can be in different currencies — total per currency, never mix.
   const totalsByCurrency = payments.reduce<Record<string, number>>((acc, p) => {
-    const cur = p.privatePaymentPaidCurrency || 'USD';
+    const cur = effectiveCurrency(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency);
     acc[cur] = (acc[cur] || 0) + p.privatePaymentPaidAmount;
     return acc;
   }, {});
@@ -106,7 +106,7 @@ export function PrivatePaymentsPage() {
                   </div>
                 </div>
                 <p className="text-base font-bold text-emerald-600">
-                  {p.privatePaymentPaidAmount.toLocaleString()} {p.privatePaymentPaidCurrency}
+                  {formatMoney(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency)}
                 </p>
               </div>
               {p.coachFullName && (
@@ -144,7 +144,6 @@ export function PrivatePaymentsPage() {
             )}
             {!receipt.loading && receipt.data && (() => {
               const d = receipt.data;
-              const cur = d.privatePaymentPaidCurrency || '';
               const balance = d.privatePaymentTotalAmount - d.privatePaymentPaidAmount;
               return (
                 <div className="space-y-0">
@@ -152,11 +151,11 @@ export function PrivatePaymentsPage() {
                   {d.packageName && <ReceiptRow label="Package" value={d.packageName} />}
                   {d.coachFullName && <ReceiptRow label="Coach" value={d.coachFullName} />}
                   {d.privatePaymentDate && <ReceiptRow label="Payment Date" value={new Date(d.privatePaymentDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />}
-                  <ReceiptRow label="Total Amount" value={`${d.privatePaymentTotalAmount.toLocaleString()} ${cur}`} />
-                  <ReceiptRow label="Amount Paid" value={`${d.privatePaymentPaidAmount.toLocaleString()} ${cur}`} highlight />
+                  <ReceiptRow label="Total Amount" value={formatMoney(d.privatePaymentTotalAmount, d.privatePaymentPaidCurrency)} />
+                  <ReceiptRow label="Amount Paid" value={formatMoney(d.privatePaymentPaidAmount, d.privatePaymentPaidCurrency)} highlight />
                   <ReceiptRow
                     label="Balance Due"
-                    value={balance <= 0 ? 'Paid in Full' : `${balance.toLocaleString()} ${cur}`}
+                    value={balance <= 0 ? 'Paid in Full' : formatMoney(balance, d.privatePaymentPaidCurrency)}
                     status={balance <= 0 ? 'paid' : 'due'}
                   />
                   {d.privatePaymentNotes && <ReceiptRow label="Notes" value={d.privatePaymentNotes} />}

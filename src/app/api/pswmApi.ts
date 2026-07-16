@@ -462,6 +462,16 @@ export async function verifyCode(code: string): Promise<VerifyCodeResponse> {
   });
 }
 
+// Legacy data quirk: some LBP amounts are stored with a USD currency label.
+// Any amount above 10,000 is treated as LBP; smaller amounts keep their currency.
+export function effectiveCurrency(amount: number, currency?: string | null): string {
+  return Math.abs(amount) > 10000 ? "LBP" : (currency || "USD");
+}
+
+export function formatMoney(amount: number, currency?: string | null): string {
+  return `${amount.toLocaleString()} ${effectiveCurrency(amount, currency)}`;
+}
+
 // Mirror of the server password policy — check before calling the API.
 export function validatePasswordPolicy(pw: string): string | null {
   if (pw.length < 8) return "Password must be at least 8 characters.";

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { CreditCard, Loader2, AlertCircle, X, FileText } from 'lucide-react';
-import { getGroupPayments, type GroupPaymentDto, getGroupReceipt, type GroupReceiptDto } from '../api/pswmApi';
+import { getGroupPayments, type GroupPaymentDto, getGroupReceipt, type GroupReceiptDto, formatMoney, effectiveCurrency } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -45,7 +45,7 @@ export function RegistrationPaymentsPage() {
 
   // Payments can be in different currencies — total per currency, never mix.
   const totalsByCurrency = payments.reduce<Record<string, number>>((acc, p) => {
-    const cur = p.paymentPaidCurrency || 'USD';
+    const cur = effectiveCurrency(p.paymentPaidAmount, p.paymentPaidCurrency);
     acc[cur] = (acc[cur] || 0) + p.paymentPaidAmount;
     return acc;
   }, {});
@@ -104,7 +104,7 @@ export function RegistrationPaymentsPage() {
                   </div>
                 </div>
                 <p className="text-sm font-bold text-emerald-600">
-                  {p.paymentPaidAmount.toLocaleString()} {p.paymentPaidCurrency}
+                  {formatMoney(p.paymentPaidAmount, p.paymentPaidCurrency)}
                 </p>
               </div>
               {p.semesterName && (
@@ -139,18 +139,17 @@ export function RegistrationPaymentsPage() {
             )}
             {!receipt.loading && receipt.data && (() => {
               const d = receipt.data;
-              const cur = d.paymentPaidCurrency || '';
               const balance = d.paymentTotalAmount - d.paymentPaidAmount;
               return (
                 <div className="space-y-0">
                   {d.studentName && <ReceiptRow label="Student" value={d.studentName} />}
                   {d.semesterName && <ReceiptRow label="Semester" value={d.semesterName} />}
                   {d.paymentDate && <ReceiptRow label="Payment Date" value={new Date(d.paymentDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />}
-                  <ReceiptRow label="Total Amount" value={`${d.paymentTotalAmount.toLocaleString()} ${cur}`} />
-                  <ReceiptRow label="Amount Paid" value={`${d.paymentPaidAmount.toLocaleString()} ${cur}`} highlight />
+                  <ReceiptRow label="Total Amount" value={formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency)} />
+                  <ReceiptRow label="Amount Paid" value={formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency)} highlight />
                   <ReceiptRow
                     label="Balance Due"
-                    value={balance <= 0 ? 'Paid in Full' : `${balance.toLocaleString()} ${cur}`}
+                    value={balance <= 0 ? 'Paid in Full' : formatMoney(balance, d.paymentPaidCurrency)}
                     status={balance <= 0 ? 'paid' : 'due'}
                   />
                   {d.paymentNotes && <ReceiptRow label="Notes" value={d.paymentNotes} />}

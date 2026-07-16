@@ -2,6 +2,22 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Target, Eye, Lightbulb } from 'lucide-react';
 
+// Brand logo paths (24x24 viewBox)
+const SOCIALS = [
+  {
+    label: 'Facebook', href: 'https://www.facebook.com/pages/ProSwim/226193561428', color: '#1877F2',
+    path: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
+  },
+  {
+    label: 'X (Twitter)', href: 'https://twitter.com/ProSwimlb', color: '#0F1419',
+    path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z',
+  },
+  {
+    label: 'YouTube', href: 'https://www.youtube.com/user/ProSwimlb', color: '#FF0000',
+    path: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+  },
+];
+
 const LETTER_COLORS = [
   { bg: 'rgba(91,173,255,0.22)',  color: '#1A6FBF' },
   { bg: 'rgba(176,138,255,0.22)', color: '#6D28D9' },
@@ -151,6 +167,22 @@ export function AboutPage() {
                 </div>
                 <span className="text-sm font-medium text-slate-800">{word}</span>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Follow us */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <p className="text-sm font-semibold text-slate-900 mb-3 text-center">Follow ProSwim</p>
+          <div className="flex justify-center gap-3">
+            {SOCIALS.map(({ label, href, color, path }) => (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                className="w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
+                style={{ background: `${color}1A`, border: `1px solid ${color}33` }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
+                  <path d={path} />
+                </svg>
+              </a>
             ))}
           </div>
         </div>

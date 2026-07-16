@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { Bell, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { Bell, Loader2, AlertCircle } from 'lucide-react';
 import { PageHero } from '../components/PageHero';
 import {
   getStoredNotifications,
   markAllRead,
-  clearAllNotifications,
-  getFcmToken,
   type StoredNotification,
 } from '../utils/notifications';
 import { getNotifications, type NotificationDto } from '../api/pswmApi';
@@ -47,22 +45,6 @@ export function NotificationsPage() {
   const [items, setItems] = useState<DisplayNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [token, setToken] = useState('');
-  const [tokenVisible, setTokenVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const revealToken = async () => {
-    if (!tokenVisible) setToken(await getFcmToken());
-    setTokenVisible(v => !v);
-  };
-
-  const copyToken = async () => {
-    try {
-      await navigator.clipboard.writeText(token);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* clipboard unavailable */ }
-  };
 
   useEffect(() => {
     markAllRead();
@@ -90,11 +72,6 @@ export function NotificationsPage() {
     })();
   }, []);
 
-  const handleClear = () => {
-    clearAllNotifications();
-    setItems(prev => prev.filter(n => n.id.startsWith('api-')));
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F5F7FA] pb-20">
@@ -113,18 +90,6 @@ export function NotificationsPage() {
       <MobileHeader title="Notifications" showBack />
       <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} tint="rgba(11,79,140,0.58)" />
       <div className="px-4 pt-3 pb-4 space-y-3">
-        {items.length > 0 && (
-          <div className="flex justify-end">
-            <button
-              onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs text-slate-400 active:text-red-500 py-1"
-            >
-              <Trash2 className="size-3.5" />
-              Clear device notifications
-            </button>
-          </div>
-        )}
-
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -161,33 +126,12 @@ export function NotificationsPage() {
                 {n.body && (
                   <p className="text-sm text-slate-500 mt-0.5 leading-snug">{n.body}</p>
                 )}
-                <p className="text-xs text-slate-400 mt-1.5">{timeAgo(n.receivedAt)}</p>
+                <p className="text-xs font-medium text-[#0B4F8C] mt-1.5">ProSwim Admin Team</p>
+                <p className="text-xs text-slate-400 mt-0.5">{timeAgo(n.receivedAt)}</p>
               </div>
             </div>
           </div>
         ))}
-
-        {/* Device token — for diagnosing push delivery */}
-        <div className="pt-6 pb-2">
-          <button onClick={revealToken} className="w-full text-center text-[11px] text-slate-300 active:text-slate-500 py-1">
-            {tokenVisible ? 'Hide device token' : 'Show device token'}
-          </button>
-          {tokenVisible && (
-            <button
-              onClick={copyToken}
-              className="mt-2 w-full bg-white border border-slate-100 rounded-xl p-3 text-left active:bg-slate-50"
-            >
-              <p className="text-[10px] text-slate-400 break-all font-mono leading-relaxed">
-                {token || 'No token — push may not be registered on this device'}
-              </p>
-              {token && (
-                <p className="text-[10px] font-semibold text-[#0B4F8C] mt-1.5">
-                  {copied ? 'Copied!' : 'Tap to copy'}
-                </p>
-              )}
-            </button>
-          )}
-        </div>
       </div>
 
       <MobileNav />

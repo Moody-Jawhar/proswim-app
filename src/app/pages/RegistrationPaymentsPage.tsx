@@ -43,7 +43,12 @@ export function RegistrationPaymentsPage() {
     }
   };
 
-  const totalPaid = payments.reduce((s, p) => s + p.paymentPaidAmount, 0);
+  // Payments can be in different currencies — total per currency, never mix.
+  const totalsByCurrency = payments.reduce<Record<string, number>>((acc, p) => {
+    const cur = p.paymentPaidCurrency || 'USD';
+    acc[cur] = (acc[cur] || 0) + p.paymentPaidAmount;
+    return acc;
+  }, {});
 
   if (loading) {
     return (
@@ -73,9 +78,11 @@ export function RegistrationPaymentsPage() {
         {payments.length > 0 && (
           <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4">
             <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
-            <p className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
-              {totalPaid.toLocaleString()} {payments[0]?.paymentPaidCurrency}
-            </p>
+            {Object.entries(totalsByCurrency).map(([cur, amount]) => (
+              <p key={cur} className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
+                {amount.toLocaleString()} {cur}
+              </p>
+            ))}
           </div>
         )}
 

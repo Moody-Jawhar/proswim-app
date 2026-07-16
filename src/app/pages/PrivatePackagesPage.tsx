@@ -43,6 +43,20 @@ export function PrivatePackagesPage() {
           </div>
         )}
 
+        {packages.length > 0 && (
+          <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4 flex items-center gap-4">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <User className="size-5 text-white" />
+            </div>
+            <div>
+              <p className="num-stat text-3xl font-extrabold text-white leading-none">{packages.length}</p>
+              <p className="text-xs font-semibold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Private package{packages.length === 1 ? '' : 's'} bought
+              </p>
+            </div>
+          </div>
+        )}
+
         {packages.length === 0 && !error && (
           <div className="text-center py-16 text-slate-400 text-sm">No private packages found.</div>
         )}
@@ -50,8 +64,14 @@ export function PrivatePackagesPage() {
         <div className="space-y-3">
           {packages.map((pkg) => (
               <div key={pkg.packageId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="text-sm font-semibold text-slate-900">{pkg.packageName}</p>
+                <div className="flex items-start gap-3 mb-1">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(91,173,255,0.18)' }}>
+                    <User className="size-5 text-[#1A6FBF]" />
+                  </div>
+                  <p className="flex-1 min-w-0 text-sm font-bold text-slate-900">
+                    <span className="font-medium text-slate-400">Package: </span>
+                    {pkg.packageName}
+                  </p>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                     pkg.packageStatus === 'Active'
                       ? 'bg-emerald-100 text-emerald-700'
@@ -98,7 +118,7 @@ export function PrivatePackagesPage() {
                   <Link
                     to={`/private/${pkg.packageId}/sessions`}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}
+                    style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.55) 0%,rgba(59,130,246,0.55) 100%)' }}
                   >
                     <Calendar className="size-4" />
                     Sessions
@@ -106,7 +126,7 @@ export function PrivatePackagesPage() {
                   <Link
                     to={`/private/${pkg.packageId}/payments`}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}
+                    style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
                   >
                     <CreditCard className="size-4" />
                     Payments

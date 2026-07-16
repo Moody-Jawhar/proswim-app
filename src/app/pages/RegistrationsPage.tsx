@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { Calendar, CreditCard, MapPin, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users } from 'lucide-react';
 import { getGroupRegistrations, type RegistrationDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
@@ -21,7 +21,7 @@ export function RegistrationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F5F7FA] pb-20">
-        <MobileHeader title="Registrations" showBack />
+        <MobileHeader title="Group Registrations" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
           <p className="text-sm text-slate-500">Loading registrations…</p>
@@ -33,13 +33,27 @@ export function RegistrationsPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
-      <MobileHeader title="Registrations" showBack />
-      <PageHero title="My Registrations" subtitle="Group classes & semesters" slide={1} tint="rgba(11,100,180,0.58)" />
+      <MobileHeader title="Group Registrations" showBack />
+      <PageHero title="Group Registrations" subtitle="Group classes & semesters" slide={1} tint="rgba(11,100,180,0.58)" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {registrations.length > 0 && (
+          <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4 flex items-center gap-4">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <Users className="size-5 text-white" />
+            </div>
+            <div>
+              <p className="num-stat text-3xl font-extrabold text-white leading-none">{registrations.length}</p>
+              <p className="text-xs font-semibold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Semester{registrations.length === 1 ? '' : 's'} registered
+              </p>
+            </div>
           </div>
         )}
 
@@ -52,12 +66,17 @@ export function RegistrationsPage() {
             const names = [reg.className1, reg.className2, reg.className3].filter(Boolean) as string[];
             return (
               <div key={reg.registrationId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(91,173,255,0.18)' }}>
+                    <Users className="size-5 text-[#1A6FBF]" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {names.length > 0 ? names.join(' / ') : reg.semesterName || 'Registration'}
+                    <p className="text-sm font-bold text-slate-900">
+                      {reg.semesterName || 'Registration'}
                     </p>
-                    <p className="text-xs text-[#0B4F8C] font-medium mt-0.5">{reg.semesterName}</p>
+                    {names.length > 0 && (
+                      <p className="text-xs text-slate-500 mt-0.5">{names.join(' / ')}</p>
+                    )}
                   </div>
                   {reg.registrationStudentStopped && (
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600 shrink-0">

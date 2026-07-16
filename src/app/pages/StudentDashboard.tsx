@@ -65,8 +65,8 @@ const MOCK_COURSES: Record<string, MockCourse[]> = {
 const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
 
 const QUICK_TILES = [
-  { icon: BookOpen, label: 'REGISTRATIONS', href: '/registrations', slide: 1 },
-  { icon: Waves,    label: 'PRIVATE',       href: '/private',       slide: 2 },
+  { icon: BookOpen, label: 'GROUP REGISTRATIONS', href: '/registrations', slide: 1 },
+  { icon: Waves,    label: 'PRIVATE PACKAGES',    href: '/private',       slide: 2 },
 ] as const;
 
 interface ApiCourse {
@@ -235,21 +235,6 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
             ))}
           </div>
 
-          {/* Schedule — full-width card */}
-          <Link
-            to="/schedule"
-            className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-3 bg-white border border-slate-100 shadow-sm"
-          >
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(91,173,255,0.18)' }}>
-              <Calendar className="size-5 text-[#1A6FBF]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-black tracking-wide uppercase text-slate-800">My Schedule</p>
-              <p className="text-xs mt-0.5 text-slate-400">View this week's classes</p>
-            </div>
-            <ChevronRight className="size-4 shrink-0 text-slate-300" />
-          </Link>
-
           {/* Skills Checklist — full-width card */}
           {isRealAuth && (
             <Link
@@ -271,11 +256,11 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
         {/* Segmented tabs */}
         <div className="bg-white rounded-2xl p-1 flex gap-1 border border-slate-100 shadow-sm">
           <TabButton active={activeTab === 'courses'} onClick={() => setActiveTab('courses')}>
-            {isRealAuth ? 'Registrations' : 'My Courses'}
+            {isRealAuth ? 'Group Registrations' : 'My Courses'}
           </TabButton>
           {isRealAuth && privatePackages.length > 0 && (
             <TabButton active={activeTab === 'payments'} onClick={() => setActiveTab('payments')}>
-              Private
+              Private Packages
             </TabButton>
           )}
           {!isRealAuth && (

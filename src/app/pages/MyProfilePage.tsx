@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { getStudentById, getGroupAttendanceSummary, type StudentDto, type AttendanceSummaryDto } from '../api/pswmApi';
+import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, type StudentDto, type AttendanceSummaryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
@@ -24,6 +24,8 @@ export function MyProfilePage() {
   const navigate = useNavigate();
   const [student, setStudent] = useState<StudentDto | null>(null);
   const [attendance, setAttendance] = useState<AttendanceSummaryDto[]>([]);
+  const [groupCount, setGroupCount] = useState<number | null>(null);
+  const [privateCount, setPrivateCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -34,13 +36,17 @@ export function MyProfilePage() {
     if (!user.studentId) { navigate('/dashboard'); return; }
     (async () => {
       try {
-        const [studentData, attendanceData] = await Promise.allSettled([
+        const [studentData, attendanceData, registrationsData, packagesData] = await Promise.allSettled([
           getStudentById(user.studentId),
           getGroupAttendanceSummary(),
+          getGroupRegistrations(),
+          getPrivatePackages(),
         ]);
         if (studentData.status === 'fulfilled') setStudent(studentData.value);
         else throw new Error('Failed to load profile');
         if (attendanceData.status === 'fulfilled') setAttendance(attendanceData.value);
+        if (registrationsData.status === 'fulfilled') setGroupCount(registrationsData.value.length);
+        if (packagesData.status === 'fulfilled') setPrivateCount(packagesData.value.length);
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Failed to load profile');
       } finally {
@@ -100,10 +106,6 @@ export function MyProfilePage() {
     student.studentSchoolSwimmer && 'School', student.studentAquaBabySwimmer && 'Aqua Baby',
     student.studentAquaGymSwimmer && 'Aqua Gym', student.studentOthersSwimmer && 'Others',
   ].filter(Boolean) as string[];
-  const totalSessions = attendance.reduce((s, a) => s + a.totalSessions, 0);
-  const attendedSessions = attendance.reduce((s, a) => s + a.attendedSessions, 0);
-  const attendancePct = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : null;
-
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
       <MobileHeader title="My Profile" showBack showSignOut />
@@ -137,8 +139,8 @@ export function MyProfilePage() {
             <StatChip label="Since" value={student.studentStartingDate
               ? new Date(student.studentStartingDate).getFullYear().toString() : '—'}
               color="#3B82F6" />
-            <StatChip label="Attendance" value={attendancePct != null ? `${attendancePct}%` : '—'} color="#10B981" />
-            <StatChip label="Classes" value={attendance.length > 0 ? attendance.length.toString() : '—'} color="#8B5CF6" />
+            <StatChip label="Group Classes" value={groupCount != null ? groupCount.toString() : '—'} color="#10B981" />
+            <StatChip label="Private Packages" value={privateCount != null ? privateCount.toString() : '—'} color="#8B5CF6" />
           </div>
           <div className="h-4" />
         </div>
@@ -233,7 +235,11 @@ export function MyProfilePage() {
 
         {/* Contact to edit */}
         <button
-          onClick={() => window.open('https://wa.me/96170916503?text=Hello%20ProSwim%2C%20I%20would%20like%20to%20update%20my%20profile%20information.')}
+          onClick={() => {
+            const name = [student.studentFirstName, student.studentLastName].filter(Boolean).join(' ');
+            const text = `Hello ProSwim, I am ${name || 'a ProSwim student'}. I would like to update my profile information.`;
+            window.open(`https://wa.me/96178949498?text=${encodeURIComponent(text)}`);
+          }}
           className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl active:scale-[0.98] transition-transform"
           style={{ backgroundColor: '#25D366' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white">

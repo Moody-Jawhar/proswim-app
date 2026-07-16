@@ -174,12 +174,12 @@ export function AboutPage() {
         {/* Follow us */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
           <p className="text-sm font-semibold text-slate-900 mb-3 text-center">Follow ProSwim</p>
-          <div className="flex justify-center gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {SOCIALS.map(({ label, href, color, path }) => (
               <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                className="w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
+                className="h-16 rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
                 style={{ background: `${color}1A`, border: `1px solid ${color}33` }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill={color}>
                   <path d={path} />
                 </svg>
               </a>

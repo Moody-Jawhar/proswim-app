@@ -53,6 +53,20 @@ async function apiRequest<T>(
     headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
   });
 
+  // A 401 on an authenticated call means the session is gone (expired, or the
+  // server stopped honouring old tokens) — sign out and return to sign-in.
+  if (res.status === 401 && requiresAuth) {
+    clearAuth();
+    if (import.meta.env.VITE_BUILD_TARGET === "capacitor") {
+      // HashRouter (Capacitor build)
+      window.location.hash = "#/signin";
+    } else if (!window.location.pathname.endsWith("/signin")) {
+      // BrowserRouter with basename /Mobilev1 (web build)
+      window.location.href = "/Mobilev1/signin";
+    }
+    throw new ApiError("Session expired. Please sign in again.", 401);
+  }
+
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
     // Prefer the server's user-safe message when the body is JSON like { "message": "..." }
@@ -183,6 +197,20 @@ export interface SessionDto {
   attended: number;
   registered: number;
   makeuped: string | null;
+  // This student's own attendance, included in /Group/Sessions so no
+  // separate /Group/Attendance call is needed. Null until attendance is taken.
+  myAttendanceId: number | null;
+  myAttended: boolean | null;
+  myAttendanceStatus: string | null;
+  myRemarks: string | null;
+  myMakeUpSessionId: number | null;
+  myMakeUpDate: string | null;
+  semesterId: number | null;
+  semesterName: string | null;
+  locationNickName: string | null;
+  classDay: string | null;
+  classTimeFrom: string | null;
+  coachFullName: string | null;
 }
 
 export interface AttendanceDto {
@@ -495,8 +523,17 @@ export async function getGroupRegistrations(): Promise<RegistrationDto[]> {
   return apiRequest<RegistrationDto[]>("/api/Group/Registrations");
 }
 
-export async function getGroupSessions(semesterId: number): Promise<SessionDto[]> {
-  return apiRequest<SessionDto[]>(`/api/Group/Sessions?semesterId=${semesterId}`);
+export async function getGroupSessions(
+  semesterId?: number,
+  dateFrom?: string,
+  dateTo?: string
+): Promise<SessionDto[]> {
+  const q = new URLSearchParams();
+  if (semesterId != null) q.set('semesterId', String(semesterId));
+  if (dateFrom) q.set('dateFrom', dateFrom);
+  if (dateTo) q.set('dateTo', dateTo);
+  const qs = q.toString();
+  return apiRequest<SessionDto[]>(`/api/Group/Sessions${qs ? `?${qs}` : ''}`);
 }
 
 export async function getGroupAttendance(semesterId?: number): Promise<AttendanceDto[]> {
@@ -525,8 +562,17 @@ export async function getPrivatePackage(id: number): Promise<PrivatePackageDto> 
   return apiRequest<PrivatePackageDto>(`/api/Private/Packages/${id}`);
 }
 
-export async function getPrivateSessions(packageId: number): Promise<PrivateSessionDto[]> {
-  return apiRequest<PrivateSessionDto[]>(`/api/Private/Sessions?packageId=${packageId}`);
+export async function getPrivateSessions(
+  packageId?: number,
+  opts?: { dateFrom?: string; dateTo?: string; onlyActive?: boolean }
+): Promise<PrivateSessionDto[]> {
+  const q = new URLSearchParams();
+  if (packageId != null) q.set('packageId', String(packageId));
+  if (opts?.dateFrom) q.set('dateFrom', opts.dateFrom);
+  if (opts?.dateTo) q.set('dateTo', opts.dateTo);
+  if (opts?.onlyActive) q.set('onlyActive', 'true');
+  const qs = q.toString();
+  return apiRequest<PrivateSessionDto[]>(`/api/Private/Sessions${qs ? `?${qs}` : ''}`);
 }
 
 export async function getPrivatePayments(packageId: number): Promise<PrivatePaymentDto[]> {

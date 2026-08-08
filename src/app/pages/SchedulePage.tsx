@@ -6,7 +6,6 @@ import {
   getStoredToken,
   getGroupRegistrations,
   getGroupSessions,
-  getPrivatePackages,
   getPrivateSessions,
   type RegistrationDto,
   type SessionDto,
@@ -42,36 +41,23 @@ export function SchedulePage() {
       try {
         setLoading(true);
 
-        const [regsRes, pkgsRes] = await Promise.allSettled([
+        // Local date, not toISOString() — UTC could still be "yesterday".
+        const now = new Date();
+        const fromDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        // One call each: the API now returns sessions across every semester /
+        // package the student is on, filtered server-side to today onward.
+        const [regsRes, groupRes, privateRes] = await Promise.allSettled([
           getGroupRegistrations(),
-          getPrivatePackages(),
-        ]);
-        const regs = regsRes.status === 'fulfilled' ? regsRes.value : [];
-        const pkgs = pkgsRes.status === 'fulfilled' ? pkgsRes.value : [];
-
-        setRegistrations(regs);
-
-        const [groupResults, privateResults] = await Promise.all([
-          Promise.allSettled(regs.map((r) => getGroupSessions(r.registrationSemesterId))),
-          Promise.allSettled(pkgs.map((p) => getPrivateSessions(p.packageId))),
+          getGroupSessions(undefined, fromDate),
+          getPrivateSessions(undefined, { dateFrom: fromDate }),
         ]);
 
-        const seenG = new Set<number>();
-        const allG = groupResults
-          .filter((x): x is PromiseFulfilledResult<SessionDto[]> => x.status === 'fulfilled')
-          .flatMap((x) => x.value)
-          .filter((s) => (seenG.has(s.sessionId) ? false : (seenG.add(s.sessionId), true)));
+        setRegistrations(regsRes.status === 'fulfilled' ? regsRes.value : []);
+        setGroupSessions(groupRes.status === 'fulfilled' ? groupRes.value : []);
+        setPrivateSessions(privateRes.status === 'fulfilled' ? privateRes.value : []);
 
-        const seenP = new Set<number>();
-        const allP = privateResults
-          .filter((x): x is PromiseFulfilledResult<PrivateSessionDto[]> => x.status === 'fulfilled')
-          .flatMap((x) => x.value)
-          .filter((s) => (seenP.has(s.privateSessionId) ? false : (seenP.add(s.privateSessionId), true)));
-
-        setGroupSessions(allG);
-        setPrivateSessions(allP);
-
-        if (regsRes.status === 'rejected' && pkgsRes.status === 'rejected') {
+        if (regsRes.status === 'rejected' && groupRes.status === 'rejected' && privateRes.status === 'rejected') {
           setError('Could not load schedule.');
         }
       } catch {

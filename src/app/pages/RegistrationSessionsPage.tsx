@@ -5,9 +5,7 @@ import { MobileNav } from '../components/MobileNav';
 import { Calendar, Loader2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import {
   getGroupSessions,
-  getGroupAttendance,
   type SessionDto,
-  type AttendanceDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
@@ -22,7 +20,6 @@ function formatDate(dateStr: string) {
 export function RegistrationSessionsPage() {
   const { semesterId } = useParams<{ semesterId: string }>();
   const [sessions, setSessions] = useState<SessionDto[]>([]);
-  const [attendanceMap, setAttendanceMap] = useState<Map<number, boolean | null>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -34,27 +31,16 @@ export function RegistrationSessionsPage() {
       return;
     }
 
-    Promise.allSettled([
-      getGroupSessions(id),
-      getGroupAttendance(id),
-    ]).then(([sessionsRes, attendanceRes]) => {
-      if (sessionsRes.status === 'fulfilled') {
-        setSessions(sessionsRes.value);
-      } else {
-        setError('Could not load sessions.');
-      }
-      if (attendanceRes.status === 'fulfilled') {
-        const map = new Map<number, boolean | null>();
-        (attendanceRes.value as AttendanceDto[]).forEach(a => {
-          map.set(a.attendanceSessionId, a.attendanceStudentAttended);
-        });
-        setAttendanceMap(map);
-      }
-    }).finally(() => setLoading(false));
+    // Sessions now carry the student's own attendance (myAttended), so the
+    // old second call to /Group/Attendance is gone.
+    getGroupSessions(id)
+      .then(setSessions)
+      .catch(() => setError('Could not load sessions.'))
+      .finally(() => setLoading(false));
   }, [semesterId]);
 
-  const attended = sessions.filter(s => attendanceMap.get(s.sessionId) === true).length;
-  const absent = sessions.filter(s => attendanceMap.get(s.sessionId) === false).length;
+  const attended = sessions.filter(s => s.myAttended === true).length;
+  const absent = sessions.filter(s => s.myAttended === false).length;
 
   if (loading) {
     return (
@@ -104,7 +90,7 @@ export function RegistrationSessionsPage() {
 
         <div className="space-y-2">
           {sessions.map((s) => {
-            const wasAttended = attendanceMap.get(s.sessionId);
+            const wasAttended = s.myAttended;
             const isAttended = wasAttended === true;
             const isAbsent = wasAttended === false;
             const cardStyle = isAttended
@@ -135,7 +121,7 @@ export function RegistrationSessionsPage() {
                   <div className="shrink-0">
                     {isAttended && <CheckCircle2 className="size-5" style={{ color: white }} />}
                     {isAbsent && <XCircle className="size-5" style={{ color: white }} />}
-                    {wasAttended === undefined && (
+                    {wasAttended == null && (
                       <div className="size-5 rounded-full border-2 border-slate-200" />
                     )}
                   </div>

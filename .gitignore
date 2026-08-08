@@ -37,3 +37,6 @@ ios/App/App/GoogleService-Info.plist
 GoogleService-Info.plist
 android/app/google-services.json
 firebase-service-account.json
+
+# Local scratch: raw SQL result dumps (contain live student data)
+one.txt

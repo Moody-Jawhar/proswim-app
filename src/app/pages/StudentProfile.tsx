@@ -151,7 +151,7 @@ export function StudentProfile() {
       <div className="px-4 py-6 space-y-6">
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="relative bg-gradient-to-br from-[#0B4F8C] to-[#1a6bb8] p-6 pb-16">
+          <div className="relative bg-gradient-to-br from-[#1e5c97] to-[#1a6bb8] p-6 pb-16">
             <img
               src={proswimLogo}
               alt="ProSwim"
@@ -480,7 +480,7 @@ export function StudentProfile() {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="w-full mt-2 flex items-center justify-center gap-2 bg-[#0B4F8C] text-white rounded-xl py-3 active:scale-[0.99] disabled:opacity-60"
+                    className="w-full mt-2 flex items-center justify-center gap-2 bg-[#1e5c97] text-white rounded-xl py-3 active:scale-[0.99] disabled:opacity-60"
                   >
                     <Save className="size-5" />
                     {saving ? "Saving..." : "Save Changes"}
@@ -519,7 +519,7 @@ function TabButton({
       onClick={onClick}
       className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
         active
-          ? "bg-[#0B4F8C] text-white"
+          ? "bg-[#1e5c97] text-white"
           : "bg-gray-100 text-gray-600 active:scale-95"
       }`}
     >
@@ -598,7 +598,7 @@ function Input({
         className={`w-full rounded-xl px-3 py-2 text-sm border outline-none ${
           disabled
             ? "bg-gray-100 text-gray-500 border-gray-200"
-            : "bg-white text-gray-900 border-gray-200 focus:border-[#0B4F8C]"
+            : "bg-white text-gray-900 border-gray-200 focus:border-[#1e5c97]"
         }`}
       />
     </label>
@@ -621,7 +621,7 @@ function TextArea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={3}
-        className="w-full rounded-xl px-3 py-2 text-sm border outline-none bg-white text-gray-900 border-gray-200 focus:border-[#0B4F8C]"
+        className="w-full rounded-xl px-3 py-2 text-sm border outline-none bg-white text-gray-900 border-gray-200 focus:border-[#1e5c97]"
       />
     </label>
   );

@@ -44,10 +44,10 @@ export function RegistrationSessionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Sessions" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading sessions…</p>
         </div>
         <MobileNav />
@@ -56,9 +56,9 @@ export function RegistrationSessionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Sessions & Attendance" showBack />
-      <PageHero title="Sessions & Attendance" subtitle="Your class attendance record" slide={1} tint="rgba(11,100,180,0.58)" />
+      <PageHero title="Sessions & Attendance" subtitle="Your class attendance record" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -70,7 +70,7 @@ export function RegistrationSessionsPage() {
         {sessions.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-4 grid grid-cols-3 divide-x divide-slate-100">
             <div className="flex flex-col items-center py-4">
-              <p className="num-stat text-xl font-extrabold text-[#0B4F8C]">{sessions.length}</p>
+              <p className="num-stat text-xl font-extrabold text-[#1e5c97]">{sessions.length}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">Total</p>
             </div>
             <div className="flex flex-col items-center py-4">
@@ -107,7 +107,7 @@ export function RegistrationSessionsPage() {
                   <div className="flex-1 min-w-0">
                     {s.sessionDate && (
                       <div className="flex items-center gap-1.5 text-sm font-medium mb-1">
-                        <Calendar className="size-3.5 shrink-0" style={{ color: (isAttended || isAbsent) ? white : '#0B4F8C' }} />
+                        <Calendar className="size-3.5 shrink-0" style={{ color: (isAttended || isAbsent) ? white : '#1e5c97' }} />
                         <span style={{ color: (isAttended || isAbsent) ? white : '#0f172a' }}>{formatDate(s.sessionDate)}</span>
                       </div>
                     )}

@@ -91,7 +91,7 @@ export function CoachProfile() {
         {/* Profile Header with Photo */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* ProSwim Logo Watermark */}
-          <div className="relative bg-gradient-to-br from-[#0B4F8C] to-[#1a6bb8] p-6 pb-20">
+          <div className="relative bg-gradient-to-br from-[#1e5c97] to-[#1a6bb8] p-6 pb-20">
             <img 
               src={proswimLogo} 
               alt="ProSwim"
@@ -334,7 +334,7 @@ function TabButton({ active, onClick, children }: TabButtonProps) {
       onClick={onClick}
       className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
         active 
-          ? 'bg-[#0B4F8C] text-white' 
+          ? 'bg-[#1e5c97] text-white' 
           : 'bg-gray-100 text-gray-600 active:scale-95'
       }`}
     >

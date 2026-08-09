@@ -191,7 +191,7 @@ export function SwimTimes({ studentEmail }: SwimTimesProps) {
             onClick={() => setSelectedStroke(stroke)}
             className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
               selectedStroke === stroke
-                ? 'bg-[#0B4F8C] text-white'
+                ? 'bg-[#1e5c97] text-white'
                 : 'bg-gray-100 text-gray-600 active:scale-95'
             }`}
           >

@@ -76,7 +76,7 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
       
       <div className="px-4 py-6 space-y-6">
         {/* Welcome Card */}
-        <div className="bg-gradient-to-r from-[#0B4F8C] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
+        <div className="bg-gradient-to-r from-[#1e5c97] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
           <h1 className="text-2xl mb-2">Hi {firstName}! 👋</h1>
           <p className="text-blue-100">
             Manage ProSwim operations and monitor performance
@@ -207,7 +207,7 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
               </div>
               <button 
                 onClick={() => navigate('/students')}
-                className="w-full px-4 py-3 bg-[#0B4F8C] text-white rounded-xl active:scale-95 transition-transform"
+                className="w-full px-4 py-3 bg-[#1e5c97] text-white rounded-xl active:scale-95 transition-transform"
               >
                 View All Students
               </button>
@@ -226,7 +226,7 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
               </div>
               <button 
                 onClick={() => navigate('/coaches')}
-                className="w-full px-4 py-3 bg-[#0B4F8C] text-white rounded-xl active:scale-95 transition-transform"
+                className="w-full px-4 py-3 bg-[#1e5c97] text-white rounded-xl active:scale-95 transition-transform"
               >
                 View All Coaches
               </button>
@@ -255,7 +255,7 @@ export function AdminDashboard({ userName }: AdminDashboardProps) {
             </div>
             <button 
               onClick={() => navigate('/payments')}
-              className="w-full px-4 py-3 bg-[#0B4F8C] text-white rounded-xl active:scale-95 transition-transform"
+              className="w-full px-4 py-3 bg-[#1e5c97] text-white rounded-xl active:scale-95 transition-transform"
             >
               View Payment Details
             </button>
@@ -280,7 +280,7 @@ function TabButton({ active, onClick, children }: TabButtonProps) {
       onClick={onClick}
       className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-all ${
         active 
-          ? 'bg-[#0B4F8C] text-white' 
+          ? 'bg-[#1e5c97] text-white' 
           : 'bg-gray-100 text-gray-600 active:scale-95'
       }`}
     >
@@ -403,7 +403,7 @@ interface QuickActionButtonProps {
 function QuickActionButton({ icon, label }: QuickActionButtonProps) {
   return (
     <button className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl active:scale-95 transition-transform">
-      <div className="text-[#0B4F8C]">{icon}</div>
+      <div className="text-[#1e5c97]">{icon}</div>
       <span className="text-xs text-gray-700">{label}</span>
     </button>
   );

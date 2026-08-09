@@ -20,8 +20,14 @@ export function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50"
-      style={{ boxShadow: '0 -1px 12px rgba(0,0,0,0.06)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-100 z-50"
+      style={{
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 -2px 16px rgba(30,60,100,0.08)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}>
       <div className="flex items-stretch h-16 max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -32,14 +38,20 @@ export function MobileNav() {
               to={item.path}
               className="flex flex-col items-center justify-center flex-1 gap-1 active:opacity-60 transition-opacity"
             >
-              <div className={`flex items-center justify-center w-10 h-7 rounded-full transition-all ${isActive ? 'bg-[#EBF3FC]' : ''}`}>
+              <div
+                className="flex items-center justify-center w-11 h-7 rounded-full transition-all"
+                style={isActive ? {
+                  backgroundImage: 'linear-gradient(120deg, #2d7dc4, #1e5c97)',
+                  boxShadow: '0 4px 10px -4px rgba(30,92,151,0.6)',
+                } : undefined}
+              >
                 <Icon
-                  className={`size-5 transition-colors ${isActive ? 'text-[#0B4F8C]' : 'text-slate-400'}`}
-                  strokeWidth={isActive ? 2.5 : 1.75}
+                  className={`size-5 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`}
+                  strokeWidth={isActive ? 2.25 : 1.75}
                 />
               </div>
-              <span className={`text-[10px] font-medium leading-none transition-colors ${
-                isActive ? 'text-[#0B4F8C]' : 'text-slate-400'
+              <span className={`text-[10px] leading-none transition-colors ${
+                isActive ? 'font-bold text-[#1e5c97]' : 'font-medium text-slate-400'
               }`}>
                 {item.label}
               </span>

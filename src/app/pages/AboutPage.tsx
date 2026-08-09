@@ -39,7 +39,7 @@ const FEATURE_COLORS = [
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="About ProSwim" />
 
       <div className="px-4 py-6 space-y-4">
@@ -174,8 +174,8 @@ export function AboutPage() {
         {/* For more information */}
         <a href="https://www.proswim-lb.com/WebsitePage.aspx?Page=About_US" target="_blank" rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors">
-          <span className="text-sm font-semibold text-[#0B4F8C]">For more information</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0B4F8C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <span className="text-sm font-semibold text-[#1e5c97]">For more information</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1e5c97" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
           </svg>
         </a>

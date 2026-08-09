@@ -43,8 +43,14 @@ export function MobileHeader({
 
   return (
     <header
-      className="sticky top-0 z-40 bg-white border-b border-slate-100"
-      style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)', paddingTop: 'env(safe-area-inset-top)' }}
+      className="sticky top-0 z-40 border-b border-slate-100"
+      style={{
+        background: 'rgba(255,255,255,0.86)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 1px 12px rgba(30,60,100,0.06)',
+        paddingTop: 'env(safe-area-inset-top)',
+      }}
     >
       <div className="flex items-center justify-between h-14 px-4">
         {showLogo ? (
@@ -60,12 +66,12 @@ export function MobileHeader({
                   className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
                   aria-label="Go Back"
                 >
-                  <ArrowLeft className="size-5 text-slate-500" />
+                  <ArrowLeft className="size-5 text-[#1e5c97]" />
                 </button>
               )}
             </div>
 
-            <p className="flex-1 text-center text-base font-semibold text-slate-900">
+            <p className="font-display flex-1 text-center text-xl font-semibold" style={{ color: '#242c43' }}>
               {title || 'ProSwim'}
             </p>
 

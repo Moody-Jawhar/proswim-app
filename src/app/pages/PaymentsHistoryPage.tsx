@@ -68,10 +68,10 @@ export function PaymentsHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Payment History" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading payments…</p>
         </div>
         <MobileNav />
@@ -80,9 +80,9 @@ export function PaymentsHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Payment History" showBack />
-      <PageHero title="Payment History" subtitle="All your payments in one place" slide={2} tint="rgba(5,120,90,0.58)" />
+      <PageHero title="Payment History" subtitle="All your payments in one place" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(5,120,90,0.55))" />
       <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
@@ -100,8 +100,8 @@ export function PaymentsHistoryPage() {
                 <div key={p.paymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-xl bg-[#EBF3FC] flex items-center justify-center shrink-0">
-                        <Waves className="size-4 text-[#0B4F8C]" />
+                      <div className="w-9 h-9 rounded-xl bg-[#e8f0f8] flex items-center justify-center shrink-0">
+                        <Waves className="size-4 text-[#1e5c97]" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-slate-900">

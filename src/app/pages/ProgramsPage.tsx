@@ -13,7 +13,7 @@ export function ProgramsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Programs" showBack />
 
       <div className="px-4 py-6">
@@ -82,11 +82,11 @@ export function ProgramsPage() {
             </p>
             <div className="space-y-1.5">
               <div className="flex gap-2 text-sm text-slate-600">
-                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
+                <span className="text-[#1e5c97] font-bold shrink-0">✓</span>
                 <span>45-minute sessions</span>
               </div>
               <div className="flex gap-2 text-sm text-slate-600">
-                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
+                <span className="text-[#1e5c97] font-bold shrink-0">✓</span>
                 <span>Flexible scheduling</span>
               </div>
             </div>
@@ -99,11 +99,11 @@ export function ProgramsPage() {
             </p>
             <div className="space-y-1.5">
               <div className="flex gap-2 text-sm text-slate-600">
-                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
+                <span className="text-[#1e5c97] font-bold shrink-0">✓</span>
                 <span>Ages 6+ years</span>
               </div>
               <div className="flex gap-2 text-sm text-slate-600">
-                <span className="text-[#0B4F8C] font-bold shrink-0">✓</span>
+                <span className="text-[#1e5c97] font-bold shrink-0">✓</span>
                 <span>Photoshoots available</span>
               </div>
             </div>
@@ -111,12 +111,12 @@ export function ProgramsPage() {
         </div>
 
         {!isAuthenticated && (
-          <div className="mt-6 bg-gradient-to-br from-[#08366A] to-[#0B4F8C] rounded-2xl p-6 text-center text-white">
+          <div className="mt-6 bg-gradient-to-br from-[#08366A] to-[#1e5c97] rounded-2xl p-6 text-center text-white">
             <p className="text-xl font-bold mb-2">Ready to Join?</p>
             <p className="text-sm mb-5 text-white/80">Sign in to view available classes and register.</p>
             <Link
               to="/signin"
-              className="inline-block w-full px-6 py-3.5 bg-white text-[#0B4F8C] rounded-xl font-semibold active:scale-95 transition-transform"
+              className="inline-block w-full px-6 py-3.5 bg-white text-[#1e5c97] rounded-xl font-semibold active:scale-95 transition-transform"
             >
               Sign In Now
             </Link>

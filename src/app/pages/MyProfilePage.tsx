@@ -57,10 +57,10 @@ export function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading profile...</p>
         </div>
         <MobileNav />
@@ -70,7 +70,7 @@ export function MyProfilePage() {
 
   if (error || !student) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           <AlertCircle className="size-10 text-red-400" />
@@ -107,9 +107,9 @@ export function MyProfilePage() {
     student.studentAquaGymSwimmer && 'Aqua Gym', student.studentOthersSwimmer && 'Others',
   ].filter(Boolean) as string[];
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="My Profile" showBack showSignOut />
-      <PageHero title="My Profile" subtitle="Your swimmer details & attendance" slide={3} tint="rgba(14,100,144,0.58)" />
+      <PageHero title="My Profile" subtitle="Your swimmer details & attendance" slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(14,100,144,0.55))" />
       <div className="px-4 pt-3 pb-5 space-y-4">
 
         {/* Hero card */}
@@ -119,8 +119,8 @@ export function MyProfilePage() {
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.10)' }} />
             <div className="flex items-center gap-3 relative">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(11,79,140,0.15)', border: '1.5px solid rgba(11,79,140,0.20)' }}>
-                <span className="text-[#0B4F8C] text-base font-bold">{initials}</span>
+                style={{ background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)' }}>
+                <span className="text-[#1e5c97] text-base font-bold">{initials}</span>
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
@@ -223,14 +223,14 @@ export function MyProfilePage() {
         {/* Go to Dashboard */}
         <Link to="/dashboard"
           className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
-          style={{ background: 'rgba(11,79,140,0.60)' }}>
+          style={{ background: 'rgba(30,92,151,0.60)' }}>
           <span className="text-sm font-semibold text-white">Go to Dashboard</span>
         </Link>
 
         {/* Change password */}
         <Link to="/change-password"
           className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors">
-          <span className="text-sm font-semibold text-[#0B4F8C]">Change Password</span>
+          <span className="text-sm font-semibold text-[#1e5c97]">Change Password</span>
         </Link>
 
         {/* Contact to edit */}

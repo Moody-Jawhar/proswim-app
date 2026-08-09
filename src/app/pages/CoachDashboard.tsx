@@ -164,7 +164,7 @@ export function CoachDashboard({ userName }: CoachDashboardProps) {
       
       <div className="px-4 py-6 space-y-6">
         {/* Welcome Card */}
-        <div className="bg-gradient-to-r from-[#0B4F8C] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
+        <div className="bg-gradient-to-r from-[#1e5c97] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
           <h1 className="text-2xl mb-2">Hi Coach {firstName}! 👋</h1>
           <p className="text-blue-100">
             Track your students' progress and manage sessions
@@ -285,11 +285,11 @@ function StudentCard({ student, isExpanded, onToggle, selectedSkills, onToggleSk
 
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Award className="size-4 text-[#0B4F8C]" />
+            <Award className="size-4 text-[#1e5c97]" />
             <span>{student.course}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Calendar className="size-4 text-[#0B4F8C]" />
+            <Calendar className="size-4 text-[#1e5c97]" />
             <span>Next: {nextClassDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           </div>
         </div>
@@ -297,7 +297,7 @@ function StudentCard({ student, isExpanded, onToggle, selectedSkills, onToggleSk
         <div className="mt-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">Progress</span>
-            <span className="text-sm text-[#0B4F8C]">{student.progress}%</span>
+            <span className="text-sm text-[#1e5c97]">{student.progress}%</span>
           </div>
           <Progress value={student.progress} className="h-2" />
         </div>
@@ -337,7 +337,7 @@ function StudentCard({ student, isExpanded, onToggle, selectedSkills, onToggleSk
                     e.stopPropagation();
                     onSaveProgress(student.id);
                   }}
-                  className="px-3 py-1.5 bg-[#0B4F8C] text-white rounded-lg text-xs active:scale-95 transition-transform"
+                  className="px-3 py-1.5 bg-[#1e5c97] text-white rounded-lg text-xs active:scale-95 transition-transform"
                 >
                   Save Changes
                 </button>

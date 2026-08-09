@@ -125,7 +125,7 @@ export function ParentDashboard({ userName }: ParentDashboardProps) {
       
       <div className="px-4 py-6 space-y-6">
         {/* Welcome Card */}
-        <div className="bg-gradient-to-r from-[#0B4F8C] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
+        <div className="bg-gradient-to-r from-[#1e5c97] to-[#1a6bb8] rounded-2xl p-6 text-white shadow-xl">
           <h1 className="text-2xl mb-2">Hi {firstName}! 👋</h1>
           <p className="text-blue-100">
             Monitor your children's progress and manage payments
@@ -187,7 +187,7 @@ export function ParentDashboard({ userName }: ParentDashboardProps) {
           </div>
 
           {!payment.isPaid && (
-            <button className="w-full mt-4 px-4 py-3 bg-[#0B4F8C] text-white rounded-xl active:scale-95 transition-transform shadow-lg">
+            <button className="w-full mt-4 px-4 py-3 bg-[#1e5c97] text-white rounded-xl active:scale-95 transition-transform shadow-lg">
               Pay Now
             </button>
           )}
@@ -301,7 +301,7 @@ function ChildCard({ child, isExpanded, onToggle, expandedCourse, onCourseToggle
           <div className="flex-1">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-600">Overall Progress</span>
-              <span className="text-sm text-[#0B4F8C]">{Math.round(avgProgress)}%</span>
+              <span className="text-sm text-[#1e5c97]">{Math.round(avgProgress)}%</span>
             </div>
             <Progress value={avgProgress} className="h-2" />
           </div>
@@ -352,11 +352,11 @@ function CourseCard({ course, isExpanded, onToggle }: CourseCardProps) {
 
         <div className="space-y-1.5 text-xs">
           <div className="flex items-center gap-2 text-gray-600">
-            <Clock className="size-3 text-[#0B4F8C]" />
+            <Clock className="size-3 text-[#1e5c97]" />
             <span>{course.schedule}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600">
-            <Calendar className="size-3 text-[#0B4F8C]" />
+            <Calendar className="size-3 text-[#1e5c97]" />
             <span>Next: {nextClassDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           </div>
         </div>
@@ -370,11 +370,11 @@ function CourseCard({ course, isExpanded, onToggle }: CourseCardProps) {
         <div className="px-4 pb-4 border-t border-gray-200 pt-3">
           <div className="mb-3">
             <div className="flex items-center gap-2 text-xs text-gray-600 mb-1.5">
-              <MapPin className="size-3 text-[#0B4F8C]" />
+              <MapPin className="size-3 text-[#1e5c97]" />
               <span>{course.location}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              <User className="size-3 text-[#0B4F8C]" />
+              <User className="size-3 text-[#1e5c97]" />
               <span>{course.instructor}</span>
             </div>
           </div>

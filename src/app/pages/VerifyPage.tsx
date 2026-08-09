@@ -65,7 +65,7 @@ export function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-transparent">
       <MobileHeader title="Verify Account" />
 
       <div className="px-4 pt-6 space-y-4">
@@ -124,16 +124,16 @@ export function VerifyPage() {
                 maxLength={6} value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                 placeholder="••••••"
-                className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-300 focus:border-[#0B4F8C] focus:ring-2 focus:ring-[#0B4F8C]/10 outline-none transition-all text-center text-2xl font-bold tracking-[0.5em]"
+                className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-300 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-center text-2xl font-bold tracking-[0.5em]"
               />
 
               <button type="submit" disabled={verifying || code.length !== 6}
-                className="w-full py-4 bg-[#0B4F8C] text-white rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
+                className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
                 {verifying ? 'Verifying…' : 'Verify'}
               </button>
 
               <button type="button" onClick={handleSend} disabled={sending}
-                className="w-full py-2 text-sm font-semibold text-[#0B4F8C] disabled:opacity-50">
+                className="w-full py-2 text-sm font-semibold text-[#1e5c97] disabled:opacity-50">
                 {sending ? 'Resending…' : "Didn't get it? Resend code"}
               </button>
             </form>

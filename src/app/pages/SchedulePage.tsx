@@ -87,10 +87,10 @@ export function SchedulePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="My Schedule" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading your schedule…</p>
         </div>
         <MobileNav />
@@ -99,9 +99,9 @@ export function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <MobileHeader title="My Schedule" showBack />
-      <PageHero title="My Schedule" subtitle="Upcoming sessions & classes" slide={1} tint="rgba(11,100,180,0.58)" />
+      <PageHero title="My Schedule" subtitle="Upcoming sessions & classes" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-4 pb-4 space-y-5">
 
         {error && (
@@ -119,8 +119,8 @@ export function SchedulePage() {
               {activeRegs.map(r => (
                 <div key={r.registrationId} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#EBF3FC] flex items-center justify-center shrink-0">
-                      <BookOpen className="size-5 text-[#0B4F8C]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#e8f0f8] flex items-center justify-center shrink-0">
+                      <BookOpen className="size-5 text-[#1e5c97]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -130,7 +130,7 @@ export function SchedulePage() {
                           ))}
                         </div>
                         {r.semesterName && (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EBF3FC] text-[#0B4F8C] shrink-0 whitespace-nowrap">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e8f0f8] text-[#1e5c97] shrink-0 whitespace-nowrap">
                             {r.semesterName}
                           </span>
                         )}
@@ -167,8 +167,8 @@ export function SchedulePage() {
         {/* Empty state — only when nothing at all */}
         {activeRegs.length === 0 && upcoming.length === 0 && !error && (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-[#EBF3FC] flex items-center justify-center">
-              <Waves className="size-7 text-[#0B4F8C]" />
+            <div className="w-14 h-14 rounded-2xl bg-[#e8f0f8] flex items-center justify-center">
+              <Waves className="size-7 text-[#1e5c97]" />
             </div>
             <p className="text-sm font-medium text-slate-500">No schedule found</p>
             <p className="text-xs text-slate-400 text-center px-8">Register for a class to see your schedule here</p>
@@ -187,14 +187,14 @@ function GroupSessionCard({ session, showDate }: { session: SessionDto; showDate
   return (
     <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#EBF3FC] flex items-center justify-center shrink-0">
-          <Waves className="size-5 text-[#0B4F8C]" />
+        <div className="w-10 h-10 rounded-xl bg-[#e8f0f8] flex items-center justify-center shrink-0">
+          <Waves className="size-5 text-[#1e5c97]" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="text-sm font-semibold text-slate-900">{session.className || 'Group Class'}</p>
             {session.sessionStatus && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-[#EBF3FC] text-[#0B4F8C]">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-[#e8f0f8] text-[#1e5c97]">
                 {session.sessionStatus}
               </span>
             )}

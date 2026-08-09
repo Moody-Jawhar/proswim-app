@@ -46,10 +46,10 @@ export function SkillsChecklistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Skills Checklist" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading checklist…</p>
         </div>
         <MobileNav />
@@ -58,9 +58,9 @@ export function SkillsChecklistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Skills Checklist" showBack />
-      <PageHero title="Skills Checklist" subtitle="Track your swimming progress" slide={3} tint="rgba(5,120,90,0.80)" />
+      <PageHero title="Skills Checklist" subtitle="Track your swimming progress" slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.85), rgba(5,120,90,0.72))" />
       <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
@@ -75,7 +75,7 @@ export function SkillsChecklistPage() {
           <div className="rounded-2xl px-5 py-5" style={{ background: 'rgba(91,173,255,0.18)' }}>
             <p className="text-xs font-semibold text-slate-500">Overall Progress</p>
             <div className="flex items-end justify-between mt-1 mb-3">
-              <p className="num-stat text-3xl font-extrabold text-[#0B4F8C]">
+              <p className="num-stat text-3xl font-extrabold text-[#1e5c97]">
                 {totalChecked} <span className="text-lg font-semibold text-slate-400">/ {items.length}</span>
               </p>
               <p className="num-stat text-sm font-semibold mb-0.5 text-slate-500">
@@ -83,12 +83,12 @@ export function SkillsChecklistPage() {
               </p>
             </div>
             {/* Progress bar */}
-            <div className="h-2 rounded-full" style={{ backgroundColor: 'rgba(11,79,140,0.12)' }}>
+            <div className="h-2 rounded-full" style={{ backgroundColor: 'rgba(30,92,151,0.12)' }}>
               <div
                 className="h-2 rounded-full transition-all"
                 style={{
                   width: `${Math.round((totalChecked / items.length) * 100)}%`,
-                  backgroundColor: '#0B4F8C',
+                  backgroundColor: '#1e5c97',
                 }}
               />
             </div>
@@ -107,7 +107,7 @@ export function SkillsChecklistPage() {
               {/* Level header */}
               <div className="flex items-center justify-between mb-2 px-1">
                 <p className="text-sm font-bold text-slate-900">{group.level}</p>
-                <p className="num-stat text-xs font-semibold text-[#0B4F8C]">{groupChecked} / {group.items.length}</p>
+                <p className="num-stat text-xs font-semibold text-[#1e5c97]">{groupChecked} / {group.items.length}</p>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -119,7 +119,7 @@ export function SkillsChecklistPage() {
                     }`}
                   >
                     {item.isChecked
-                      ? <CheckSquare className="size-5 text-[#0B4F8C] shrink-0 mt-0.5" />
+                      ? <CheckSquare className="size-5 text-[#1e5c97] shrink-0 mt-0.5" />
                       : <Square className="size-5 text-slate-300 shrink-0 mt-0.5" />
                     }
                     <p className={`text-sm leading-snug flex-1 ${

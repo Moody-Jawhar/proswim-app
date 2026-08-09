@@ -87,7 +87,7 @@ export function SignInPage() {
               <input
                 type="text" value={username} onChange={(e) => setUsername(e.target.value)}
                 required autoComplete="username" placeholder="Enter your username"
-                className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#0B4F8C] focus:ring-2 focus:ring-[#0B4F8C]/10 outline-none transition-all text-base"
+                className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base"
               />
             </div>
 
@@ -98,7 +98,7 @@ export function SignInPage() {
                   type={showPassword ? 'text' : 'password'} value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required autoComplete="current-password" placeholder="Enter your password"
-                  className="w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#0B4F8C] focus:ring-2 focus:ring-[#0B4F8C]/10 outline-none transition-all text-base"
+                  className="w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base"
                 />
                 <button type="button" tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
@@ -109,7 +109,7 @@ export function SignInPage() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full py-4 bg-[#0B4F8C] text-white rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
+              className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
               {loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>

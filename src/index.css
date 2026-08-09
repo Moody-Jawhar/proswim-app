@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&family=Yanone+Kaffeesatz:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,900&display=swap');
 @import "./styles/tailwind.css";
 @import "./styles/theme.css";
 
@@ -9,8 +9,15 @@
   letter-spacing: -0.02em;
 }
 
+/* Display face — same as the management portal (Yanone Kaffeesatz). Use on
+   hero titles and big headings, not on small labels. */
+.font-display {
+  font-family: 'Yanone Kaffeesatz', 'Mulish', sans-serif;
+  letter-spacing: 0.01em;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Mulish', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,6 +39,41 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* Soft branded canvas — the portal's aqua wash instead of flat grey. */
+  background:
+    radial-gradient(1200px 600px at 100% -5%, rgba(45, 125, 196, 0.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(30, 92, 151, 0.08), transparent 55%),
+    #eef2f7;
+  background-attachment: fixed;
+}
+
+/* ── Portal-matching utilities ───────────────────────────────── */
+
+/* Soft elevated card shadow */
+.shadow-soft { box-shadow: 0 6px 20px -10px rgba(30, 60, 100, 0.18); }
+
+/* Gradient primary button */
+.btn-grad {
+  background-image: linear-gradient(120deg, #2d7dc4, #1e5c97);
+  color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(30, 92, 151, 0.55);
+  transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.btn-grad:active { transform: translateY(1px); }
+.btn-grad:disabled { opacity: 0.6; box-shadow: none; }
+
+/* Staggered content entrance (portal's riseIn) */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise-in { animation: riseIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.12s; }
+.rise-3 { animation-delay: 0.19s; }
+.rise-4 { animation-delay: 0.26s; }
+@media (prefers-reduced-motion: reduce) {
+  .rise-in { animation: none; }
 }
 
 /* ── Page transition ─────────────────────────────────────────── */
@@ -43,19 +85,5 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes psBubble {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  60% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-108vh) scale(0.35);
-    opacity: 0;
   }
 }

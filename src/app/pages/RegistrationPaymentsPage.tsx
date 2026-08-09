@@ -52,10 +52,10 @@ export function RegistrationPaymentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Payments" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading payments…</p>
         </div>
         <MobileNav />
@@ -64,9 +64,9 @@ export function RegistrationPaymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Group Payments" showBack />
-      <PageHero title="Group Payments" subtitle="Registration payment history" slide={2} tint="rgba(11,100,180,0.58)" />
+      <PageHero title="Group Payments" subtitle="Registration payment history" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -76,7 +76,7 @@ export function RegistrationPaymentsPage() {
         )}
 
         {payments.length > 0 && (
-          <div className="bg-[#0B4F8C] rounded-2xl p-5 mb-4">
+          <div className="bg-[#1e5c97] rounded-2xl p-5 mb-4">
             <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
             {Object.entries(totalsByCurrency).map(([cur, amount]) => (
               <p key={cur} className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
@@ -95,8 +95,8 @@ export function RegistrationPaymentsPage() {
             <div key={p.paymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-[#EBF3FC] flex items-center justify-center shrink-0">
-                    <CreditCard className="size-4 text-[#0B4F8C]" />
+                  <div className="w-9 h-9 rounded-xl bg-[#e8f0f8] flex items-center justify-center shrink-0">
+                    <CreditCard className="size-4 text-[#1e5c97]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-900">Receipt #{p.paymentId}</p>
@@ -113,7 +113,7 @@ export function RegistrationPaymentsPage() {
               <div className="flex justify-end mt-2 pt-2 border-t border-slate-50">
                 <button
                   onClick={() => openReceipt(p.paymentId)}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-[#0B4F8C] active:opacity-60"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-[#1e5c97] active:opacity-60"
                 >
                   <FileText className="size-3.5" />
                   View Receipt
@@ -134,7 +134,7 @@ export function RegistrationPaymentsPage() {
             </div>
             {receipt.loading && (
               <div className="flex justify-center py-8">
-                <Loader2 className="size-6 text-[#0B4F8C] animate-spin" />
+                <Loader2 className="size-6 text-[#1e5c97] animate-spin" />
               </div>
             )}
             {!receipt.loading && receipt.data && (() => {

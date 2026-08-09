@@ -177,7 +177,7 @@ const LEVELS: Level[] = [
     title: 'Competitive Team',
     ageRange: 'Elite',
     color: 'blue',
-    icon: <Trophy className="size-6 text-[#0B4F8C]" />,
+    icon: <Trophy className="size-6 text-[#1e5c97]" />,
     iconBg: 'bg-blue-50',
     description:
       'ProSwim\'s highest level — swimmers who complete all levels compete nationally & internationally, led by Head Coach Mohamad Sakr.',
@@ -210,14 +210,14 @@ const colorConfig: Record<LevelColor, { border: string; check: string; tag: stri
   emerald: { border: 'border-l-emerald-400', check: 'text-emerald-600', tag: 'bg-emerald-100 text-emerald-700' },
   amber:   { border: 'border-l-amber-400',   check: 'text-amber-600',   tag: 'bg-amber-100 text-amber-700' },
   violet:  { border: 'border-l-violet-400',  check: 'text-violet-600',  tag: 'bg-violet-100 text-violet-700' },
-  blue:    { border: 'border-l-[#0B4F8C]',   check: 'text-[#0B4F8C]',   tag: 'bg-blue-100 text-[#0B4F8C]' },
+  blue:    { border: 'border-l-[#1e5c97]',   check: 'text-[#1e5c97]',   tag: 'bg-blue-100 text-[#1e5c97]' },
 };
 
 export function SwimLevelsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Swim Levels" showBack />
 
       <div className="px-4 py-6">
@@ -269,7 +269,7 @@ export function SwimLevelsPage() {
                       </div>
                     ))}
                     <a href={level.url} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0B4F8C]">
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#1e5c97]">
                       For more information
                       <ExternalLink className="size-3.5" />
                     </a>

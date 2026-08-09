@@ -38,10 +38,10 @@ export function PrivateSessionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Sessions" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading sessions…</p>
         </div>
         <MobileNav />
@@ -50,9 +50,9 @@ export function PrivateSessionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Private Sessions" showBack />
-      <PageHero title="Private Sessions" subtitle="Your 1-on-1 coaching sessions" slide={4} tint="rgba(79,70,229,0.58)" />
+      <PageHero title="Private Sessions" subtitle="Your 1-on-1 coaching sessions" slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">

@@ -23,10 +23,10 @@ export function LocationDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Location" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading…</p>
         </div>
         <MobileNav />
@@ -36,7 +36,7 @@ export function LocationDetailPage() {
 
   if (error || !location) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Location" showBack />
         <div className="flex items-center gap-2 m-4 bg-red-50 border border-red-100 rounded-2xl p-4">
           <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -64,13 +64,13 @@ export function LocationDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title={location.locationNickName || 'Location'} showBack />
       <PageHero
         title={location.locationNickName || 'Location'}
         subtitle={[location.locationCity, location.locationActive ? 'Active' : 'Inactive'].filter(Boolean).join(' · ')}
         slide={2}
-        tint="rgba(11,100,180,0.58)"
+        tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))"
       />
 
       <div className="px-4 pt-3 pb-4 space-y-3">
@@ -78,11 +78,11 @@ export function LocationDetailPage() {
         {/* Details card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {location.locationAddress && (
-            <DetailRow icon={<MapPin className="size-4 text-[#0B4F8C]" />} label="Address" value={location.locationAddress} />
+            <DetailRow icon={<MapPin className="size-4 text-[#1e5c97]" />} label="Address" value={location.locationAddress} />
           )}
           {location.locationPhone1 && (
             <DetailRow
-              icon={<Phone className="size-4 text-[#0B4F8C]" />}
+              icon={<Phone className="size-4 text-[#1e5c97]" />}
               label="Phone"
               value={location.locationPhone1}
               onTap={() => handleCall(location.locationPhone1!)}
@@ -91,7 +91,7 @@ export function LocationDetailPage() {
           )}
           {location.locationPhone2 && (
             <DetailRow
-              icon={<Phone className="size-4 text-[#0B4F8C]" />}
+              icon={<Phone className="size-4 text-[#1e5c97]" />}
               label="Phone 2"
               value={location.locationPhone2}
               onTap={() => handleCall(location.locationPhone2!)}
@@ -100,7 +100,7 @@ export function LocationDetailPage() {
           )}
           {location.locationEmail && (
             <DetailRow
-              icon={<Mail className="size-4 text-[#0B4F8C]" />}
+              icon={<Mail className="size-4 text-[#1e5c97]" />}
               label="Email"
               value={location.locationEmail}
               onTap={() => handleEmail(location.locationEmail!)}
@@ -114,8 +114,8 @@ export function LocationDetailPage() {
           onClick={handleMap}
           className="w-full flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors"
         >
-          <Navigation className="size-4 text-[#0B4F8C]" />
-          <span className="text-sm font-semibold text-[#0B4F8C]">Get Directions</span>
+          <Navigation className="size-4 text-[#1e5c97]" />
+          <span className="text-sm font-semibold text-[#1e5c97]">Get Directions</span>
         </button>
       </div>
 
@@ -142,7 +142,7 @@ function DetailRow({ icon, label, value, onTap, tapLabel }: {
         <button
           onClick={onTap}
           className="shrink-0 px-4 py-2 rounded-xl text-sm font-semibold"
-          style={{ backgroundColor: '#EBF3FC', color: '#0B4F8C' }}
+          style={{ backgroundColor: '#e8f0f8', color: '#1e5c97' }}
         >
           {tapLabel}
         </button>

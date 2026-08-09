@@ -48,7 +48,7 @@ export function ViewAllLocations() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <MobileHeader title="All Locations" showBack />
-      <PageHero title="Our Locations" subtitle="Find a ProSwim pool near you" slide={2} tint="rgba(11,100,180,0.58)" />
+      <PageHero title="Our Locations" subtitle="Find a ProSwim pool near you" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-6 space-y-4">
         {/* Search + Refresh */}
         <div className="relative">

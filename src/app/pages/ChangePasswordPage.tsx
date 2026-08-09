@@ -46,10 +46,10 @@ export function ChangePasswordPage() {
   };
 
   const inputClass =
-    'w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#0B4F8C] focus:ring-2 focus:ring-[#0B4F8C]/10 outline-none transition-all text-base';
+    'w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base';
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Change Password" showBack={!required} />
 
       <div className="px-4 pt-6 space-y-4">
@@ -121,7 +121,7 @@ export function ChangePasswordPage() {
               </div>
 
               <button type="submit" disabled={loading}
-                className="w-full py-4 bg-[#0B4F8C] text-white rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
+                className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
                 {loading ? 'Updating…' : 'Update Password'}
               </button>
             </form>

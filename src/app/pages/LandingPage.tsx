@@ -43,7 +43,7 @@ export function LandingPage() {
           </div>
           {!isAuthenticated && (
             <Link to="/signin"
-              className="px-4 py-2 rounded-xl bg-[#0B4F8C] text-sm font-semibold"
+              className="px-4 py-2 rounded-xl bg-[#1e5c97] text-sm font-semibold"
               style={{ color: "#ffffff" }}>
               Sign In
             </Link>
@@ -76,7 +76,7 @@ export function LandingPage() {
           <Link
             to="/dashboard"
             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl font-bold text-sm"
-            style={{ background: 'rgba(11,79,140,0.60)', color: '#ffffff', fontFamily: "'Abadi MT Condensed Extra Bold', 'Abadi MT Condensed', 'Abadi', 'Century Gothic', 'Futura', sans-serif", letterSpacing: '0.04em' }}>
+            style={{ background: 'rgba(30,92,151,0.60)', color: '#ffffff', fontFamily: "'Abadi MT Condensed Extra Bold', 'Abadi MT Condensed', 'Abadi', 'Century Gothic', 'Futura', sans-serif", letterSpacing: '0.04em' }}>
             Continue, {userName || "swimmer"}
             <ArrowRight className="size-6" style={{ color: "#ffffff" }} />
           </Link>
@@ -90,7 +90,7 @@ export function LandingPage() {
           <a href="https://www.proswim-lb.com/"
             target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-1.5 py-3 rounded-2xl font-semibold text-sm text-white"
-            style={{ background: 'rgba(11,79,140,0.60)' }}>
+            style={{ background: 'rgba(30,92,151,0.60)' }}>
             For More Info
             <ArrowRight className="size-4" />
           </a>
@@ -105,8 +105,8 @@ export function LandingPage() {
           { icon: <Calendar className="size-3.5" />, label: "Flexible" },
         ].map(({ icon, label }) => (
           <div key={label}
-            className="bg-[#F5F7FA] border border-slate-100 rounded-xl py-2.5 flex items-center justify-center gap-1.5">
-            <span className="text-[#0B4F8C]">{icon}</span>
+            className="bg-transparent border border-slate-100 rounded-xl py-2.5 flex items-center justify-center gap-1.5">
+            <span className="text-[#1e5c97]">{icon}</span>
             <span className="text-xs font-medium text-slate-600">{label}</span>
           </div>
         ))}
@@ -147,7 +147,7 @@ export function LandingPage() {
           </p>
           <a href="https://www.proswim-lb.com/"
             target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B4F8C] mt-3">
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[#1e5c97] mt-3">
             Visit our website
             <ArrowRight className="size-4" />
           </a>
@@ -157,9 +157,9 @@ export function LandingPage() {
 
       {/* Find a location */}
       <section className="px-4 mt-6">
-        <div className="bg-[#F5F7FA] border border-slate-100 rounded-2xl p-5">
+        <div className="bg-transparent border border-slate-100 rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-1">
-            <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
+            <MapPin className="size-4 text-[#1e5c97] shrink-0" />
             <p className="text-sm font-semibold text-slate-900">Multiple locations across Lebanon</p>
           </div>
           <p className="text-sm text-slate-500 mb-4 ml-6">View pools, schedules, and availability.</p>

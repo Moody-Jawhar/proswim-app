@@ -74,10 +74,10 @@ export function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="Notifications" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading…</p>
         </div>
         <MobileNav />
@@ -86,9 +86,9 @@ export function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="Notifications" showBack />
-      <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} tint="rgba(11,79,140,0.58)" />
+      <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} />
       <div className="px-4 pt-3 pb-4 space-y-3">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
@@ -117,16 +117,16 @@ export function NotificationsPage() {
             <div className="flex items-start gap-3">
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-                style={{ backgroundColor: '#EBF3FC' }}
+                style={{ backgroundColor: '#e8f0f8' }}
               >
-                <Bell className="size-4" style={{ color: '#0B4F8C' }} />
+                <Bell className="size-4" style={{ color: '#1e5c97' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-900">{n.title}</p>
                 {n.body && (
                   <p className="text-sm text-slate-500 mt-0.5 leading-snug">{n.body}</p>
                 )}
-                <p className="text-xs font-medium text-[#0B4F8C] mt-1.5">ProSwim Admin Team</p>
+                <p className="text-xs font-medium text-[#1e5c97] mt-1.5">ProSwim Admin Team</p>
                 <p className="text-xs text-slate-400 mt-0.5">{timeAgo(n.receivedAt)}</p>
               </div>
             </div>

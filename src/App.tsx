@@ -49,6 +49,7 @@ import { PrivatePaymentsPage } from "./app/pages/PrivatePaymentsPage";
 import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
 import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
 import { NotificationsPage } from "./app/pages/NotificationsPage";
+import { NewsPage } from "./app/pages/NewsPage";
 import { LocationDetailPage } from "./app/pages/LocationDetailPage";
 import { PageTransition } from "./app/components/PageTransition";
 
@@ -86,6 +87,7 @@ export default function App() {
         <Route path="/payment-history" element={<PaymentsHistoryPage />} />
         <Route path="/checklist" element={<SkillsChecklistPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/news" element={<NewsPage />} />
 
         <Route path="/Locations" element={<Navigate to="/locations" replace />} />
         <Route path="/Payments" element={<Navigate to="/payments" replace />} />

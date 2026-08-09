@@ -4,7 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import {
   Calendar, Clock, MapPin, Award, Users, ChevronRight,
-  Target, AlertCircle, Loader2, BookOpen, Waves
+  Target, AlertCircle, Loader2, BookOpen, Waves, Newspaper
 } from 'lucide-react';
 import { Progress } from '../components/Progress';
 import { SwimTimes } from '../components/SwimTimes';
@@ -164,10 +164,10 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
   if (apiLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] pb-20">
+      <div className="min-h-screen bg-transparent pb-20">
         <MobileHeader title="My Dashboard" showSignOut showBell />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#0B4F8C] animate-spin" />
+          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
           <p className="text-sm text-slate-500">Loading your data...</p>
         </div>
         <MobileNav />
@@ -176,14 +176,14 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <MobileHeader title="My Dashboard" showSignOut showBell />
 
       {/* Welcome card */}
       <div className="px-4 pt-4 pb-0">
         <div className="rounded-3xl px-6 py-6 relative overflow-hidden" style={{ minHeight: 140 }}>
           <img src={SLIDE(3)} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(6,30,60,0.88) 0%,rgba(11,79,140,0.72) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(6,30,60,0.88) 0%,rgba(30,92,151,0.72) 100%)' }} />
           <p className="text-xs font-bold tracking-widest uppercase relative" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>Welcome back</p>
           <p className="text-3xl font-black mt-1 relative" style={{ color: '#ffffff', letterSpacing: '-0.01em' }}>Hi, {firstName}! 👋</p>
           {currentLevel && (
@@ -234,6 +234,23 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
               </Link>
             ))}
           </div>
+
+          {/* News — full-width card */}
+          {isRealAuth && (
+            <Link
+              to="/news"
+              className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-2 bg-white border border-slate-100 shadow-sm"
+            >
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(30,92,151,0.12)' }}>
+                <Newspaper className="size-5 text-[#1e5c97]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black tracking-wide uppercase text-slate-800">News</p>
+                <p className="text-xs mt-0.5 text-slate-400">What's happening at ProSwim</p>
+              </div>
+              <ChevronRight className="size-4 shrink-0 text-slate-300" />
+            </Link>
+          )}
 
           {/* Skills Checklist — full-width card */}
           {isRealAuth && (
@@ -317,8 +334,8 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
 
         {activeTab === 'times' && !isRealAuth && (
           <div>
-            <p className="text-sm font-bold mb-4 text-[#0B4F8C] flex items-center gap-2">
-              <Target className="size-5 text-[#0B4F8C]" />
+            <p className="text-sm font-bold mb-4 text-[#1e5c97] flex items-center gap-2">
+              <Target className="size-5 text-[#1e5c97]" />
               Swim Times & PBs
             </p>
             <SwimTimes studentEmail={userEmail} />
@@ -357,11 +374,11 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#0B4F8C] mb-1.5">
+            <p className="text-base font-semibold text-[#1e5c97] mb-1.5">
               {course.names.join(' / ')}
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#0B4F8C] rounded-full text-xs font-medium">
+              <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#1e5c97] rounded-full text-xs font-medium">
                 {course.semester}
               </span>
               {course.stopped && (
@@ -378,7 +395,7 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
 
         {course.location && (
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-3">
-            <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
+            <MapPin className="size-4 text-[#1e5c97] shrink-0" />
             <span>{course.location}</span>
           </div>
         )}
@@ -387,7 +404,7 @@ function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
           <div className="mt-1">
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-slate-400">Attendance</span>
-              <span className="num-stat text-xs font-bold text-[#0B4F8C]">
+              <span className="num-stat text-xs font-bold text-[#1e5c97]">
                 {course.attendancePercent}%
               </span>
             </div>
@@ -419,7 +436,7 @@ function PrivatePackageCard({ pkg }: { pkg: PrivatePackageDto }) {
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-3">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-base font-semibold text-[#0B4F8C]">{pkg.packageName}</p>
+          <p className="text-base font-semibold text-[#1e5c97]">{pkg.packageName}</p>
           {pkg.coachFullName && (
             <p className="text-sm text-slate-400 mt-0.5">Coach: {pkg.coachFullName}</p>
           )}
@@ -435,7 +452,7 @@ function PrivatePackageCard({ pkg }: { pkg: PrivatePackageDto }) {
 
       {pkg.locationNickName && (
         <div className="flex items-center gap-2 text-sm text-slate-500">
-          <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
+          <MapPin className="size-4 text-[#1e5c97] shrink-0" />
           <span>{pkg.locationNickName}</span>
         </div>
       )}
@@ -467,8 +484,8 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#0B4F8C] mb-1.5">{course.name}</p>
-            <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#0B4F8C] rounded-full text-xs font-medium">
+            <p className="text-base font-semibold text-[#1e5c97] mb-1.5">{course.name}</p>
+            <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#1e5c97] rounded-full text-xs font-medium">
               {course.level}
             </span>
           </div>
@@ -479,11 +496,11 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
 
         <div className="space-y-1.5 mb-3">
           <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Clock className="size-4 text-[#0B4F8C] shrink-0" />
+            <Clock className="size-4 text-[#1e5c97] shrink-0" />
             <span>{course.schedule}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Calendar className="size-4 text-[#0B4F8C] shrink-0" />
+            <Calendar className="size-4 text-[#1e5c97] shrink-0" />
             <span>
               Next:{' '}
               {nextClassDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -494,7 +511,7 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
         <div>
           <div className="flex justify-between items-center mb-1.5">
             <span className="text-xs text-slate-400">Progress</span>
-            <span className="text-xs font-bold text-[#0B4F8C]">{course.progress}%</span>
+            <span className="text-xs font-bold text-[#1e5c97]">{course.progress}%</span>
           </div>
           <Progress value={course.progress} className="h-1.5" />
         </div>
@@ -504,11 +521,11 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
         <div className="px-5 pb-5 border-t border-slate-100 pt-4">
           <div className="mb-4 space-y-1.5">
             <div className="flex items-center gap-2 text-sm text-slate-500">
-              <MapPin className="size-4 text-[#0B4F8C] shrink-0" />
+              <MapPin className="size-4 text-[#1e5c97] shrink-0" />
               <span>{course.location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Users className="size-4 text-[#0B4F8C] shrink-0" />
+              <Users className="size-4 text-[#1e5c97] shrink-0" />
               <span>{course.instructor}</span>
             </div>
           </div>
@@ -527,10 +544,10 @@ function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
                         : 'bg-slate-50'
                     }`}
                   >
-                    <span className={`text-sm font-bold shrink-0 ${done ? 'text-[#0B4F8C]' : 'text-slate-300'}`}>
+                    <span className={`text-sm font-bold shrink-0 ${done ? 'text-[#1e5c97]' : 'text-slate-300'}`}>
                       {done ? '✓' : '○'}
                     </span>
-                    <span className={done ? 'text-[#0B4F8C] font-medium' : 'text-slate-400'}>
+                    <span className={done ? 'text-[#1e5c97] font-medium' : 'text-slate-400'}>
                       {skill}
                     </span>
                   </div>

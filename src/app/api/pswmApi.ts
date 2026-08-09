@@ -1,8 +1,11 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.VITE_BUILD_TARGET === "capacitor"
-    ? "https://admin.proswim-lb.com/Proswim_API"
-    : "/Proswim_API");
+    ? // Native builds ignore the Vite proxy — this is what an installed app hits.
+      // V27_API = unified-auth test build. Point store builds back at
+      // https://admin.proswim-lb.com/Proswim_API once the new API is promoted.
+      "https://admin.proswim-lb.com/V27_API"
+    : "/V27_API");
 
 const API_KEY = import.meta.env.VITE_API_KEY || "dev-api-key-12345";
 
@@ -629,6 +632,20 @@ export interface ChecklistItemDto {
 
 export async function getChecklist(studentId: number): Promise<ChecklistItemDto[]> {
   return apiRequest<ChecklistItemDto[]>(`/api/Students/GetChecklist?studentId=${studentId}`);
+}
+
+export interface NewsItemDto {
+  newsId: number;
+  newsTitle: string;
+  newsBody: string;
+  newsImageURL: string | null;
+  newsLocationId: number | null;
+  newsDate: string | null;
+}
+
+export async function getNews(locationId?: number): Promise<NewsItemDto[]> {
+  const q = locationId ? `?locationId=${locationId}` : '';
+  return apiRequest<NewsItemDto[]>(`/api/News${q}`);
 }
 
 export interface NotificationDto {

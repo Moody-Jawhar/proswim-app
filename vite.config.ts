@@ -9,6 +9,12 @@ export default defineConfig({
   server: {
     allowedHosts: true,
     proxy: {
+      // V27_API = unified-auth test build; Proswim_API = production (old auth).
+      "/V27_API": {
+        target: "https://admin.proswim-lb.com",
+        changeOrigin: true,
+        secure: true,
+      },
       "/Proswim_API": {
         target: "https://admin.proswim-lb.com",
         changeOrigin: true,

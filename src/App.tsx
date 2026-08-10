@@ -39,6 +39,8 @@ import { ViewAllPayments } from "./app/pages/ViewAllPayments";
 import { CoachProfile } from "./app/pages/CoachProfile";
 import { StudentProfile } from "./app/pages/StudentProfile";
 import { MyProfilePage } from "./app/pages/MyProfilePage";
+import { PersonalInfoPage } from "./app/pages/PersonalInfoPage";
+import { PortfolioPage } from "./app/pages/PortfolioPage";
 import { SchedulePage } from "./app/pages/SchedulePage";
 import { RegistrationsPage } from "./app/pages/RegistrationsPage";
 import { RegistrationSessionsPage } from "./app/pages/RegistrationSessionsPage";
@@ -75,6 +77,8 @@ export default function App() {
         <Route path="/coach/:id" element={<CoachProfile />} />
         <Route path="/student/:id" element={<StudentProfile />} />
         <Route path="/profile" element={<MyProfilePage />} />
+        <Route path="/profile/personal" element={<PersonalInfoPage />} />
+        <Route path="/profile/portfolio" element={<PortfolioPage />} />
         <Route path="/schedule" element={<SchedulePage />} />
 
         {/* Student section pages */}

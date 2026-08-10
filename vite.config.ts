@@ -10,10 +10,14 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       // V27_API = unified-auth test build; Proswim_API = production (old auth).
+      // Dev currently targets the LOCAL API (localhost:5126) so new endpoints
+      // (Personal Information / change requests) work before they're deployed.
+      // To go back to the deployed test API, restore:
+      //   target: "https://admin.proswim-lb.com" and remove the rewrite.
       "/V27_API": {
-        target: "https://admin.proswim-lb.com",
+        target: "http://localhost:5126",
         changeOrigin: true,
-        secure: true,
+        rewrite: (path) => path.replace(/^\/V27_API/, ""),
       },
       "/Proswim_API": {
         target: "https://admin.proswim-lb.com",

@@ -143,6 +143,12 @@ export interface ProfileDto {
   studentLatestLevelName: string | null;
   studentPrimaryLocationId: number | null;
   locationNickName: string | null;
+  studentEmergencyContactName: string | null;
+  studentEmergencyContactPhoneCode: string | null;
+  studentEmergencyContactPhone: string | null;
+  studentEmergencyContactRelation: string | null;
+  studentAllergies: string | null;
+  studentMedicalNotes: string | null;
 }
 
 export interface ProfileUpdateDto {
@@ -522,6 +528,73 @@ export async function getProfileLevelHistory(): Promise<LevelHistoryDto[]> {
   return apiRequest<LevelHistoryDto[]>("/api/Profile/LevelHistory");
 }
 
+// --- Personal Information (parent-editable) ---
+
+export interface PersonalInfoUpdateDto {
+  studentAddressCity: string | null;
+  studentAddressRegion: string | null;
+  studentAddressStreet: string | null;
+  studentAddressBuilding: string | null;
+  studentAddressFloor: string | null;
+  studentEmergencyContactName: string | null;
+  studentEmergencyContactPhoneCode: string | null;
+  studentEmergencyContactPhone: string | null;
+  studentEmergencyContactRelation: string | null;
+  studentAllergies: string | null;
+  studentMedicalNotes: string | null;
+}
+
+export async function updatePersonalInfo(data: PersonalInfoUpdateDto): Promise<void> {
+  await apiRequest<void>("/api/Profile/PersonalInfo", { method: "PUT", body: JSON.stringify(data) });
+}
+
+// Changing the main phone/email is a request that ProSwim staff approve —
+// the value only changes after approval (security rule).
+export interface ContactChangeRequestDto {
+  requestId: number;
+  fieldType: string | null;      // "Phone" | "Email"
+  oldValue: string | null;
+  newPhoneCode: string | null;
+  newValue: string | null;
+  status: string | null;         // Pending | Approved | Rejected | Cancelled
+  requestedDate: string | null;
+  reviewedDate: string | null;
+  reviewNote: string | null;
+}
+
+export async function getContactChangeRequests(): Promise<ContactChangeRequestDto[]> {
+  return apiRequest<ContactChangeRequestDto[]>("/api/Profile/ContactChangeRequests");
+}
+
+export async function submitContactChangeRequest(
+  fieldType: "Phone" | "Email",
+  newValue: string,
+  newPhoneCode?: string
+): Promise<{ requestId: number; message: string }> {
+  return apiRequest<{ requestId: number; message: string }>("/api/Profile/ContactChangeRequest", {
+    method: "POST",
+    body: JSON.stringify({ fieldType, newValue, newPhoneCode: newPhoneCode || null }),
+  });
+}
+
+// --- Competitive Team Portfolio (read-only) ---
+// Row objects keep the DB's PascalCase column names (EventName, TimeMs, ...).
+
+export type PortfolioRow = Record<string, unknown>;
+
+export interface CompPortfolioDto {
+  personalBests: PortfolioRow[];
+  results: PortfolioRow[];
+  awards: PortfolioRow[];
+  documents: PortfolioRow[];
+  evaluations: PortfolioRow[];
+  upcomingCompetitions: PortfolioRow[];
+}
+
+export async function getCompPortfolio(): Promise<CompPortfolioDto> {
+  return apiRequest<CompPortfolioDto>("/api/Comp/Portfolio");
+}
+
 export async function getGroupRegistrations(): Promise<RegistrationDto[]> {
   return apiRequest<RegistrationDto[]>("/api/Group/Registrations");
 }
@@ -641,6 +714,10 @@ export interface NewsItemDto {
   newsImageURL: string | null;
   newsLocationId: number | null;
   newsDate: string | null;
+  /** Optional social buttons under the article, linking to ProSwim profiles. */
+  newsWhatsappURL: string | null;
+  newsYoutubeURL: string | null;
+  newsFacebookURL: string | null;
 }
 
 export async function getNews(locationId?: number): Promise<NewsItemDto[]> {

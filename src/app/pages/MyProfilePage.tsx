@@ -234,6 +234,23 @@ export function MyProfilePage() {
           <span className="text-sm font-semibold text-[#1e5c97]">Change Password</span>
         </Link>
 
+        {/* Competitive Team Portfolio */}
+        {student.studentEliteSwimmer === true && (
+          <Link to="/profile/portfolio"
+            className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
+            style={{ background: 'linear-gradient(90deg, #B45309, #F59E0B)' }}>
+            <Award className="size-4 text-white" />
+            <span className="text-sm font-bold text-white">Competitive Portfolio</span>
+          </Link>
+        )}
+
+        {/* Edit personal information (in-app; phone/email go through approval) */}
+        <Link to="/profile/personal"
+          className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
+          style={{ background: '#1e5c97' }}>
+          <span className="text-sm font-bold text-white">Edit Personal Information</span>
+        </Link>
+
         {/* Contact to edit */}
         <button
           onClick={() => {

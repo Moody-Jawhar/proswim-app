@@ -10,14 +10,14 @@ import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPr
 import { PageHero } from '../components/PageHero';
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  Elite:     { bg: 'rgba(249,115,22,0.15)',  color: '#9A3412' },
-  Gifted:    { bg: 'rgba(236,72,153,0.15)',  color: '#9D174D' },
-  Group:     { bg: 'rgba(91,173,255,0.18)',  color: '#1A6FBF' },
-  Private:   { bg: 'rgba(139,92,246,0.18)',  color: '#6D28D9' },
-  School:    { bg: 'rgba(52,211,153,0.18)',  color: '#065F46' },
-  'Aqua Baby': { bg: 'rgba(56,189,248,0.18)', color: '#0369A1' },
-  'Aqua Gym':  { bg: 'rgba(251,191,36,0.20)', color: '#92600A' },
-  Others:    { bg: 'rgba(148,163,184,0.18)', color: '#475569' },
+  'Competitive Team': { bg: 'rgba(249,115,22,0.15)',  color: '#9A3412' },
+  Gifted:             { bg: 'rgba(236,72,153,0.15)',  color: '#9D174D' },
+  'Group Training':   { bg: 'rgba(91,173,255,0.18)',  color: '#1A6FBF' },
+  'Private Training': { bg: 'rgba(139,92,246,0.18)',  color: '#6D28D9' },
+  School:             { bg: 'rgba(52,211,153,0.18)',  color: '#065F46' },
+  AquaBaby:           { bg: 'rgba(56,189,248,0.18)', color: '#0369A1' },
+  AquaGym:            { bg: 'rgba(251,191,36,0.20)', color: '#92600A' },
+  Others:             { bg: 'rgba(148,163,184,0.18)', color: '#475569' },
 };
 
 export function MyProfilePage() {
@@ -100,11 +100,12 @@ export function MyProfilePage() {
     student.studentAddressFloor && `Floor ${student.studentAddressFloor}`,
     student.studentAddressStreet, student.studentAddressRegion, student.studentAddressCity,
   ].filter(Boolean).join(', ');
-  const swimmerTypes = [
-    student.studentEliteSwimmer && 'Elite', student.studentGiftedSwimmer && 'Gifted',
-    student.studentGroupSwimmer && 'Group', student.studentPrivateSwimmer && 'Private',
-    student.studentSchoolSwimmer && 'School', student.studentAquaBabySwimmer && 'Aqua Baby',
-    student.studentAquaGymSwimmer && 'Aqua Gym', student.studentOthersSwimmer && 'Others',
+  // A swimmer can be enrolled in several programs at once.
+  const programs = [
+    student.studentGroupSwimmer && 'Group Training', student.studentPrivateSwimmer && 'Private Training',
+    student.studentEliteSwimmer && 'Competitive Team', student.studentAquaBabySwimmer && 'AquaBaby',
+    student.studentAquaGymSwimmer && 'AquaGym', student.studentSchoolSwimmer && 'School',
+    student.studentGiftedSwimmer && 'Gifted', student.studentOthersSwimmer && 'Others',
   ].filter(Boolean) as string[];
   return (
     <div className="min-h-screen bg-transparent pb-20">
@@ -145,11 +146,11 @@ export function MyProfilePage() {
           <div className="h-4" />
         </div>
 
-        {/* Swimmer Type */}
-        {swimmerTypes.length > 0 && (
-          <Section title="Swimmer Type" icon={<Award className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(251,191,36,0.18)">
+        {/* Programs Enrolled In */}
+        {programs.length > 0 && (
+          <Section title="Programs Enrolled In" icon={<Award className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(251,191,36,0.18)">
             <div className="flex flex-wrap gap-2">
-              {swimmerTypes.map(type => {
+              {programs.map(type => {
                 const c = TYPE_COLORS[type] ?? { bg: 'rgba(91,173,255,0.15)', color: '#1A6FBF' };
                 return (
                   <span key={type} className="px-3 py-1 rounded-full text-sm font-semibold"

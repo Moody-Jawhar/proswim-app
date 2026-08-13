@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Waves, User, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { t } from '../i18n';
 
 export function MobileNav() {
   const location = useLocation();
@@ -13,10 +14,10 @@ export function MobileNav() {
   }, [location.pathname]);
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
-    { path: '/levels', icon: Waves, label: 'Swim Levels' },
-    { path: isAuthenticated ? '/profile' : '/signin', icon: User, label: isAuthenticated ? 'Profile' : 'Sign In' },
-    { path: '/about', icon: Info, label: 'About' },
+    { path: '/', icon: Home, label: t('nav.home') },
+    { path: '/levels', icon: Waves, label: t('nav.levels') },
+    { path: isAuthenticated ? '/profile' : '/signin', icon: User, label: isAuthenticated ? t('nav.profile') : t('nav.signin') },
+    { path: '/about', icon: Info, label: t('nav.about') },
   ];
 
   return (

@@ -38,16 +38,23 @@ button {
   font-family: inherit;
 }
 
+html {
+  /* Never trap vertical scroll. (No -webkit-overflow-scrolling here — on the
+     root element it can freeze window scrolling in Safari.) */
+  overflow-y: auto;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* Soft branded canvas — the portal's aqua wash instead of flat grey. */
+  /* Soft branded canvas — the portal's aqua wash instead of flat grey.
+     NOTE: no background-attachment: fixed — iOS Safari renders it with
+     broken/janky scrolling. */
   background:
     radial-gradient(1200px 600px at 100% -5%, rgba(45, 125, 196, 0.10), transparent 60%),
     radial-gradient(900px 500px at -10% 110%, rgba(30, 92, 151, 0.08), transparent 55%),
     #eef2f7;
-  background-attachment: fixed;
 }
 
 /* ── Portal-matching utilities ───────────────────────────────── */

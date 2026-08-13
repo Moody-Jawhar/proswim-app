@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, ArrowLeft, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getUnreadCount, unsubscribeFromStudentTopic } from '../utils/notifications';
+import { LanguageButton } from './LanguageButton';
 
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
 
@@ -54,9 +55,12 @@ export function MobileHeader({
     >
       <div className="flex items-center justify-between h-14 px-4">
         {showLogo ? (
-          <Link to="/" className="flex items-center">
-            <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
-          </Link>
+          <>
+            <Link to="/" className="flex items-center">
+              <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
+            </Link>
+            <LanguageButton />
+          </>
         ) : (
           <>
             <div className="w-10 flex items-center">
@@ -76,6 +80,7 @@ export function MobileHeader({
             </p>
 
             <div className="flex items-center gap-0.5">
+              <LanguageButton />
               {showBell && (
                 <Link
                   to="/notifications"

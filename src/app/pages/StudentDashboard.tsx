@@ -7,6 +7,7 @@ import {
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
+import { t } from '../i18n';
 import {
   getStoredToken, getProfile, getGroupRegistrations, getGroupAttendanceSummary,
   getPrivatePackages, getGroupSessions, getPrivateSessions, getPaymentSummary,
@@ -46,8 +47,8 @@ function dayLabel(d: Date): string {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const that = new Date(d); that.setHours(0, 0, 0, 0);
   const diff = Math.round((that.getTime() - today.getTime()) / 86400000);
-  if (diff === 0) return 'Today';
-  if (diff === 1) return 'Tomorrow';
+  if (diff === 0) return t('home.today');
+  if (diff === 1) return t('home.tomorrow');
   return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
@@ -154,7 +155,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-20">
-        <MobileHeader title="Home" showSignOut showBell />
+        <MobileHeader title={t('home.title')} showSignOut showBell />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 animate-spin" style={{ color: BRAND }} />
           <p className="text-sm" style={{ color: '#64748B' }}>Getting everything ready…</p>
@@ -166,7 +167,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
   return (
     <div className="min-h-screen bg-transparent pb-24">
-      <MobileHeader title="Home" showSignOut showBell />
+      <MobileHeader title={t('home.title')} showSignOut showBell />
 
       <div className="px-4 pt-4">
         {/* ── Hero: identity, calm and compact ── */}
@@ -177,7 +178,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.14em' }}>
-                  Welcome back
+                  {t('home.welcome')}
                 </p>
                 <p className="font-display text-2xl mt-0.5" style={{ color: '#fff' }}>{firstName}</p>
               </div>
@@ -224,7 +225,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         )}
 
         {/* ── Up next ── */}
-        <Section icon={<CalendarClock className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title="Up next" />
+        <Section icon={<CalendarClock className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title={t('home.upNext')} />
         <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5">
           {nextSession ? (
             <div className="flex items-center gap-4">
@@ -254,14 +255,14 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
               </div>
             </div>
           ) : (
-            <p className="text-sm py-1" style={{ color: '#64748B' }}>No upcoming sessions in the next two weeks.</p>
+            <p className="text-sm py-1" style={{ color: '#64748B' }}>{t('home.noUpcoming')}</p>
           )}
         </div>
 
         {/* ── Group training ── */}
         {registrations.length > 0 && (
           <>
-            <Section icon={<Users className="size-4" style={{ color: GROUP_C }} />} tint="rgba(26,111,191,0.12)" title="Group training" />
+            <Section icon={<Users className="size-4" style={{ color: GROUP_C }} />} tint="rgba(26,111,191,0.12)" title={t('home.group')} />
             <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {registrations.map((reg) => {
                 const summary = attendance.find((a) => a.registrationId === reg.registrationId);
@@ -304,20 +305,20 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                       {upcoming && (
                         <span className="text-xs font-bold rounded-full px-2 py-0.5"
                           style={{ background: 'rgba(26,111,191,0.10)', color: GROUP_C }}>
-                          Next: {dayLabel(upcoming.when)}{upcoming.when.getHours() !== 23 ? ` · ${upcoming.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
+                          {t('home.next')}: {dayLabel(upcoming.when)}{upcoming.when.getHours() !== 23 ? ` · ${upcoming.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
                         </span>
                       )}
                       {due && (
                         <span className="text-xs font-bold rounded-full px-2 py-0.5"
                           style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
-                          Due: {due.dueAmount.toLocaleString()}
+                          {t('home.due')}: {due.dueAmount.toLocaleString()}
                         </span>
                       )}
                     </div>
                     {pct != null && (
                       <div className="mt-3">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-semibold" style={{ color: '#64748B' }}>Attendance</span>
+                          <span className="text-xs font-semibold" style={{ color: '#64748B' }}>{t('home.attendance')}</span>
                           <span className="num-stat text-xs font-bold" style={{ color: GROUP_C }}>
                             {summary!.attendedSessions}/{summary!.totalSessions} · {pct}%
                           </span>
@@ -337,7 +338,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         {/* ── Private training ── */}
         {activePackages.length > 0 && (
           <>
-            <Section icon={<GraduationCap className="size-4" style={{ color: PRIVATE_C }} />} tint="rgba(109,40,217,0.10)" title="Private training" />
+            <Section icon={<GraduationCap className="size-4" style={{ color: PRIVATE_C }} />} tint="rgba(109,40,217,0.10)" title={t('home.private')} />
             <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {activePackages.map((k) => {
                 const used = k.countAttended;
@@ -362,7 +363,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                       </div>
                       <div className="text-center" style={{ flexShrink: 0 }}>
                         <p className="num-stat text-2xl font-bold" style={{ color: low ? '#B45309' : PRIVATE_C }}>{k.sessionsLeft}</p>
-                        <p className="text-xs font-semibold" style={{ color: '#94A3B8' }}>of {k.packageNumberOfSessions} left</p>
+                        <p className="text-xs font-semibold" style={{ color: '#94A3B8' }}>{t('home.leftOf', { n: k.packageNumberOfSessions })}</p>
                       </div>
                     </div>
                     <div className="h-2 rounded-full overflow-hidden mt-3" style={{ background: '#F1F5F9' }}>
@@ -372,20 +373,20 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                       {nextPriv && (
                         <span className="text-xs font-bold rounded-full px-2 py-0.5"
                           style={{ background: 'rgba(109,40,217,0.08)', color: PRIVATE_C }}>
-                          Next: {dayLabel(nextPriv.when)}{nextPriv.when.getHours() !== 23 ? ` · ${nextPriv.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
+                          {t('home.next')}: {dayLabel(nextPriv.when)}{nextPriv.when.getHours() !== 23 ? ` · ${nextPriv.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
                         </span>
                       )}
                       {k.duePayment > 0 && (
                         <span className="text-xs font-bold rounded-full px-2 py-0.5"
                           style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
-                          Due: {k.duePayment.toLocaleString()} {k.packageCurrency ?? ''}
+                          {t('home.due')}: {k.duePayment.toLocaleString()} {k.packageCurrency ?? ''}
                         </span>
                       )}
                     </div>
                     {low && (
                       <p className="text-xs font-bold mt-2 inline-flex items-center gap-1 rounded-full px-2 py-1"
                         style={{ background: 'rgba(245,158,11,0.12)', color: '#B45309' }}>
-                        Sessions running low — time to renew
+                        {t('home.lowSessions')}
                       </p>
                     )}
                   </Link>
@@ -397,13 +398,13 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
         {/* ── Payments ── */}
         <Section icon={<Wallet className="size-4" style={{ color: totalDue > 0 ? '#DC2626' : '#047857' }} />}
-          tint={totalDue > 0 ? 'rgba(239,68,68,0.10)' : 'rgba(16,185,129,0.10)'} title="Payments" />
+          tint={totalDue > 0 ? 'rgba(239,68,68,0.10)' : 'rgba(16,185,129,0.10)'} title={t('home.payments')} />
         <Link to="/payment-history" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5 block active:scale-[0.99] transition-transform"
           style={{ borderLeft: `4px solid ${totalDue > 0 ? '#DC2626' : '#10B981'}` }}>
           {totalDue > 0 ? (
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-bold" style={{ color: '#B91C1C' }}>Outstanding balance</p>
+                <p className="text-sm font-bold" style={{ color: '#B91C1C' }}>{t('home.outstanding')}</p>
                 <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
                   {(payments!.totalGroupDue > 0 ? ['group'] : []).concat(payments!.totalPrivateDue > 0 ? ['private'] : []).join(' + ')} payments pending — tap for details
                 </p>
@@ -416,8 +417,8 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="size-5" style={{ color: '#059669', flexShrink: 0 }} />
               <div>
-                <p className="text-sm font-bold" style={{ color: '#047857' }}>All payments settled</p>
-                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Tap to see your payment history</p>
+                <p className="text-sm font-bold" style={{ color: '#047857' }}>{t('home.allSettled')}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.historyHint')}</p>
               </div>
             </div>
           )}
@@ -437,7 +438,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         )}
 
         {/* ── Quick actions ── */}
-        <Section icon={<UserCog className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title="Quick actions" />
+        <Section icon={<UserCog className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title={t('home.quickActions')} />
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button
             onClick={() => {
@@ -449,16 +450,16 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             style={{ background: 'linear-gradient(135deg, #1e5c97, #2d7dc4)' }}
           >
             <MessageCircle className="size-5 mb-2" style={{ color: 'rgba(255,255,255,0.85)' }} />
-            <p className="text-sm font-bold text-white">Book a session</p>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.65)' }}>Chat with us on WhatsApp</p>
+            <p className="text-sm font-bold text-white">{t('home.book')}</p>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.65)' }}>{t('home.bookHint')}</p>
           </button>
           <button
             onClick={() => navigate('/profile/personal')}
             className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 text-left active:scale-[0.98] transition-transform"
           >
             <UserCog className="size-5 mb-2" style={{ color: BRAND }} />
-            <p className="text-sm font-bold text-slate-900">Request a change</p>
-            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Update your details</p>
+            <p className="text-sm font-bold text-slate-900">{t('home.requestChange')}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.requestHint')}</p>
           </button>
         </div>
       </div>

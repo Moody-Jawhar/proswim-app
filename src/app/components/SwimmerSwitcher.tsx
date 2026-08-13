@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Check, Loader2, Users } from 'lucide-react';
+import { t } from '../i18n';
 import { getFamily, switchStudent, type FamilyMemberDto } from '../api/pswmApi';
 
 function initialsOf(name: string | null): string {
@@ -51,12 +53,12 @@ export function SwimmerSwitcher() {
         className="inline-flex items-center gap-2 rounded-full pl-1 pr-3 py-1 active:scale-[0.97] transition-transform"
         style={{ background: 'rgba(255,255,255,0.14)' }}
       >
-        <Avatar m={current} size={26} />
-        <span className="text-xs font-bold" style={{ color: '#fff' }}>Switch swimmer</span>
+        <Avatar m={current} size={34} />
+        <span className="text-xs font-bold" style={{ color: '#fff' }}>{t('switch.trigger')}</span>
         <ChevronDown className="size-3.5" style={{ color: 'rgba(255,255,255,0.7)' }} />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           onClick={() => switching == null && setOpen(false)}
           style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(9,20,38,0.55)', display: 'flex', alignItems: 'flex-end' }}
@@ -70,7 +72,7 @@ export function SwimmerSwitcher() {
               <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(30,92,151,0.10)' }}>
                 <Users className="size-4" style={{ color: '#1e5c97' }} />
               </div>
-              <p className="font-display text-base text-slate-900">My swimmers</p>
+              <p className="font-display text-base text-slate-900">{t('switch.title')}</p>
             </div>
             {family.map((m) => (
               <button
@@ -80,11 +82,11 @@ export function SwimmerSwitcher() {
                 style={{ borderBottom: '1px solid #F1F5F9', opacity: switching != null && switching !== m.studentId ? 0.5 : 1 }}
               >
                 <div className="rounded-full overflow-hidden flex items-center justify-center"
-                  style={{ width: 44, height: 44, background: 'rgba(30,92,151,0.08)', flexShrink: 0 }}>
+                  style={{ width: 58, height: 58, background: 'rgba(30,92,151,0.08)', border: '2px solid rgba(30,92,151,0.15)', flexShrink: 0 }}>
                   {m.studentPhotoUrl ? (
                     <img src={m.studentPhotoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <span className="font-display text-sm" style={{ color: '#1e5c97' }}>{initialsOf(m.studentFullName)}</span>
+                    <span className="font-display" style={{ color: '#1e5c97', fontSize: 21 }}>{initialsOf(m.studentFullName)}</span>
                   )}
                 </div>
                 <div className="flex-1" style={{ minWidth: 0 }}>
@@ -106,7 +108,8 @@ export function SwimmerSwitcher() {
               </button>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

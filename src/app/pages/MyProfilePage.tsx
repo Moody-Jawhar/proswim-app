@@ -8,6 +8,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t } from '../i18n';
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   'Competitive Team': { bg: 'rgba(249,115,22,0.15)',  color: '#9A3412' },
@@ -87,7 +88,7 @@ export function MyProfilePage() {
   const fullName = [student.studentFirstName, student.studentMiddleName, student.studentLastName]
     .filter(Boolean).join(' ');
   const initials = [student.studentFirstName, student.studentLastName]
-    .filter(Boolean).map(n => n![0]).join('');
+    .filter(Boolean).map(n => n![0]).join('').toUpperCase();
   const dob = student.studentDateOfBirth
     ? new Date(student.studentDateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : null;
@@ -112,8 +113,8 @@ export function MyProfilePage() {
   ].filter(Boolean) as string[];
   return (
     <div className="min-h-screen bg-transparent pb-20">
-      <MobileHeader title="My Profile" showBack showSignOut />
-      <PageHero title="My Profile" subtitle="Your swimmer details & attendance" slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(14,100,144,0.55))" />
+      <MobileHeader title={t('profile.title')} showBack showSignOut />
+      <PageHero title={t('profile.title')} subtitle={t('profile.subtitle')} slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(14,100,144,0.55))" />
       <div className="px-4 pt-3 pb-5 space-y-4">
 
         {/* Hero card */}
@@ -122,12 +123,12 @@ export function MyProfilePage() {
             style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.22) 0%,rgba(176,138,255,0.18) 100%)' }}>
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.10)' }} />
             <div className="flex items-center gap-3 relative">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden"
-                style={{ background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)' }}>
+              <div className="rounded-2xl flex items-center justify-center shrink-0 overflow-hidden"
+                style={{ width: 58, height: 58, background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)' }}>
                 {student.studentPhotoUrl ? (
                   <img src={student.studentPhotoUrl} alt={fullName} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-[#1e5c97] text-base font-bold">{initials}</span>
+                  <span className="font-display text-[#1e5c97] font-bold" style={{ fontSize: 21 }}>{initials}</span>
                 )}
               </div>
               <div>
@@ -155,7 +156,7 @@ export function MyProfilePage() {
 
         {/* Programs Enrolled In */}
         {programs.length > 0 && (
-          <Section title="Programs Enrolled In" icon={<Award className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(251,191,36,0.18)">
+          <Section title={t('profile.programs')} icon={<Award className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(251,191,36,0.18)">
             <div className="flex flex-wrap gap-2">
               {programs.map(type => {
                 const c = TYPE_COLORS[type] ?? { bg: 'rgba(91,173,255,0.15)', color: '#1A6FBF' };
@@ -171,7 +172,7 @@ export function MyProfilePage() {
         )}
 
         {/* Contact */}
-        <Section title="Contact" icon={<Phone className="size-4" style={{ color: '#3B82F6' }} />} iconBg="rgba(91,173,255,0.18)">
+        <Section title={t('profile.contact')} icon={<Phone className="size-4" style={{ color: '#3B82F6' }} />} iconBg="rgba(91,173,255,0.18)">
           {student.studentEmail && (
             <InfoRow icon={<Mail className="size-4" style={{ color: '#3B82F6' }} />} label="Email" value={student.studentEmail} />
           )}
@@ -181,7 +182,7 @@ export function MyProfilePage() {
         </Section>
 
         {/* Personal */}
-        <Section title="Personal" icon={<User className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.18)">
+        <Section title={t('profile.personal')} icon={<User className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.18)">
           {dob && <InfoRow icon={<Calendar className="size-4" style={{ color: '#8B5CF6' }} />} label="Date of Birth" value={dob} />}
           {student.studentSchool && (
             <InfoRow icon={<GraduationCap className="size-4" style={{ color: '#F59E0B' }} />} label="School" value={student.studentSchool} />
@@ -197,7 +198,7 @@ export function MyProfilePage() {
 
         {/* Family */}
         {(student.studentMomOccupation || student.studentDadOccupation) && (
-          <Section title="Family" icon={<Shield className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.18)">
+          <Section title={t('profile.family')} icon={<Shield className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.18)">
             {student.studentMomOccupation && (
               <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label="Mom's Occupation" value={student.studentMomOccupation} />
             )}
@@ -233,7 +234,7 @@ export function MyProfilePage() {
 
         {/* Progress & Achievements */}
         {(levels.length > 0 || student.studentLatestLevelName || student.studentEliteSwimmer) && (
-          <Section title="Progress & Achievements" icon={<Award className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)">
+          <Section title={t('profile.progress')} icon={<Award className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)">
             {student.studentLatestLevelName && (
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-bold rounded-full px-3 py-1"

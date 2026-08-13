@@ -10,10 +10,10 @@ import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
 import {
   getStoredToken, getProfile, getGroupRegistrations, getGroupAttendanceSummary,
   getPrivatePackages, getGroupSessions, getPrivateSessions, getPaymentSummary,
-  getNotifications,
+  getNotifications, getGroupPaymentsDue,
   type ProfileDto, type RegistrationDto, type AttendanceSummaryDto,
   type PrivatePackageDto, type SessionDto, type PrivateSessionDto,
-  type PaymentSummaryDto, type NotificationDto,
+  type PaymentSummaryDto, type NotificationDto, type GroupPaymentDueDto,
 } from '../api/pswmApi';
 
 const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
@@ -61,7 +61,8 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   const [attendance, setAttendance] = useState<AttendanceSummaryDto[]>([]);
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
   const [groupSessions, setGroupSessions] = useState<SessionDto[]>([]);
-  const [privSessions, setPrivSessions] = useState<PrivateSessionDto[]>([]);
+  const [privSessions, setPrivSessions] = useState<Record<number, PrivateSessionDto[]>>({});
+  const [groupDues, setGroupDues] = useState<GroupPaymentDueDto[]>([]);
   const [payments, setPayments] = useState<PaymentSummaryDto | null>(null);
   const [announcement, setAnnouncement] = useState<NotificationDto | null>(null);
 
@@ -70,7 +71,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
     (async () => {
       const today = new Date();
       const ahead = new Date(); ahead.setDate(ahead.getDate() + 14);
-      const [p, regs, att, pkgs, gs, pay, notifs] = await Promise.allSettled([
+      const [p, regs, att, pkgs, gs, pay, notifs, dues] = await Promise.allSettled([
         getProfile(),
         getGroupRegistrations(),
         getGroupAttendanceSummary(),
@@ -78,12 +79,14 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         getGroupSessions(undefined, iso(today), iso(ahead)),
         getPaymentSummary(),
         getNotifications(),
+        getGroupPaymentsDue(),
       ]);
       if (p.status === 'fulfilled') setProfile(p.value);
       if (regs.status === 'fulfilled') setRegistrations(regs.value);
       if (att.status === 'fulfilled') setAttendance(att.value);
       if (gs.status === 'fulfilled') setGroupSessions(gs.value);
       if (pay.status === 'fulfilled') setPayments(pay.value);
+      if (dues.status === 'fulfilled') setGroupDues(dues.value);
 
       if (notifs.status === 'fulfilled') {
         const cutoff = Date.now() - 30 * 86400000;
@@ -95,12 +98,16 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
       if (pkgs.status === 'fulfilled') {
         setPackages(pkgs.value);
-        // Upcoming private sessions for the (max 2) open packages
+        // Upcoming private sessions per open package (max 2)
         const open = pkgs.value.filter((k) => k.sessionsLeft > 0).slice(0, 2);
         const results = await Promise.allSettled(
           open.map((k) => getPrivateSessions(k.packageId, { dateFrom: iso(today), dateTo: iso(ahead) })),
         );
-        setPrivSessions(results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])));
+        const byPackage: Record<number, PrivateSessionDto[]> = {};
+        results.forEach((r, i) => {
+          if (r.status === 'fulfilled') byPackage[open[i].packageId] = r.value;
+        });
+        setPrivSessions(byPackage);
       }
       setLoading(false);
     })();
@@ -122,7 +129,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         label: s.className ?? 'Group session', location: s.locationNickName ?? '',
       });
     }
-    for (const s of privSessions) {
+    for (const s of Object.values(privSessions).flat()) {
       const state = (s.privateSessionState ?? '').toLowerCase().trim();
       if (state === 'cancelled' || state === 'canceled') continue;
       const when = combine(s.privateSessionDate, s.privateSessionTime);
@@ -258,9 +265,22 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {registrations.map((reg) => {
                 const summary = attendance.find((a) => a.registrationId === reg.registrationId);
-                const names = [reg.className1, reg.className2, reg.className3].filter(Boolean).join(' · ');
+                const classNames = [reg.className1, reg.className2, reg.className3].filter(Boolean) as string[];
+                const names = classNames.join(' · ');
                 const pct = summary && summary.totalSessions > 0
                   ? Math.round((summary.attendedSessions / summary.totalSessions) * 100) : null;
+                // Weekly schedule + next session, from this registration's class sessions
+                const mySessions = groupSessions.filter((s) => s.className != null && classNames.includes(s.className));
+                const slots = [...new Set(mySessions
+                  .filter((s) => s.classDay || s.classTimeFrom)
+                  .map((s) => [s.classDay, s.classTimeFrom].filter(Boolean).join(' ')))].slice(0, 3);
+                const upNow = new Date();
+                const upcoming = mySessions
+                  .map((s) => ({ status: (s.sessionStatus ?? '').toLowerCase().trim(), when: combine(s.sessionDate, s.classTimeFrom) }))
+                  .filter((x): x is { status: string; when: Date } =>
+                    x.when != null && x.when >= upNow && x.status !== 'cancelled' && x.status !== 'canceled')
+                  .sort((a, b) => a.when.getTime() - b.when.getTime())[0];
+                const due = groupDues.find((d) => d.registrationId === reg.registrationId && d.dueAmount > 0);
                 return (
                   <Link to="/registrations" key={reg.registrationId}
                     className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
@@ -274,6 +294,26 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                     <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
                       {[reg.semesterName, reg.locationNickName].filter(Boolean).join(' · ')}
                     </p>
+                    {slots.length > 0 && (
+                      <p className="text-xs mt-1.5 flex items-center gap-1.5" style={{ color: '#475569' }}>
+                        <Clock className="size-3" style={{ color: GROUP_C, flexShrink: 0 }} />
+                        <span className="font-semibold">{slots.join('  ·  ')}</span>
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1.5" style={{ flexWrap: 'wrap' }}>
+                      {upcoming && (
+                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
+                          style={{ background: 'rgba(26,111,191,0.10)', color: GROUP_C }}>
+                          Next: {dayLabel(upcoming.when)}{upcoming.when.getHours() !== 23 ? ` · ${upcoming.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
+                        </span>
+                      )}
+                      {due && (
+                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
+                          style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
+                          Due: {due.dueAmount.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
                     {pct != null && (
                       <div className="mt-3">
                         <div className="flex justify-between items-center mb-1">
@@ -303,6 +343,12 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                 const used = k.countAttended;
                 const pct = k.packageNumberOfSessions > 0 ? Math.round((used / k.packageNumberOfSessions) * 100) : 0;
                 const low = k.sessionsLeft > 0 && k.sessionsLeft <= 2;
+                const pkNow = new Date();
+                const nextPriv = (privSessions[k.packageId] ?? [])
+                  .map((s) => ({ state: (s.privateSessionState ?? '').toLowerCase().trim(), when: combine(s.privateSessionDate, s.privateSessionTime) }))
+                  .filter((x): x is { state: string; when: Date } =>
+                    x.when != null && x.when >= pkNow && x.state !== 'cancelled' && x.state !== 'canceled')
+                  .sort((a, b) => a.when.getTime() - b.when.getTime())[0];
                 return (
                   <Link to="/private" key={k.packageId}
                     className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
@@ -321,6 +367,20 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                     </div>
                     <div className="h-2 rounded-full overflow-hidden mt-3" style={{ background: '#F1F5F9' }}>
                       <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${PRIVATE_C}, #8B5CF6)` }} />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2" style={{ flexWrap: 'wrap' }}>
+                      {nextPriv && (
+                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
+                          style={{ background: 'rgba(109,40,217,0.08)', color: PRIVATE_C }}>
+                          Next: {dayLabel(nextPriv.when)}{nextPriv.when.getHours() !== 23 ? ` · ${nextPriv.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
+                        </span>
+                      )}
+                      {k.duePayment > 0 && (
+                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
+                          style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
+                          Due: {k.duePayment.toLocaleString()} {k.packageCurrency ?? ''}
+                        </span>
+                      )}
                     </div>
                     {low && (
                       <p className="text-xs font-bold mt-2 inline-flex items-center gap-1 rounded-full px-2 py-1"

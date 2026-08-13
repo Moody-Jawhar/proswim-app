@@ -96,13 +96,23 @@ export function NewsPage() {
               className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
             >
               {n.newsImageURL && (
-                <img
-                  src={n.newsImageURL}
-                  alt=""
-                  className="w-full object-cover"
-                  style={{ maxHeight: 180 }}
-                  loading="lazy"
-                />
+                n.newsImageURL.toLowerCase().split('?')[0].endsWith('.pdf') ? (
+                  <button
+                    onClick={() => window.open(n.newsImageURL!)}
+                    className="w-full flex items-center justify-center gap-2 py-3"
+                    style={{ background: 'rgba(239,68,68,0.08)' }}
+                  >
+                    <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 View document (PDF)</span>
+                  </button>
+                ) : (
+                  <img
+                    src={n.newsImageURL}
+                    alt=""
+                    className="w-full object-cover"
+                    style={{ maxHeight: 180 }}
+                    loading="lazy"
+                  />
+                )
               )}
               <div className="p-4">
                 <p className="text-xs text-slate-400">{formatDate(n.newsDate)}</p>

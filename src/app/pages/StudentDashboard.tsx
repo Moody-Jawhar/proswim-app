@@ -1,174 +1,156 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Loader2, MapPin, Award, CalendarClock, Users, GraduationCap, Wallet,
+  Megaphone, CheckCircle2, ChevronRight, MessageCircle, UserCog, Clock,
+} from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
 import {
-  Calendar, Clock, MapPin, Award, Users, ChevronRight,
-  Target, AlertCircle, Loader2, BookOpen, Waves, Newspaper
-} from 'lucide-react';
-import { Progress } from '../components/Progress';
-import { SwimTimes } from '../components/SwimTimes';
-import {
-  getStoredToken,
-  getProfile,
-  getGroupRegistrations,
-  getGroupAttendanceSummary,
-  getPrivatePackages,
-  type ProfileDto,
-  type RegistrationDto,
-  type AttendanceSummaryDto,
-  type PrivatePackageDto,
+  getStoredToken, getProfile, getGroupRegistrations, getGroupAttendanceSummary,
+  getPrivatePackages, getGroupSessions, getPrivateSessions, getPaymentSummary,
+  getNotifications,
+  type ProfileDto, type RegistrationDto, type AttendanceSummaryDto,
+  type PrivatePackageDto, type SessionDto, type PrivateSessionDto,
+  type PaymentSummaryDto, type NotificationDto,
 } from '../api/pswmApi';
-
-interface MockCourse {
-  id: string;
-  name: string;
-  level: string;
-  schedule: string;
-  location: string;
-  instructor: string;
-  nextClass: string;
-  progress: number;
-  skills: string[];
-  completedSkills: string[];
-}
-
-const MOCK_COURSES: Record<string, MockCourse[]> = {
-  'sanadalaghbar@gmail.com': [
-    {
-      id: '1',
-      name: 'Fundamentals - Dolphin',
-      level: 'Beginner 3',
-      schedule: 'Tue & Thu, 3:30 PM',
-      location: 'Achrafieh Pool',
-      instructor: 'Coach Lara',
-      nextClass: '2025-01-07',
-      progress: 45,
-      skills: ['Front crawl 15m', 'Backstroke 15m', 'Treading water 30 sec', 'Underwater swimming 5m', 'Streamline position', 'Flip turn basics'],
-      completedSkills: ['Front crawl 15m', 'Backstroke 15m', 'Treading water 30 sec'],
-    },
-    {
-      id: '2',
-      name: 'Active Start - Seal',
-      level: 'Beginner 1',
-      schedule: 'Saturday, 10:00 AM',
-      location: 'Achrafieh Pool',
-      instructor: 'Coach Rami',
-      nextClass: '2025-01-04',
-      progress: 70,
-      skills: ['Water confidence', 'Floating on back', 'Kicking with kickboard', 'Blowing bubbles', 'Underwater exploration', 'Safe pool entry'],
-      completedSkills: ['Water confidence', 'Floating on back', 'Kicking with kickboard', 'Blowing bubbles', 'Safe pool entry'],
-    },
-  ],
-};
 
 const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
 
-const QUICK_TILES = [
-  { icon: BookOpen, label: 'GROUP REGISTRATIONS', href: '/registrations', slide: 1 },
-  { icon: Waves,    label: 'PRIVATE PACKAGES',    href: '/private',       slide: 2 },
-] as const;
+const BRAND = '#1e5c97';
+const GROUP_C = '#1A6FBF';
+const PRIVATE_C = '#6D28D9';
 
-interface ApiCourse {
-  id: number;
-  names: string[];
-  semester: string;
+interface NextSession {
+  kind: 'Group' | 'Private';
+  when: Date;
+  time: string;
+  label: string;
   location: string;
-  attendancePercent: number | null;
-  totalSessions: number;
-  attendedSessions: number;
-  stopped: boolean;
 }
 
-interface StudentDashboardProps {
-  userName: string;
-  userEmail: string;
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+function combine(dateStr: string | null, timeStr: string | null): Date | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return null;
+  const m = (timeStr ?? '').match(/^(\d{1,2}):(\d{2})/);
+  if (m) d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+  else d.setHours(23, 59, 0, 0); // date-only sorts after timed same-day sessions
+  return d;
 }
 
-export function StudentDashboard({ userName, userEmail }: StudentDashboardProps) {
+function dayLabel(d: Date): string {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const that = new Date(d); that.setHours(0, 0, 0, 0);
+  const diff = Math.round((that.getTime() - today.getTime()) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+}
+
+export function StudentDashboard({ userName }: { userName: string; userEmail?: string }) {
+  const navigate = useNavigate();
   const isRealAuth = !!getStoredToken();
 
+  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileDto | null>(null);
-  const [apiCourses, setApiCourses] = useState<ApiCourse[]>([]);
-  const [privatePackages, setPrivatePackages] = useState<PrivatePackageDto[]>([]);
-  const [apiLoading, setApiLoading] = useState(isRealAuth);
-  const [apiError, setApiError] = useState('');
-
-  const mockCourses = MOCK_COURSES[userEmail] || [];
-
-  const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'courses' | 'times' | 'payments'>('courses');
+  const [registrations, setRegistrations] = useState<RegistrationDto[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceSummaryDto[]>([]);
+  const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
+  const [groupSessions, setGroupSessions] = useState<SessionDto[]>([]);
+  const [privSessions, setPrivSessions] = useState<PrivateSessionDto[]>([]);
+  const [payments, setPayments] = useState<PaymentSummaryDto | null>(null);
+  const [announcement, setAnnouncement] = useState<NotificationDto | null>(null);
 
   useEffect(() => {
-    if (!isRealAuth) return;
-
+    if (!isRealAuth) { setLoading(false); return; }
     (async () => {
-      try {
-        setApiLoading(true);
-        setApiError('');
+      const today = new Date();
+      const ahead = new Date(); ahead.setDate(ahead.getDate() + 14);
+      const [p, regs, att, pkgs, gs, pay, notifs] = await Promise.allSettled([
+        getProfile(),
+        getGroupRegistrations(),
+        getGroupAttendanceSummary(),
+        getPrivatePackages(),
+        getGroupSessions(undefined, iso(today), iso(ahead)),
+        getPaymentSummary(),
+        getNotifications(),
+      ]);
+      if (p.status === 'fulfilled') setProfile(p.value);
+      if (regs.status === 'fulfilled') setRegistrations(regs.value);
+      if (att.status === 'fulfilled') setAttendance(att.value);
+      if (gs.status === 'fulfilled') setGroupSessions(gs.value);
+      if (pay.status === 'fulfilled') setPayments(pay.value);
 
-        const [profileResult, registrationsResult, attendanceSummaryResult, packagesResult] =
-          await Promise.allSettled([
-            getProfile(),
-            getGroupRegistrations(),
-            getGroupAttendanceSummary(),
-            getPrivatePackages(),
-          ]);
-
-        const profileData = profileResult.status === 'fulfilled' ? profileResult.value : null;
-        const registrations = registrationsResult.status === 'fulfilled' ? registrationsResult.value : [];
-        const attendanceSummary = attendanceSummaryResult.status === 'fulfilled' ? attendanceSummaryResult.value : [];
-        const packages = packagesResult.status === 'fulfilled' ? packagesResult.value : [];
-
-        setProfile(profileData);
-        setPrivatePackages(packages);
-
-        const courses: ApiCourse[] = registrations.map((reg: RegistrationDto) => {
-          const summary = attendanceSummary.find(
-            (a: AttendanceSummaryDto) => a.registrationId === reg.registrationId
-          );
-          const names = [reg.className1, reg.className2, reg.className3].filter(Boolean) as string[];
-          const attendancePercent = summary && summary.totalSessions > 0
-            ? Math.round((summary.attendedSessions / summary.totalSessions) * 100)
-            : null;
-
-          return {
-            id: reg.registrationId,
-            names: names.length > 0 ? names : [reg.semesterName || 'Class'],
-            semester: reg.semesterName || '',
-            location: reg.locationNickName || '',
-            attendancePercent,
-            totalSessions: summary?.totalSessions ?? 0,
-            attendedSessions: summary?.attendedSessions ?? 0,
-            stopped: reg.registrationStudentStopped ?? false,
-          };
-        });
-
-        setApiCourses(courses);
-      } catch {
-        // individual endpoint errors handled above via allSettled
-      } finally {
-        setApiLoading(false);
+      if (notifs.status === 'fulfilled') {
+        const cutoff = Date.now() - 30 * 86400000;
+        const important = notifs.value.find((n) =>
+          ['urgent', 'announcement', 'schedule', 'competition'].includes((n.type ?? '').toLowerCase())
+          && new Date(n.date).getTime() > cutoff);
+        setAnnouncement(important ?? null);
       }
+
+      if (pkgs.status === 'fulfilled') {
+        setPackages(pkgs.value);
+        // Upcoming private sessions for the (max 2) open packages
+        const open = pkgs.value.filter((k) => k.sessionsLeft > 0).slice(0, 2);
+        const results = await Promise.allSettled(
+          open.map((k) => getPrivateSessions(k.packageId, { dateFrom: iso(today), dateTo: iso(ahead) })),
+        );
+        setPrivSessions(results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])));
+      }
+      setLoading(false);
     })();
   }, [isRealAuth]);
 
-  const firstName = (isRealAuth && profile
-    ? profile.studentFirstName
-    : userName.split(' ')[0]) || userName.split(' ')[0];
+  const firstName = (profile?.studentFirstName || userName.split(' ')[0]) ?? '';
 
-  const currentLevel = isRealAuth && profile
-    ? profile.studentLatestLevelName
-    : null;
+  // ── Next session across both programs ────────────────────────────────────
+  const nextSession: NextSession | null = useMemo(() => {
+    const now = new Date();
+    const cands: NextSession[] = [];
+    for (const s of groupSessions) {
+      const status = (s.sessionStatus ?? '').toLowerCase().trim();
+      if (status === 'cancelled' || status === 'canceled') continue;
+      const when = combine(s.sessionDate, s.classTimeFrom);
+      if (!when || when < now) continue;
+      cands.push({
+        kind: 'Group', when, time: s.classTimeFrom ?? '',
+        label: s.className ?? 'Group session', location: s.locationNickName ?? '',
+      });
+    }
+    for (const s of privSessions) {
+      const state = (s.privateSessionState ?? '').toLowerCase().trim();
+      if (state === 'cancelled' || state === 'canceled') continue;
+      const when = combine(s.privateSessionDate, s.privateSessionTime);
+      if (!when || when < now) continue;
+      cands.push({
+        kind: 'Private', when, time: s.privateSessionTime ?? '',
+        label: s.coachFullName ? `Private with ${s.coachFullName}` : 'Private session', location: '',
+      });
+    }
+    cands.sort((a, b) => a.when.getTime() - b.when.getTime());
+    return cands[0] ?? null;
+  }, [groupSessions, privSessions]);
 
+  const activePackages = packages.filter((k) => k.sessionsLeft > 0 || (k.packageStatus ?? '').toLowerCase() === 'open');
+  const totalDue = (payments?.totalGroupDue ?? 0) + (payments?.totalPrivateDue ?? 0);
+  const attTotals = attendance.reduce(
+    (acc, a) => ({ total: acc.total + a.totalSessions, attended: acc.attended + a.attendedSessions }),
+    { total: 0, attended: 0 },
+  );
+  const attPercent = attTotals.total > 0 ? Math.round((attTotals.attended / attTotals.total) * 100) : null;
 
-  if (apiLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-20">
-        <MobileHeader title="My Dashboard" showSignOut showBell />
+        <MobileHeader title="Home" showSignOut showBell />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading your data...</p>
+          <Loader2 className="size-8 animate-spin" style={{ color: BRAND }} />
+          <p className="text-sm" style={{ color: '#64748B' }}>Getting everything ready…</p>
         </div>
         <MobileNav />
       </div>
@@ -176,182 +158,249 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
-      <MobileHeader title="My Dashboard" showSignOut showBell />
+    <div className="min-h-screen bg-transparent pb-24">
+      <MobileHeader title="Home" showSignOut showBell />
 
-      {/* Welcome card */}
-      <div className="px-4 pt-4 pb-0">
-        <div className="rounded-3xl px-6 py-6 relative overflow-hidden" style={{ minHeight: 140 }}>
+      <div className="px-4 pt-4">
+        {/* ── Hero: identity, calm and compact ── */}
+        <div className="rounded-2xl relative overflow-hidden mb-4" style={{ minHeight: 116 }}>
           <img src={SLIDE(3)} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(6,30,60,0.88) 0%,rgba(30,92,151,0.72) 100%)' }} />
-          <p className="text-xs font-bold tracking-widest uppercase relative" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>Welcome back</p>
-          <p className="text-3xl font-black mt-1 relative" style={{ color: '#ffffff', letterSpacing: '-0.01em' }}>Hi, {firstName}! 👋</p>
-          {currentLevel && (
-            <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full relative" style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <Award className="size-3.5" style={{ color: '#7DD3FC' }} />
-              <span className="text-xs font-bold tracking-wide" style={{ color: '#7DD3FC' }}>{currentLevel}</span>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(120deg, rgba(9,26,48,0.92) 0%, rgba(30,92,151,0.78) 70%, rgba(45,125,196,0.6) 100%)' }} />
+          <div className="relative px-5 py-4">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.14em' }}>
+                  Welcome back
+                </p>
+                <p className="font-display text-2xl mt-0.5" style={{ color: '#fff' }}>{firstName}</p>
+              </div>
+              {profile?.studentPhotoUrl && (
+                <img src={profile.studentPhotoUrl} alt="" className="rounded-full object-cover"
+                  style={{ width: 44, height: 44, border: '2px solid rgba(255,255,255,0.5)', flexShrink: 0 }} />
+              )}
             </div>
-          )}
-          {isRealAuth && profile?.locationNickName && (
-            <p className="text-xs mt-2 relative flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              <MapPin className="size-3.5" />
-              {profile.locationNickName}
-            </p>
-          )}
-          {!isRealAuth && (
-            <p className="text-sm mt-2 relative" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              Track your progress and view upcoming classes
-            </p>
-          )}
+            <div className="mt-2">
+              <SwimmerSwitcher />
+            </div>
+            <div className="flex items-center gap-2 mt-2" style={{ flexWrap: 'wrap' }}>
+              {profile?.studentLatestLevelName && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                  style={{ background: 'rgba(255,255,255,0.16)', color: '#BAE6FD' }}>
+                  <Award className="size-3" /> {profile.studentLatestLevelName}
+                </span>
+              )}
+              {profile?.locationNickName && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                  style={{ background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.75)' }}>
+                  <MapPin className="size-3" /> {profile.locationNickName}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="px-4 mt-4 space-y-4">
-
-        {apiError && (
-          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-2xl p-4">
-            <AlertCircle className="size-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700">{apiError}</p>
+        {/* ── Important announcement ── */}
+        {announcement && (
+          <div className="rounded-2xl p-4 mb-4 flex items-start gap-3"
+            style={(announcement.type ?? '').toLowerCase() === 'urgent'
+              ? { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }
+              : { background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
+            <Megaphone className="size-4 mt-0.5" style={{ color: (announcement.type ?? '').toLowerCase() === 'urgent' ? '#DC2626' : '#B45309', flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <p className="text-xs font-bold uppercase tracking-wide"
+                style={{ color: (announcement.type ?? '').toLowerCase() === 'urgent' ? '#DC2626' : '#B45309' }}>
+                {(announcement.type ?? '').toLowerCase() === 'urgent' ? 'Urgent' : 'Announcement'}
+              </p>
+              <p className="text-sm mt-0.5 text-slate-900">{announcement.desc}</p>
+            </div>
           </div>
         )}
 
-        {/* Quick Access grid */}
-        <div>
-          <div className="grid grid-cols-2 gap-3 mx-12">
-            {QUICK_TILES.map(({ icon: Icon, label, href, slide }) => (
-              <Link
-                key={label}
-                to={href}
-                className="rounded-2xl active:scale-95 transition-transform relative overflow-hidden"
-                style={{ height: 90 }}
-              >
-                <img src={SLIDE(slide)} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,35,70,0.70)' }} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                  <Icon size={24} color="rgba(255,255,255,0.92)" strokeWidth={1.8} />
-                  <span className="text-[10px] font-black tracking-widest" style={{ color: '#ffffff', letterSpacing: '0.10em' }}>{label}</span>
+        {/* ── Up next ── */}
+        <Section icon={<CalendarClock className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title="Up next" />
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5">
+          {nextSession ? (
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl text-center px-3 py-2" style={{ background: 'rgba(30,92,151,0.07)', minWidth: 64 }}>
+                <p className="num-stat text-2xl font-bold" style={{ color: BRAND }}>{nextSession.when.getDate()}</p>
+                <p className="text-xs font-bold uppercase" style={{ color: '#64748B' }}>
+                  {nextSession.when.toLocaleDateString(undefined, { month: 'short' })}
+                </p>
+              </div>
+              <div className="flex-1" style={{ minWidth: 0 }}>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold rounded-full px-2 py-0.5"
+                    style={nextSession.kind === 'Group'
+                      ? { background: 'rgba(26,111,191,0.12)', color: GROUP_C }
+                      : { background: 'rgba(109,40,217,0.10)', color: PRIVATE_C }}>
+                    {nextSession.kind}
+                  </span>
+                  <span className="text-sm font-bold text-slate-900" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {nextSession.label}
+                  </span>
                 </div>
-              </Link>
-            ))}
-          </div>
-
-          {/* News — full-width card */}
-          {isRealAuth && (
-            <Link
-              to="/news"
-              className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-2 bg-white border border-slate-100 shadow-sm"
-            >
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(30,92,151,0.12)' }}>
-                <Newspaper className="size-5 text-[#1e5c97]" />
+                <p className="text-sm mt-1 flex items-center gap-2" style={{ color: '#64748B' }}>
+                  <span className="font-semibold" style={{ color: '#0F172A' }}>{dayLabel(nextSession.when)}</span>
+                  {nextSession.time && <span className="inline-flex items-center gap-1"><Clock className="size-3" /> {nextSession.time}</span>}
+                  {nextSession.location && <span className="inline-flex items-center gap-1"><MapPin className="size-3" /> {nextSession.location}</span>}
+                </p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black tracking-wide uppercase text-slate-800">News</p>
-                <p className="text-xs mt-0.5 text-slate-400">What's happening at ProSwim</p>
-              </div>
-              <ChevronRight className="size-4 shrink-0 text-slate-300" />
-            </Link>
-          )}
-
-          {/* Skills Checklist — full-width card */}
-          {isRealAuth && (
-            <Link
-              to="/checklist"
-              className="flex items-center gap-4 rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform mt-2 bg-white border border-slate-100 shadow-sm"
-            >
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(52,211,153,0.18)' }}>
-                <Target className="size-5 text-emerald-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black tracking-wide uppercase text-slate-800">Skills Checklist</p>
-                <p className="text-xs mt-0.5 text-slate-400">Track your skill progress</p>
-              </div>
-              <ChevronRight className="size-4 shrink-0 text-slate-300" />
-            </Link>
+            </div>
+          ) : (
+            <p className="text-sm py-1" style={{ color: '#64748B' }}>No upcoming sessions in the next two weeks.</p>
           )}
         </div>
 
-        {/* Segmented tabs */}
-        <div className="bg-white rounded-2xl p-1 flex gap-1 border border-slate-100 shadow-sm">
-          <TabButton active={activeTab === 'courses'} onClick={() => setActiveTab('courses')}>
-            {isRealAuth ? 'Group Registrations' : 'My Courses'}
-          </TabButton>
-          {isRealAuth && privatePackages.length > 0 && (
-            <TabButton active={activeTab === 'payments'} onClick={() => setActiveTab('payments')}>
-              Private Packages
-            </TabButton>
-          )}
-          {!isRealAuth && (
-            <TabButton active={activeTab === 'times'} onClick={() => setActiveTab('times')}>
-              Swim Times
-            </TabButton>
-          )}
-        </div>
-
-        {activeTab === 'courses' && (
+        {/* ── Group training ── */}
+        {registrations.length > 0 && (
           <>
-            {isRealAuth ? (
-              <div className="space-y-3">
-                {apiCourses.length === 0 && !apiError && (
-                  <div className="text-center py-10 text-slate-400 text-sm">
-                    No registrations found.
-                  </div>
-                )}
-                {apiCourses.map((course) => (
-                  <ApiCourseCard
-                    key={course.id}
-                    course={course}
-                    isExpanded={expandedCourse === String(course.id)}
-                    onToggle={() =>
-                      setExpandedCourse(expandedCourse === String(course.id) ? null : String(course.id))
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {mockCourses.map((course) => (
-                  <MockCourseCard
-                    key={course.id}
-                    course={course}
-                    isExpanded={expandedCourse === course.id}
-                    onToggle={() =>
-                      setExpandedCourse(expandedCourse === course.id ? null : course.id)
-                    }
-                  />
-                ))}
-              </div>
-            )}
+            <Section icon={<Users className="size-4" style={{ color: GROUP_C }} />} tint="rgba(26,111,191,0.12)" title="Group training" />
+            <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {registrations.map((reg) => {
+                const summary = attendance.find((a) => a.registrationId === reg.registrationId);
+                const names = [reg.className1, reg.className2, reg.className3].filter(Boolean).join(' · ');
+                const pct = summary && summary.totalSessions > 0
+                  ? Math.round((summary.attendedSessions / summary.totalSessions) * 100) : null;
+                return (
+                  <Link to="/registrations" key={reg.registrationId}
+                    className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
+                    style={{ borderLeft: `4px solid ${GROUP_C}` }}>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold text-slate-900" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {names || reg.semesterName || 'Group classes'}
+                      </p>
+                      <ChevronRight className="size-4" style={{ color: '#CBD5E1', flexShrink: 0 }} />
+                    </div>
+                    <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
+                      {[reg.semesterName, reg.locationNickName].filter(Boolean).join(' · ')}
+                    </p>
+                    {pct != null && (
+                      <div className="mt-3">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-semibold" style={{ color: '#64748B' }}>Attendance</span>
+                          <span className="num-stat text-xs font-bold" style={{ color: GROUP_C }}>
+                            {summary!.attendedSessions}/{summary!.totalSessions} · {pct}%
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ background: '#F1F5F9' }}>
+                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${GROUP_C}, #2d7dc4)` }} />
+                        </div>
+                      </div>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </>
         )}
 
-        {activeTab === 'payments' && isRealAuth && (
-          <div className="space-y-3">
-            {privatePackages.map((pkg) => (
-              <PrivatePackageCard key={pkg.packageId} pkg={pkg} />
-            ))}
+        {/* ── Private training ── */}
+        {activePackages.length > 0 && (
+          <>
+            <Section icon={<GraduationCap className="size-4" style={{ color: PRIVATE_C }} />} tint="rgba(109,40,217,0.10)" title="Private training" />
+            <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {activePackages.map((k) => {
+                const used = k.countAttended;
+                const pct = k.packageNumberOfSessions > 0 ? Math.round((used / k.packageNumberOfSessions) * 100) : 0;
+                const low = k.sessionsLeft > 0 && k.sessionsLeft <= 2;
+                return (
+                  <Link to="/private" key={k.packageId}
+                    className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
+                    style={{ borderLeft: `4px solid ${PRIVATE_C}` }}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div style={{ minWidth: 0 }}>
+                        <p className="text-sm font-bold text-slate-900">{k.packageName || 'Private package'}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
+                          {[k.coachFullName, k.locationNickName].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                      <div className="text-center" style={{ flexShrink: 0 }}>
+                        <p className="num-stat text-2xl font-bold" style={{ color: low ? '#B45309' : PRIVATE_C }}>{k.sessionsLeft}</p>
+                        <p className="text-xs font-semibold" style={{ color: '#94A3B8' }}>of {k.packageNumberOfSessions} left</p>
+                      </div>
+                    </div>
+                    <div className="h-2 rounded-full overflow-hidden mt-3" style={{ background: '#F1F5F9' }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${PRIVATE_C}, #8B5CF6)` }} />
+                    </div>
+                    {low && (
+                      <p className="text-xs font-bold mt-2 inline-flex items-center gap-1 rounded-full px-2 py-1"
+                        style={{ background: 'rgba(245,158,11,0.12)', color: '#B45309' }}>
+                        Sessions running low — time to renew
+                      </p>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── Payments ── */}
+        <Section icon={<Wallet className="size-4" style={{ color: totalDue > 0 ? '#DC2626' : '#047857' }} />}
+          tint={totalDue > 0 ? 'rgba(239,68,68,0.10)' : 'rgba(16,185,129,0.10)'} title="Payments" />
+        <Link to="/payment-history" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5 block active:scale-[0.99] transition-transform"
+          style={{ borderLeft: `4px solid ${totalDue > 0 ? '#DC2626' : '#10B981'}` }}>
+          {totalDue > 0 ? (
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-bold" style={{ color: '#B91C1C' }}>Outstanding balance</p>
+                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
+                  {(payments!.totalGroupDue > 0 ? ['group'] : []).concat(payments!.totalPrivateDue > 0 ? ['private'] : []).join(' + ')} payments pending — tap for details
+                </p>
+              </div>
+              <p className="num-stat text-2xl font-bold" style={{ color: '#B91C1C', flexShrink: 0 }}>
+                {totalDue.toLocaleString()}
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="size-5" style={{ color: '#059669', flexShrink: 0 }} />
+              <div>
+                <p className="text-sm font-bold" style={{ color: '#047857' }}>All payments settled</p>
+                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Tap to see your payment history</p>
+              </div>
+            </div>
+          )}
+        </Link>
+
+        {/* ── Attendance headline (when not shown per-course above) ── */}
+        {attPercent != null && registrations.length === 0 && (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-semibold" style={{ color: '#64748B' }}>Attendance this season</span>
+              <span className="num-stat text-sm font-bold" style={{ color: BRAND }}>{attPercent}%</span>
+            </div>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: '#F1F5F9' }}>
+              <div className="h-full rounded-full" style={{ width: `${attPercent}%`, background: `linear-gradient(90deg, ${BRAND}, #2d7dc4)` }} />
+            </div>
           </div>
         )}
 
-        {activeTab === 'times' && !isRealAuth && (
-          <div>
-            <p className="text-sm font-bold mb-4 text-[#1e5c97] flex items-center gap-2">
-              <Target className="size-5 text-[#1e5c97]" />
-              Swim Times & PBs
-            </p>
-            <SwimTimes studentEmail={userEmail} />
-          </div>
-        )}
-
-        {activeTab === 'courses' && !isRealAuth && (
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
-            <p className="text-sm font-bold mb-2 text-blue-900">Progress Tips</p>
-            <ul className="space-y-2 text-sm text-blue-800">
-              <li className="flex gap-2"><span>•</span><span>Practice regularly to improve faster</span></li>
-              <li className="flex gap-2"><span>•</span><span>Focus on technique over speed</span></li>
-              <li className="flex gap-2"><span>•</span><span>Ask your coach for feedback</span></li>
-            </ul>
-          </div>
-        )}
+        {/* ── Quick actions ── */}
+        <Section icon={<UserCog className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title="Quick actions" />
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button
+            onClick={() => {
+              const name = profile ? [profile.studentFirstName, profile.studentLastName].filter(Boolean).join(' ') : userName;
+              const text = `Hello ProSwim, I am ${name || 'a ProSwim parent'}. I would like to book a session.`;
+              window.open(`https://wa.me/96178949498?text=${encodeURIComponent(text)}`);
+            }}
+            className="rounded-2xl p-4 text-left active:scale-[0.98] transition-transform"
+            style={{ background: 'linear-gradient(135deg, #1e5c97, #2d7dc4)' }}
+          >
+            <MessageCircle className="size-5 mb-2" style={{ color: 'rgba(255,255,255,0.85)' }} />
+            <p className="text-sm font-bold text-white">Book a session</p>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.65)' }}>Chat with us on WhatsApp</p>
+          </button>
+          <button
+            onClick={() => navigate('/profile/personal')}
+            className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 text-left active:scale-[0.98] transition-transform"
+          >
+            <UserCog className="size-5 mb-2" style={{ color: BRAND }} />
+            <p className="text-sm font-bold text-slate-900">Request a change</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Update your details</p>
+          </button>
+        </div>
       </div>
 
       <MobileNav />
@@ -359,227 +408,17 @@ export function StudentDashboard({ userName, userEmail }: StudentDashboardProps)
   );
 }
 
-interface ApiCourseCardProps {
-  course: ApiCourse;
-  isExpanded: boolean;
-  onToggle: () => void;
-}
-
-function ApiCourseCard({ course, isExpanded, onToggle }: ApiCourseCardProps) {
+// Section header: consistent label treatment separating each area of the page.
+function Section({ icon, tint, title }: { icon: React.ReactNode; tint: string; title: string }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="w-full p-5 text-left active:bg-blue-50 transition-colors"
-      >
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#1e5c97] mb-1.5">
-              {course.names.join(' / ')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#1e5c97] rounded-full text-xs font-medium">
-                {course.semester}
-              </span>
-              {course.stopped && (
-                <span className="inline-block px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-xs font-medium">
-                  Stopped
-                </span>
-              )}
-            </div>
-          </div>
-          <ChevronRight
-            className={`size-5 text-slate-300 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
-          />
-        </div>
-
-        {course.location && (
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-3">
-            <MapPin className="size-4 text-[#1e5c97] shrink-0" />
-            <span>{course.location}</span>
-          </div>
-        )}
-
-        {course.attendancePercent != null && (
-          <div className="mt-1">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-slate-400">Attendance</span>
-              <span className="num-stat text-xs font-bold text-[#1e5c97]">
-                {course.attendancePercent}%
-              </span>
-            </div>
-            <Progress value={course.attendancePercent} className="h-1.5" />
-          </div>
-        )}
-      </button>
-
-      {isExpanded && (
-        <div className="px-5 pb-5 border-t border-slate-100 pt-4 space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Sessions attended</span>
-            <span className="text-slate-900 font-semibold">{course.attendedSessions} / {course.totalSessions}</span>
-          </div>
-          {course.location && (
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Location</span>
-              <span className="text-slate-900 font-semibold">{course.location}</span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function PrivatePackageCard({ pkg }: { pkg: PrivatePackageDto }) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-3">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-base font-semibold text-[#1e5c97]">{pkg.packageName}</p>
-          {pkg.coachFullName && (
-            <p className="text-sm text-slate-400 mt-0.5">Coach: {pkg.coachFullName}</p>
-          )}
-        </div>
-        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-          pkg.packageStatus === 'Active'
-            ? 'bg-emerald-100 text-emerald-700'
-            : 'bg-slate-100 text-slate-600'
-        }`}>
-          {pkg.packageStatus}
-        </span>
+    <div className="flex items-center gap-2 mb-2 px-1">
+      <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: tint }}>
+        {icon}
       </div>
-
-      {pkg.locationNickName && (
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <MapPin className="size-4 text-[#1e5c97] shrink-0" />
-          <span>{pkg.locationNickName}</span>
-        </div>
-      )}
-
-      <div className="flex justify-between text-sm pt-1 border-t border-slate-100">
-        <span className="text-slate-400">Net to pay</span>
-        <span className="text-slate-900 font-bold">
-          {pkg.packageNetToPay} {pkg.packageCurrency}
-        </span>
-      </div>
+      <p className="font-display text-xs uppercase" style={{ color: '#475569', letterSpacing: '0.12em', fontWeight: 700 }}>
+        {title}
+      </p>
+      <div className="flex-1" style={{ height: 1, background: 'rgba(100,116,139,0.12)' }} />
     </div>
-  );
-}
-
-interface MockCourseCardProps {
-  course: MockCourse;
-  isExpanded: boolean;
-  onToggle: () => void;
-}
-
-function MockCourseCard({ course, isExpanded, onToggle }: MockCourseCardProps) {
-  const nextClassDate = new Date(course.nextClass);
-
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="w-full p-5 text-left active:bg-blue-50 transition-colors"
-      >
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-base font-semibold text-[#1e5c97] mb-1.5">{course.name}</p>
-            <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#1e5c97] rounded-full text-xs font-medium">
-              {course.level}
-            </span>
-          </div>
-          <ChevronRight
-            className={`size-5 text-slate-300 transition-transform shrink-0 ml-2 ${isExpanded ? 'rotate-90' : ''}`}
-          />
-        </div>
-
-        <div className="space-y-1.5 mb-3">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Clock className="size-4 text-[#1e5c97] shrink-0" />
-            <span>{course.schedule}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Calendar className="size-4 text-[#1e5c97] shrink-0" />
-            <span>
-              Next:{' '}
-              {nextClassDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-xs text-slate-400">Progress</span>
-            <span className="text-xs font-bold text-[#1e5c97]">{course.progress}%</span>
-          </div>
-          <Progress value={course.progress} className="h-1.5" />
-        </div>
-      </button>
-
-      {isExpanded && (
-        <div className="px-5 pb-5 border-t border-slate-100 pt-4">
-          <div className="mb-4 space-y-1.5">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <MapPin className="size-4 text-[#1e5c97] shrink-0" />
-              <span>{course.location}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Users className="size-4 text-[#1e5c97] shrink-0" />
-              <span>{course.instructor}</span>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-slate-500 mb-3">Skills Progress</p>
-            <div className="space-y-2">
-              {course.skills.map((skill, index) => {
-                const done = course.completedSkills.includes(skill);
-                return (
-                  <div
-                    key={index}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-xl text-sm ${
-                      done
-                        ? 'bg-blue-50'
-                        : 'bg-slate-50'
-                    }`}
-                  >
-                    <span className={`text-sm font-bold shrink-0 ${done ? 'text-[#1e5c97]' : 'text-slate-300'}`}>
-                      {done ? '✓' : '○'}
-                    </span>
-                    <span className={done ? 'text-[#1e5c97] font-medium' : 'text-slate-400'}>
-                      {skill}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-
-interface TabButtonProps {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-function TabButton({ active, onClick, children }: TabButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${
-        active
-          ? 'text-white shadow-sm'
-          : 'text-slate-400'
-      }`}
-      style={active ? { background: 'linear-gradient(135deg,rgba(91,173,255,0.55) 0%,rgba(59,130,246,0.55) 100%)' } : undefined}
-    >
-      {children}
-    </button>
   );
 }

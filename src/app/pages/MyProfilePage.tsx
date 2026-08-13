@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
-import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, type StudentDto, type AttendanceSummaryDto } from '../api/pswmApi';
+import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
@@ -24,6 +24,7 @@ export function MyProfilePage() {
   const navigate = useNavigate();
   const [student, setStudent] = useState<StudentDto | null>(null);
   const [attendance, setAttendance] = useState<AttendanceSummaryDto[]>([]);
+  const [levels, setLevels] = useState<LevelHistoryDto[]>([]);
   const [groupCount, setGroupCount] = useState<number | null>(null);
   const [privateCount, setPrivateCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,15 +37,17 @@ export function MyProfilePage() {
     if (!user.studentId) { navigate('/dashboard'); return; }
     (async () => {
       try {
-        const [studentData, attendanceData, registrationsData, packagesData] = await Promise.allSettled([
+        const [studentData, attendanceData, registrationsData, packagesData, levelData] = await Promise.allSettled([
           getStudentById(user.studentId),
           getGroupAttendanceSummary(),
           getGroupRegistrations(),
           getPrivatePackages(),
+          getProfileLevelHistory(),
         ]);
         if (studentData.status === 'fulfilled') setStudent(studentData.value);
         else throw new Error('Failed to load profile');
         if (attendanceData.status === 'fulfilled') setAttendance(attendanceData.value);
+        if (levelData.status === 'fulfilled') setLevels(levelData.value);
         if (registrationsData.status === 'fulfilled') setGroupCount(registrationsData.value.length);
         if (packagesData.status === 'fulfilled') setPrivateCount(packagesData.value.length);
       } catch (e: unknown) {
@@ -119,9 +122,13 @@ export function MyProfilePage() {
             style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.22) 0%,rgba(176,138,255,0.18) 100%)' }}>
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.10)' }} />
             <div className="flex items-center gap-3 relative">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden"
                 style={{ background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)' }}>
-                <span className="text-[#1e5c97] text-base font-bold">{initials}</span>
+                {student.studentPhotoUrl ? (
+                  <img src={student.studentPhotoUrl} alt={fullName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[#1e5c97] text-base font-bold">{initials}</span>
+                )}
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
@@ -179,6 +186,9 @@ export function MyProfilePage() {
           {student.studentSchool && (
             <InfoRow icon={<GraduationCap className="size-4" style={{ color: '#F59E0B' }} />} label="School" value={student.studentSchool} />
           )}
+          {student.coachFullName && (
+            <InfoRow icon={<User className="size-4" style={{ color: '#10B981' }} />} label="Coach" value={student.coachFullName} />
+          )}
           {student.studentNationality1 && (
             <InfoRow icon={<Flag className="size-4" style={{ color: '#EF4444' }} />} label="Nationality"
               value={[student.studentNationality1, student.studentNationality2].filter(Boolean).join(' / ')} />
@@ -218,6 +228,43 @@ export function MyProfilePage() {
                 );
               })}
             </div>
+          </Section>
+        )}
+
+        {/* Progress & Achievements */}
+        {(levels.length > 0 || student.studentLatestLevelName || student.studentEliteSwimmer) && (
+          <Section title="Progress & Achievements" icon={<Award className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)">
+            {student.studentLatestLevelName && (
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold rounded-full px-3 py-1"
+                  style={{ background: 'rgba(139,92,246,0.12)', color: '#6D28D9' }}>
+                  Current level: {student.studentLatestLevelName}
+                </span>
+              </div>
+            )}
+            {levels.map((lv) => (
+              <div key={lv.levelHistoryId} className="flex items-start gap-3">
+                <div className="mt-1.5 shrink-0 rounded-full" style={{ width: 8, height: 8, background: '#8B5CF6' }} />
+                <div className="flex-1" style={{ minWidth: 0 }}>
+                  <p className="text-sm font-semibold text-slate-900">{lv.levelName || 'Level'}</p>
+                  <p className="text-xs" style={{ color: '#64748B' }}>
+                    {lv.levelDateFrom
+                      ? new Date(lv.levelDateFrom).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+                      : '—'}
+                    {' – '}
+                    {!lv.levelDateTo || new Date(lv.levelDateTo).getFullYear() > 2090
+                      ? 'present'
+                      : new Date(lv.levelDateTo).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </p>
+                  {lv.levelRemarks && <p className="text-xs mt-0.5" style={{ color: '#94A3B8' }}>{lv.levelRemarks}</p>}
+                </div>
+              </div>
+            ))}
+            {student.studentEliteSwimmer && (
+              <p className="text-xs" style={{ color: '#64748B' }}>
+                Competition results, medals and personal bests live in the <b>Competitive Portfolio</b> below.
+              </p>
+            )}
           </Section>
         )}
 

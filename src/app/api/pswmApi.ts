@@ -143,6 +143,8 @@ export interface ProfileDto {
   studentLatestLevelName: string | null;
   studentPrimaryLocationId: number | null;
   locationNickName: string | null;
+  studentPhotoUrl: string | null;
+  coachFullName: string | null;
   studentEmergencyContactName: string | null;
   studentEmergencyContactPhoneCode: string | null;
   studentEmergencyContactPhone: string | null;
@@ -436,6 +438,8 @@ export interface StudentDto {
   studentSpecialText: string | null;
   studentLatestLevelName: string | null;
   studentStartingDate: string | null;
+  studentPhotoUrl: string | null;
+  coachFullName: string | null;
 }
 
 export interface StudentProfileUpdateDto {
@@ -593,6 +597,41 @@ export interface CompPortfolioDto {
 
 export async function getCompPortfolio(): Promise<CompPortfolioDto> {
   return apiRequest<CompPortfolioDto>("/api/Comp/Portfolio");
+}
+
+// --- Family accounts (multi-child parents) ---
+// A family = swimmers sharing the account's main phone + staff-made links.
+// Switching re-issues a student token for the sibling; everything else in the
+// app then loads that swimmer's data automatically.
+
+export interface FamilyMemberDto {
+  studentId: number;
+  studentFullName: string | null;
+  studentDateOfBirth: string | null;
+  studentPhotoUrl: string | null;
+  studentLatestLevelName: string | null;
+  locationNickName: string | null;
+  isCurrent: boolean;
+}
+
+export async function getFamily(): Promise<FamilyMemberDto[]> {
+  return apiRequest<FamilyMemberDto[]>("/api/Family");
+}
+
+export async function switchStudent(studentId: number): Promise<void> {
+  const res = await apiRequest<{ token: string; studentId: number; studentFullName: string }>(
+    "/api/Family/Switch",
+    { method: "POST", body: JSON.stringify({ studentId }) },
+  );
+  setStoredToken(res.token);
+  const raw = localStorage.getItem("currentUser");
+  const user = raw ? JSON.parse(raw) : {};
+  localStorage.setItem("currentUser", JSON.stringify({
+    ...user,
+    name: res.studentFullName,
+    studentId: res.studentId,
+    role: "student",
+  }));
 }
 
 export async function getGroupRegistrations(): Promise<RegistrationDto[]> {

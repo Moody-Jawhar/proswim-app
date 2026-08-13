@@ -1,23 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&family=Yanone+Kaffeesatz:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,900&display=swap');
+/* Premium pairing: Sora (geometric, confident) for display and numbers,
+   Manrope (clean, professional) for body text. Replaces Mulish + Yanone
+   Kaffeesatz, which read as cheap at large sizes. */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import "./styles/tailwind.css";
 @import "./styles/theme.css";
 
-/* Geometric numeric font — apply to any big stat or number display */
+/* Numeric font — big stats align on tabular digits */
 .num-stat {
-  font-family: 'DM Sans', 'Futura', 'Century Gothic', system-ui, sans-serif;
+  font-family: 'Sora', 'Manrope', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
-/* Display face — same as the management portal (Yanone Kaffeesatz). Use on
-   hero titles and big headings, not on small labels. */
+/* Display face — hero titles and big headings, not small labels. */
 .font-display {
-  font-family: 'Yanone Kaffeesatz', 'Mulish', sans-serif;
-  letter-spacing: 0.01em;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 :root {
-  font-family: 'Mulish', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -51,6 +54,27 @@ body {
 
 /* Soft elevated card shadow */
 .shadow-soft { box-shadow: 0 6px 20px -10px rgba(30, 60, 100, 0.18); }
+
+/* ── App-open splash bubbles ──────────────────────────────────────
+   A brief burst when the app opens, then gone. Content screens never
+   run a permanent background animation. */
+@keyframes psBubbleUp {
+  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+  15%  { opacity: 0.55; }
+  100% { transform: translateY(-105vh) scale(1); opacity: 0; }
+}
+.splash-bubble {
+  position: absolute;
+  bottom: -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(45,125,196,0.16));
+  border: 1px solid rgba(45, 125, 196, 0.25);
+  animation: psBubbleUp 2.2s ease-in forwards;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-bubble { display: none; }
+}
 
 /* Gradient primary button */
 .btn-grad {

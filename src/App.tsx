@@ -54,11 +54,13 @@ import { NotificationsPage } from "./app/pages/NotificationsPage";
 import { NewsPage } from "./app/pages/NewsPage";
 import { LocationDetailPage } from "./app/pages/LocationDetailPage";
 import { PageTransition } from "./app/components/PageTransition";
+import { SplashBubbles } from "./app/components/SplashBubbles";
 
 export default function App() {
   return (
     <Router {...(!isCapacitor && { basename: "/Mobilev1" })}>
       <AndroidBackHandler />
+      <SplashBubbles />
       <PageTransition>
       <Routes>
         <Route path="/" element={<LandingPage />} />

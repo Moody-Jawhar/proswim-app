@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MobileNav } from "../components/MobileNav";
+import { LanguageButton } from "../components/LanguageButton";
+import { t } from "../i18n";
 import {
   ArrowRight, BadgeCheck, Calendar,
   MapPin, Users,
@@ -41,13 +43,16 @@ export function LandingPage() {
           <div className="flex items-center">
             <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
           </div>
-          {!isAuthenticated && (
-            <Link to="/signin"
-              className="px-4 py-2 rounded-xl bg-[#1e5c97] text-sm font-semibold"
-              style={{ color: "#ffffff" }}>
-              Sign In
-            </Link>
-          )}
+          <div className="flex items-center gap-1.5">
+            <LanguageButton />
+            {!isAuthenticated && (
+              <Link to="/signin"
+                className="px-4 py-2 rounded-xl bg-[#1e5c97] text-sm font-semibold"
+                style={{ color: "#ffffff" }}>
+                {t('nav.signin')}
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 

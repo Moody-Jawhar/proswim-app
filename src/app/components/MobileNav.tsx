@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Waves, User, Info } from 'lucide-react';
+import { Home, Waves, User, Info, Users, GraduationCap, Newspaper } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { t } from '../i18n';
 
@@ -13,12 +13,20 @@ export function MobileNav() {
     setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
   }, [location.pathname]);
 
-  const navItems = [
-    { path: '/', icon: Home, label: t('nav.home') },
-    { path: '/levels', icon: Waves, label: t('nav.levels') },
-    { path: isAuthenticated ? '/profile' : '/signin', icon: User, label: isAuthenticated ? t('nav.profile') : t('nav.signin') },
-    { path: '/about', icon: Info, label: t('nav.about') },
-  ];
+  // Signed in: the swimmer's world. Signed out: the public-facing pages.
+  const navItems = isAuthenticated
+    ? [
+        { path: '/profile', icon: User, label: t('nav.profile') },
+        { path: '/registrations', icon: Users, label: t('nav.group') },
+        { path: '/private', icon: GraduationCap, label: t('nav.private') },
+        { path: '/news', icon: Newspaper, label: t('nav.news') },
+      ]
+    : [
+        { path: '/', icon: Home, label: t('nav.home') },
+        { path: '/levels', icon: Waves, label: t('nav.levels') },
+        { path: '/news', icon: Newspaper, label: t('nav.news') },
+        { path: '/about', icon: Info, label: t('nav.about') },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-100 z-50"

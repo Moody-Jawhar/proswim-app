@@ -54,6 +54,9 @@ const en: Record<string, string> = {
   'nav.profile': 'Profile',
   'nav.signin': 'Sign In',
   'nav.about': 'About',
+  'nav.group': 'Group',
+  'nav.private': 'Private',
+  'nav.news': 'News',
 
   'home.title': 'Home',
   'home.welcome': 'Welcome back',
@@ -100,6 +103,9 @@ const fr: Record<string, string> = {
   'nav.profile': 'Profil',
   'nav.signin': 'Connexion',
   'nav.about': 'À propos',
+  'nav.group': 'Groupe',
+  'nav.private': 'Privé',
+  'nav.news': 'Actualités',
 
   'home.title': 'Accueil',
   'home.welcome': 'Bon retour',
@@ -146,6 +152,9 @@ const ar: Record<string, string> = {
   'nav.profile': 'الملف الشخصي',
   'nav.signin': 'تسجيل الدخول',
   'nav.about': 'حول',
+  'nav.group': 'جماعي',
+  'nav.private': 'خاص',
+  'nav.news': 'الأخبار',
 
   'home.title': 'الرئيسية',
   'home.welcome': 'مرحباً بعودتك',

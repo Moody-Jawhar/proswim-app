@@ -87,7 +87,7 @@ export function SchedulePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Schedule" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -99,7 +99,7 @@ export function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-24">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="My Schedule" showBack />
       <PageHero title="My Schedule" subtitle="Upcoming sessions & classes" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-4 pb-4 space-y-5">

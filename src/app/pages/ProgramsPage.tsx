@@ -13,7 +13,7 @@ export function ProgramsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Programs" showBack />
 
       <div className="px-4 py-6">

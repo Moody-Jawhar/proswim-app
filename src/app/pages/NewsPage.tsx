@@ -52,7 +52,7 @@ export function NewsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="News" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -64,7 +64,7 @@ export function NewsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="News" showBack />
       <PageHero title="News" subtitle="What's happening at ProSwim" slide={3} />
       <div className="px-4 pt-3 pb-4 space-y-3">

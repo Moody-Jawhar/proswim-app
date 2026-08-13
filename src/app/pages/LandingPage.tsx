@@ -5,8 +5,9 @@ import { LanguageButton } from "../components/LanguageButton";
 import { t } from "../i18n";
 import {
   ArrowRight, BadgeCheck, Calendar,
-  MapPin, Users,
+  MapPin, Users, LogOut,
 } from "lucide-react";
+import { unsubscribeFromStudentTopic } from "../utils/notifications";
 
 const proswimLogo = "https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png";
 const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
@@ -45,7 +46,24 @@ export function LandingPage() {
           </div>
           <div className="flex items-center gap-1.5">
             <LanguageButton />
-            {!isAuthenticated && (
+            {isAuthenticated ? (
+              <button
+                onClick={() => {
+                  try {
+                    const u = JSON.parse(localStorage.getItem("currentUser") || "{}");
+                    if (u.studentId) unsubscribeFromStudentTopic(u.studentId);
+                  } catch { /* ignore */ }
+                  localStorage.removeItem("isAuthenticated");
+                  localStorage.removeItem("currentUser");
+                  localStorage.removeItem("authToken");
+                  setIsAuthenticated(false);
+                }}
+                className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                aria-label="Sign Out"
+              >
+                <LogOut className="size-5 text-slate-400" />
+              </button>
+            ) : (
               <Link to="/signin"
                 className="px-4 py-2 rounded-xl bg-[#1e5c97] text-sm font-semibold"
                 style={{ color: "#ffffff" }}>

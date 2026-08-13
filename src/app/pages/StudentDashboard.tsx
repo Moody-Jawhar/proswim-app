@@ -154,7 +154,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('home.title')} showSignOut showBell />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 animate-spin" style={{ color: BRAND }} />
@@ -166,7 +166,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-24">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title={t('home.title')} showSignOut showBell />
 
       <div className="px-4 pt-4">

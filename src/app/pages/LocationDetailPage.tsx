@@ -23,7 +23,7 @@ export function LocationDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Location" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -36,7 +36,7 @@ export function LocationDetailPage() {
 
   if (error || !location) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Location" showBack />
         <div className="flex items-center gap-2 m-4 bg-red-50 border border-red-100 rounded-2xl p-4">
           <AlertCircle className="size-4 text-red-500 shrink-0" />
@@ -64,7 +64,7 @@ export function LocationDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title={location.locationNickName || 'Location'} showBack />
       <PageHero
         title={location.locationNickName || 'Location'}

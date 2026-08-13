@@ -49,7 +49,7 @@ export function ChangePasswordPage() {
     'w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base';
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Change Password" showBack={!required} />
 
       <div className="px-4 pt-6 space-y-4">

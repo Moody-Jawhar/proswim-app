@@ -23,6 +23,9 @@ export function MobileHeader({
 }: MobileHeaderProps) {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  // Sign-out is always available while signed in, on every screen.
+  const authed = localStorage.getItem('isAuthenticated') === 'true';
+  const canSignOut = showSignOut || authed;
 
   useEffect(() => {
     if (!showBell) return;
@@ -59,7 +62,14 @@ export function MobileHeader({
             <Link to="/" className="flex items-center">
               <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
             </Link>
-            <LanguageButton />
+            <div className="flex items-center gap-0.5">
+              <LanguageButton />
+              {canSignOut && (
+                <button onClick={handleSignOut} className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors" aria-label="Sign Out">
+                  <LogOut className="size-5 text-slate-400" />
+                </button>
+              )}
+            </div>
           </>
         ) : (
           <>
@@ -96,7 +106,7 @@ export function MobileHeader({
                   )}
                 </Link>
               )}
-              {showSignOut && (
+              {canSignOut && (
                 <button
                   onClick={handleSignOut}
                   className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
@@ -105,7 +115,7 @@ export function MobileHeader({
                   <LogOut className="size-5 text-slate-400" />
                 </button>
               )}
-              {!showSignOut && !showBell && <div className="w-10" />}
+              {!canSignOut && !showBell && <div className="w-10" />}
             </div>
           </>
         )}

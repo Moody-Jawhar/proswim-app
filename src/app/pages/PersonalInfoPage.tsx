@@ -152,7 +152,7 @@ export function PersonalInfoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Personal Information" showBack />
         <div className="px-4 pt-10 text-center text-sm" style={{ color: '#64748B' }}>Loading…</div>
         <MobileNav />
@@ -161,7 +161,7 @@ export function PersonalInfoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Personal Information" showBack />
 
       <div className="px-4 pt-4 pb-5">

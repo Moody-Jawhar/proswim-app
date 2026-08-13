@@ -52,7 +52,7 @@ export function RegistrationPaymentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Payments" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -64,7 +64,7 @@ export function RegistrationPaymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Group Payments" showBack />
       <PageHero title="Group Payments" subtitle="Registration payment history" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">

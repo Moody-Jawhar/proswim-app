@@ -74,7 +74,7 @@ export function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Notifications" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -86,7 +86,7 @@ export function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Notifications" showBack />
       <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} />
       <div className="px-4 pt-3 pb-4 space-y-3">

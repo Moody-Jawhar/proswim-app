@@ -46,7 +46,7 @@ export function SkillsChecklistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Skills Checklist" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -58,7 +58,7 @@ export function SkillsChecklistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Skills Checklist" showBack />
       <PageHero title="Skills Checklist" subtitle="Track your swimming progress" slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.85), rgba(5,120,90,0.72))" />
       <div className="px-4 pt-3 pb-4 space-y-4">

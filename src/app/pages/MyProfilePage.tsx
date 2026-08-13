@@ -61,7 +61,7 @@ export function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -74,7 +74,7 @@ export function MyProfilePage() {
 
   if (error || !student) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Profile" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           <AlertCircle className="size-10 text-red-400" />
@@ -112,7 +112,7 @@ export function MyProfilePage() {
     student.studentGiftedSwimmer && 'Gifted', student.studentOthersSwimmer && 'Others',
   ].filter(Boolean) as string[];
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title={t('profile.title')} showBack showSignOut />
       <PageHero title={t('profile.title')} subtitle={t('profile.subtitle')} slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(14,100,144,0.55))" />
       <div className="px-4 pt-3 pb-5 space-y-4">

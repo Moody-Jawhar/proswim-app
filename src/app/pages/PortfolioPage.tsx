@@ -67,7 +67,7 @@ export function PortfolioPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Portfolio" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           {error
@@ -83,7 +83,7 @@ export function PortfolioPage() {
     data.awards.length === 0 && data.evaluations.length === 0;
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="My Portfolio" showBack />
 
       <div className="px-4 pt-4 pb-5">

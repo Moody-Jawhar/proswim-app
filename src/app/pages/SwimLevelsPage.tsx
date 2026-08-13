@@ -217,7 +217,7 @@ export function SwimLevelsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Swim Levels" showBack />
 
       <div className="px-4 py-6">

@@ -62,6 +62,12 @@ body {
 /* Soft elevated card shadow */
 .shadow-soft { box-shadow: 0 6px 20px -10px rgba(30, 60, 100, 0.18); }
 
+/* Bottom padding for every page that sits above the fixed bottom nav:
+   nav height (64px) + breathing room + the iPhone home-indicator inset.
+   Without the inset, the last card hides behind the nav and the page
+   feels like it "can't scroll far enough". */
+.pb-nav { padding-bottom: calc(132px + env(safe-area-inset-bottom)); }
+
 /* ── App-open splash bubbles ──────────────────────────────────────
    A brief burst when the app opens, then gone. Content screens never
    run a permanent background animation. */

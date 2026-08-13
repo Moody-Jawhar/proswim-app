@@ -68,7 +68,7 @@ export function PaymentsHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent pb-20">
+      <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Payment History" showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
@@ -80,7 +80,7 @@ export function PaymentsHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-20">
+    <div className="min-h-screen bg-transparent pb-nav">
       <MobileHeader title="Payment History" showBack />
       <PageHero title="Payment History" subtitle="All your payments in one place" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(5,120,90,0.55))" />
       <div className="px-4 pt-3 pb-4 space-y-4">

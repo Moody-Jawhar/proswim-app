@@ -21,7 +21,6 @@ export function MobileHeader({
   title,
   showLogo = false,
   showSignOut = false,
-  showBack = false,
   showBell = false,
   backTo,
 }: MobileHeaderProps) {
@@ -82,15 +81,16 @@ export function MobileHeader({
         ) : (
           <>
             <div className="w-10 flex items-center">
-              {showBack && (
-                <button
-                  onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
-                  className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                  aria-label="Go Back"
-                >
-                  <ArrowLeft className="size-5 text-[#1e5c97]" />
-                </button>
-              )}
+              {/* Every page can get back home in one tap: the arrow targets
+                  the dashboard (or the welcome page when signed out) unless
+                  a page passes an explicit backTo. */}
+              <button
+                onClick={() => navigate(backTo || (authed ? '/dashboard' : '/'))}
+                className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                aria-label="Go Back"
+              >
+                <ArrowLeft className="size-5 text-[#1e5c97]" />
+              </button>
             </div>
 
             <p className="font-display flex-1 text-center text-xl font-semibold" style={{ color: '#242c43' }}>

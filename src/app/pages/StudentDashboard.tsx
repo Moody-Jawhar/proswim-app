@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Loader2, MapPin, Award, CalendarClock, Users, GraduationCap, Wallet,
   Megaphone, CheckCircle2, ChevronRight, MessageCircle, UserCog, Clock,
+  Newspaper, User,
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
@@ -318,6 +319,38 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             <p className="text-sm font-bold text-slate-900">{t('home.requestChange')}</p>
             <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.requestHint')}</p>
           </button>
+        </div>
+
+        {/* Shortcut tiles into the main areas of the app */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <Link to="/registrations" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.98] transition-transform">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: 'rgba(26,111,191,0.12)' }}>
+              <Users className="size-5" style={{ color: GROUP_C }} />
+            </div>
+            <p className="text-sm font-bold text-slate-900">{t('nav.group')}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.tileGroupHint')}</p>
+          </Link>
+          <Link to="/private" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.98] transition-transform">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: 'rgba(109,40,217,0.12)' }}>
+              <GraduationCap className="size-5" style={{ color: PRIVATE_C }} />
+            </div>
+            <p className="text-sm font-bold text-slate-900">{t('nav.private')}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.tilePrivateHint')}</p>
+          </Link>
+          <Link to="/news" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.98] transition-transform">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: 'rgba(234,88,12,0.12)' }}>
+              <Newspaper className="size-5" style={{ color: '#EA580C' }} />
+            </div>
+            <p className="text-sm font-bold text-slate-900">{t('nav.news')}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.tileNewsHint')}</p>
+          </Link>
+          <Link to="/profile" className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.98] transition-transform">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: 'rgba(30,92,151,0.12)' }}>
+              <User className="size-5" style={{ color: BRAND }} />
+            </div>
+            <p className="text-sm font-bold text-slate-900">{t('nav.profile')}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.tileProfileHint')}</p>
+          </Link>
         </div>
       </div>
 

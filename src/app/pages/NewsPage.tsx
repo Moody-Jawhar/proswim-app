@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { PageHero } from '../components/PageHero';
-import { Newspaper, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
+import { Newspaper, AlertCircle, ChevronRight, X } from 'lucide-react';
 import { getNews, type NewsItemDto } from '../api/pswmApi';
 
 // Brand logo paths (24x24 viewBox) — same set as the About page.
@@ -31,11 +32,96 @@ function formatDate(iso: string | null): string {
   });
 }
 
+function isPdf(url: string | null): boolean {
+  return !!url && url.toLowerCase().split('?')[0].endsWith('.pdf');
+}
+
+/** Full-screen article reader — big image, full text. */
+function NewsReader({ item, onClose }: { item: NewsItemDto; onClose: () => void }) {
+  // The reader owns the screen; keep the page behind it from scrolling.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 overflow-y-auto"
+      style={{ zIndex: 100, background: '#f5f8fb', WebkitOverflowScrolling: 'touch' }}
+    >
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        className="fixed flex items-center justify-center rounded-full active:scale-95 transition-transform"
+        style={{
+          top: 'calc(env(safe-area-inset-top) + 12px)',
+          right: 16,
+          width: 40,
+          height: 40,
+          zIndex: 101,
+          background: 'rgba(255,255,255,0.92)',
+          boxShadow: '0 4px 14px rgba(30,60,100,0.22)',
+        }}
+      >
+        <X className="size-5" style={{ color: '#242c43' }} />
+      </button>
+
+      {item.newsImageURL && !isPdf(item.newsImageURL) && (
+        <img src={item.newsImageURL} alt="" className="w-full" style={{ display: 'block' }} />
+      )}
+
+      <div className="px-5 pt-5" style={{ paddingBottom: 'calc(48px + env(safe-area-inset-bottom))' }}>
+        <p className="text-xs font-semibold" style={{ color: '#94A3B8' }}>{formatDate(item.newsDate)}</p>
+        <h1 className="font-display text-2xl mt-1.5" style={{ color: '#242c43' }}>{item.newsTitle}</h1>
+
+        {isPdf(item.newsImageURL) && (
+          <button
+            onClick={() => window.open(item.newsImageURL!)}
+            className="w-full flex items-center justify-center gap-2 py-3 mt-4 rounded-2xl"
+            style={{ background: 'rgba(239,68,68,0.08)' }}
+          >
+            <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 View document (PDF)</span>
+          </button>
+        )}
+
+        <p className="text-base mt-4 whitespace-pre-line" style={{ color: '#3f4a5f', lineHeight: 1.65 }}>
+          {item.newsBody}
+        </p>
+
+        {SOCIAL_BUTTONS.some(({ key }) => item[key]) && (
+          <div className="flex flex-wrap gap-2 mt-6">
+            {SOCIAL_BUTTONS.map(({ key, label, color, path }) => {
+              const url = item[key];
+              return url ? (
+                <a
+                  key={key}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded-full text-xs font-bold px-3.5 py-2 active:scale-95 transition-transform"
+                  style={{ background: `${color}1A`, border: `1px solid ${color}33`, color }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={color}>
+                    <path d={path} />
+                  </svg>
+                  {label}
+                </a>
+              ) : null;
+            })}
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 export function NewsPage() {
   const [items, setItems] = useState<NewsItemDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [selected, setSelected] = useState<NewsItemDto | null>(null);
 
   useEffect(() => {
     getNews()
@@ -43,13 +129,6 @@ export function NewsPage() {
       .catch(() => setError('Could not load news.'))
       .finally(() => setLoading(false));
   }, []);
-
-  const toggle = (id: number) =>
-    setExpanded(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
 
   if (loading) {
     return (
@@ -85,86 +164,54 @@ export function NewsPage() {
           </div>
         )}
 
-        {items.map((n) => {
-          const open = expanded.has(n.newsId);
-          const long = n.newsBody.length > 180;
-          return (
-            <article
-              key={n.newsId}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
-            >
-              {n.newsImageURL && (
-                n.newsImageURL.toLowerCase().split('?')[0].endsWith('.pdf') ? (
-                  <button
-                    onClick={() => window.open(n.newsImageURL!)}
-                    className="w-full flex items-center justify-center gap-2 py-3"
-                    style={{ background: 'rgba(239,68,68,0.08)' }}
-                  >
-                    <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 View document (PDF)</span>
-                  </button>
-                ) : (
-                  <img
-                    src={n.newsImageURL}
-                    alt=""
-                    className="w-full object-cover"
-                    style={{ maxHeight: 180 }}
-                    loading="lazy"
-                  />
-                )
-              )}
-              <div className="p-4">
-                <p className="text-xs text-slate-400">{formatDate(n.newsDate)}</p>
-                <h2 className="text-sm font-bold text-slate-900 mt-1">{n.newsTitle}</h2>
-                <p
-                  className="text-sm text-slate-500 mt-1.5 leading-snug whitespace-pre-line"
-                  style={!open && long ? {
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  } : undefined}
+        {items.map((n) => (
+          <article
+            key={n.newsId}
+            onClick={() => setSelected(n)}
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:opacity-70 transition-opacity cursor-pointer"
+          >
+            {n.newsImageURL && (
+              isPdf(n.newsImageURL) ? (
+                <div
+                  className="w-full flex items-center justify-center gap-2 py-3"
+                  style={{ background: 'rgba(239,68,68,0.08)' }}
                 >
-                  {n.newsBody}
-                </p>
-                {long && (
-                  <button
-                    onClick={() => toggle(n.newsId)}
-                    className="flex items-center gap-1 text-xs font-semibold text-[#1e5c97] mt-2"
-                  >
-                    {open ? 'Show less' : 'Read more'}
-                    <ChevronDown
-                      className="size-3.5 transition-transform"
-                      style={open ? { transform: 'rotate(180deg)' } : undefined}
-                    />
-                  </button>
-                )}
-                {SOCIAL_BUTTONS.some(({ key }) => n[key]) && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {SOCIAL_BUTTONS.map(({ key, label, color, path }) => {
-                      const url = n[key];
-                      return url ? (
-                        <a
-                          key={key}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 rounded-full text-xs font-bold px-3 py-1.5 active:scale-95 transition-transform"
-                          style={{ background: `${color}1A`, border: `1px solid ${color}33`, color }}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill={color}>
-                            <path d={path} />
-                          </svg>
-                          {label}
-                        </a>
-                      ) : null;
-                    })}
-                  </div>
-                )}
-              </div>
-            </article>
-          );
-        })}
+                  <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 Document (PDF)</span>
+                </div>
+              ) : (
+                <img
+                  src={n.newsImageURL}
+                  alt=""
+                  className="w-full object-cover"
+                  style={{ maxHeight: 180 }}
+                  loading="lazy"
+                />
+              )
+            )}
+            <div className="p-4">
+              <p className="text-xs text-slate-400">{formatDate(n.newsDate)}</p>
+              <h2 className="text-sm font-bold text-slate-900 mt-1">{n.newsTitle}</h2>
+              <p
+                className="text-sm text-slate-500 mt-1.5 leading-snug whitespace-pre-line"
+                style={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                }}
+              >
+                {n.newsBody}
+              </p>
+              <span className="flex items-center gap-1 text-xs font-semibold text-[#1e5c97] mt-2">
+                Read more
+                <ChevronRight className="size-3.5" />
+              </span>
+            </div>
+          </article>
+        ))}
       </div>
+
+      {selected && <NewsReader item={selected} onClose={() => setSelected(null)} />}
 
       <MobileNav />
     </div>

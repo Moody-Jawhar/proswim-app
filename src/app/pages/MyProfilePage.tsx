@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   User, Mail, Phone, MapPin, Calendar, GraduationCap,
-  Flag, Loader2, AlertCircle, Award, Shield
+  Flag, Loader2, AlertCircle, Award, Shield, Camera
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
+import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, uploadMyPhoto, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t } from '../i18n';
 
@@ -22,8 +22,36 @@ const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   Others:             { bg: 'rgba(148,163,184,0.18)', color: '#475569' },
 };
 
+/** Downscale to max 1000px and re-encode as JPEG so uploads stay small
+ *  (a phone camera shot is 3–10 MB; this brings it to ~100–300 KB). */
+async function shrinkImage(file: File): Promise<{ fileName: string; base64: string }> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result as string);
+    fr.onerror = () => reject(new Error('Could not read the image.'));
+    fr.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = () => reject(new Error('That file is not a valid image.'));
+    i.src = dataUrl;
+  });
+  const MAX = 1000;
+  const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const jpeg = canvas.toDataURL('image/jpeg', 0.85);
+  return { fileName: 'photo.jpg', base64: jpeg.split(',')[1] };
+}
+
 export function MyProfilePage() {
   const navigate = useNavigate();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [photoError, setPhotoError] = useState('');
   const [student, setStudent] = useState<StudentDto | null>(null);
   const [attendance, setAttendance] = useState<AttendanceSummaryDto[]>([]);
   const [levels, setLevels] = useState<LevelHistoryDto[]>([]);
@@ -111,13 +139,51 @@ export function MyProfilePage() {
             style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.22) 0%,rgba(176,138,255,0.18) 100%)' }}>
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(91,173,255,0.10)' }} />
             <div className="flex items-center gap-3 relative">
-              <div className="rounded-2xl flex items-center justify-center shrink-0 overflow-hidden"
-                style={{ width: 58, height: 58, background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)' }}>
-                {student.studentPhotoUrl ? (
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = '';
+                  if (!file) return;
+                  setPhotoError('');
+                  setUploading(true);
+                  try {
+                    const { fileName, base64 } = await shrinkImage(file);
+                    const { url } = await uploadMyPhoto(fileName, base64);
+                    setStudent((s) => (s ? { ...s, studentPhotoUrl: url } : s));
+                  } catch (err) {
+                    setPhotoError(err instanceof Error ? err.message : 'Could not upload the photo.');
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
+              />
+              <button
+                onClick={() => !uploading && fileRef.current?.click()}
+                className="relative rounded-2xl flex items-center justify-center shrink-0 overflow-hidden active:opacity-80 transition-opacity"
+                style={{ width: 58, height: 58, background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)', padding: 0 }}
+                aria-label="Change profile photo"
+              >
+                {uploading ? (
+                  <Loader2 className="animate-spin" style={{ width: 24, height: 24, color: '#1e5c97' }} />
+                ) : student.studentPhotoUrl ? (
                   <img src={student.studentPhotoUrl} alt={fullName} className="w-full h-full object-cover" />
                 ) : (
                   <span className="font-display text-[#1e5c97] font-bold" style={{ fontSize: 21 }}>{initials}</span>
                 )}
+              </button>
+              {/* Camera badge — signals the avatar is tappable */}
+              <div
+                className="absolute rounded-full flex items-center justify-center pointer-events-none"
+                style={{
+                  left: 42, top: 40, width: 20, height: 20,
+                  background: '#1e5c97', border: '1.5px solid #ffffff',
+                }}
+              >
+                <Camera style={{ width: 11, height: 11, color: '#ffffff' }} />
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
@@ -130,6 +196,9 @@ export function MyProfilePage() {
                 )}
               </div>
             </div>
+            {photoError && (
+              <p className="text-xs mt-2 relative" style={{ color: '#DC2626' }}>{photoError}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-slate-100 -mt-5 bg-white mx-3 rounded-xl shadow-sm border border-slate-100 relative z-10">

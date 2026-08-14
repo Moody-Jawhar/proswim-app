@@ -536,6 +536,15 @@ export async function updateProfile(data: ProfileUpdateDto): Promise<void> {
   await apiRequest<void>("/api/Profile", { method: "PUT", body: JSON.stringify(data) });
 }
 
+// Swimmer sets their own profile picture. Base64 JSON body — Capacitor's
+// native HTTP layer doesn't reliably carry multipart FormData files.
+export async function uploadMyPhoto(fileName: string, base64: string): Promise<{ url: string }> {
+  return apiRequest<{ url: string }>("/api/Profile/photo", {
+    method: "POST",
+    body: JSON.stringify({ fileName, base64 }),
+  });
+}
+
 export async function getProfileLevelHistory(): Promise<LevelHistoryDto[]> {
   return apiRequest<LevelHistoryDto[]>("/api/Profile/LevelHistory");
 }

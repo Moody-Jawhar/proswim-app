@@ -12,10 +12,10 @@ import { t } from '../i18n';
 import {
   getStoredToken, getProfile, getGroupRegistrations, getGroupAttendanceSummary,
   getPrivatePackages, getGroupSessions, getPrivateSessions, getPaymentSummary,
-  getNotifications, getGroupPaymentsDue,
+  getNotifications,
   type ProfileDto, type RegistrationDto, type AttendanceSummaryDto,
   type PrivatePackageDto, type SessionDto, type PrivateSessionDto,
-  type PaymentSummaryDto, type NotificationDto, type GroupPaymentDueDto,
+  type PaymentSummaryDto, type NotificationDto,
 } from '../api/pswmApi';
 
 const SLIDE = (n: number) => `https://www.proswim-lb.com/Gallery/_Website/Main/Slide${n}.jpg`;
@@ -64,7 +64,6 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
   const [groupSessions, setGroupSessions] = useState<SessionDto[]>([]);
   const [privSessions, setPrivSessions] = useState<Record<number, PrivateSessionDto[]>>({});
-  const [groupDues, setGroupDues] = useState<GroupPaymentDueDto[]>([]);
   const [payments, setPayments] = useState<PaymentSummaryDto | null>(null);
   const [announcement, setAnnouncement] = useState<NotificationDto | null>(null);
 
@@ -73,7 +72,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
     (async () => {
       const today = new Date();
       const ahead = new Date(); ahead.setDate(ahead.getDate() + 14);
-      const [p, regs, att, pkgs, gs, pay, notifs, dues] = await Promise.allSettled([
+      const [p, regs, att, pkgs, gs, pay, notifs] = await Promise.allSettled([
         getProfile(),
         getGroupRegistrations(),
         getGroupAttendanceSummary(),
@@ -81,14 +80,12 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         getGroupSessions(undefined, iso(today), iso(ahead)),
         getPaymentSummary(),
         getNotifications(),
-        getGroupPaymentsDue(),
       ]);
       if (p.status === 'fulfilled') setProfile(p.value);
       if (regs.status === 'fulfilled') setRegistrations(regs.value);
       if (att.status === 'fulfilled') setAttendance(att.value);
       if (gs.status === 'fulfilled') setGroupSessions(gs.value);
       if (pay.status === 'fulfilled') setPayments(pay.value);
-      if (dues.status === 'fulfilled') setGroupDues(dues.value);
 
       if (notifs.status === 'fulfilled') {
         const cutoff = Date.now() - 30 * 86400000;
@@ -145,7 +142,6 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
     return cands[0] ?? null;
   }, [groupSessions, privSessions]);
 
-  const activePackages = packages.filter((k) => k.sessionsLeft > 0 || (k.packageStatus ?? '').toLowerCase() === 'open');
   const totalDue = (payments?.totalGroupDue ?? 0) + (payments?.totalPrivateDue ?? 0);
   const attTotals = attendance.reduce(
     (acc, a) => ({ total: acc.total + a.totalSessions, attended: acc.attended + a.attendedSessions }),
@@ -257,143 +253,6 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
           )}
         </div>
 
-        {/* ── Group training ── */}
-        {registrations.length > 0 && (
-          <>
-            <Section icon={<Users className="size-4" style={{ color: GROUP_C }} />} tint="rgba(26,111,191,0.12)" title={t('home.group')} />
-            <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {registrations.map((reg) => {
-                const summary = attendance.find((a) => a.registrationId === reg.registrationId);
-                const classNames = [reg.className1, reg.className2, reg.className3].filter(Boolean) as string[];
-                const names = classNames.join(' · ');
-                const pct = summary && summary.totalSessions > 0
-                  ? Math.round((summary.attendedSessions / summary.totalSessions) * 100) : null;
-                // Weekly schedule + next session, from this registration's class sessions
-                const mySessions = groupSessions.filter((s) => s.className != null && classNames.includes(s.className));
-                const slots = [...new Set(mySessions
-                  .filter((s) => s.classDay || s.classTimeFrom)
-                  .map((s) => [s.classDay, s.classTimeFrom].filter(Boolean).join(' ')))].slice(0, 3);
-                const upNow = new Date();
-                const upcoming = mySessions
-                  .map((s) => ({ status: (s.sessionStatus ?? '').toLowerCase().trim(), when: combine(s.sessionDate, s.classTimeFrom) }))
-                  .filter((x): x is { status: string; when: Date } =>
-                    x.when != null && x.when >= upNow && x.status !== 'cancelled' && x.status !== 'canceled')
-                  .sort((a, b) => a.when.getTime() - b.when.getTime())[0];
-                const due = groupDues.find((d) => d.registrationId === reg.registrationId && d.dueAmount > 0);
-                return (
-                  <Link to="/registrations" key={reg.registrationId}
-                    className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
-                    style={{ borderLeft: `4px solid ${GROUP_C}` }}>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-bold text-slate-900" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {names || reg.semesterName || 'Group classes'}
-                      </p>
-                      <ChevronRight className="size-4" style={{ color: '#CBD5E1', flexShrink: 0 }} />
-                    </div>
-                    <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
-                      {[reg.semesterName, reg.locationNickName].filter(Boolean).join(' · ')}
-                    </p>
-                    {slots.length > 0 && (
-                      <p className="text-xs mt-1.5 flex items-center gap-1.5" style={{ color: '#475569' }}>
-                        <Clock className="size-3" style={{ color: GROUP_C, flexShrink: 0 }} />
-                        <span className="font-semibold">{slots.join('  ·  ')}</span>
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1.5" style={{ flexWrap: 'wrap' }}>
-                      {upcoming && (
-                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
-                          style={{ background: 'rgba(26,111,191,0.10)', color: GROUP_C }}>
-                          {t('home.next')}: {dayLabel(upcoming.when)}{upcoming.when.getHours() !== 23 ? ` · ${upcoming.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
-                        </span>
-                      )}
-                      {due && (
-                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
-                          style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
-                          {t('home.due')}: {due.dueAmount.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                    {pct != null && (
-                      <div className="mt-3">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-semibold" style={{ color: '#64748B' }}>{t('home.attendance')}</span>
-                          <span className="num-stat text-xs font-bold" style={{ color: GROUP_C }}>
-                            {summary!.attendedSessions}/{summary!.totalSessions} · {pct}%
-                          </span>
-                        </div>
-                        <div className="h-2 rounded-full overflow-hidden" style={{ background: '#F1F5F9' }}>
-                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${GROUP_C}, #2d7dc4)` }} />
-                        </div>
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* ── Private training ── */}
-        {activePackages.length > 0 && (
-          <>
-            <Section icon={<GraduationCap className="size-4" style={{ color: PRIVATE_C }} />} tint="rgba(109,40,217,0.10)" title={t('home.private')} />
-            <div className="mb-5" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {activePackages.map((k) => {
-                const used = k.countAttended;
-                const pct = k.packageNumberOfSessions > 0 ? Math.round((used / k.packageNumberOfSessions) * 100) : 0;
-                const low = k.sessionsLeft > 0 && k.sessionsLeft <= 2;
-                const pkNow = new Date();
-                const nextPriv = (privSessions[k.packageId] ?? [])
-                  .map((s) => ({ state: (s.privateSessionState ?? '').toLowerCase().trim(), when: combine(s.privateSessionDate, s.privateSessionTime) }))
-                  .filter((x): x is { state: string; when: Date } =>
-                    x.when != null && x.when >= pkNow && x.state !== 'cancelled' && x.state !== 'canceled')
-                  .sort((a, b) => a.when.getTime() - b.when.getTime())[0];
-                return (
-                  <Link to="/private" key={k.packageId}
-                    className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 block active:scale-[0.99] transition-transform"
-                    style={{ borderLeft: `4px solid ${PRIVATE_C}` }}>
-                    <div className="flex items-center justify-between gap-3">
-                      <div style={{ minWidth: 0 }}>
-                        <p className="text-sm font-bold text-slate-900">{k.packageName || 'Private package'}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
-                          {[k.coachFullName, k.locationNickName].filter(Boolean).join(' · ')}
-                        </p>
-                      </div>
-                      <div className="text-center" style={{ flexShrink: 0 }}>
-                        <p className="num-stat text-2xl font-bold" style={{ color: low ? '#B45309' : PRIVATE_C }}>{k.sessionsLeft}</p>
-                        <p className="text-xs font-semibold" style={{ color: '#94A3B8' }}>{t('home.leftOf', { n: k.packageNumberOfSessions })}</p>
-                      </div>
-                    </div>
-                    <div className="h-2 rounded-full overflow-hidden mt-3" style={{ background: '#F1F5F9' }}>
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${PRIVATE_C}, #8B5CF6)` }} />
-                    </div>
-                    <div className="flex items-center gap-2 mt-2" style={{ flexWrap: 'wrap' }}>
-                      {nextPriv && (
-                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
-                          style={{ background: 'rgba(109,40,217,0.08)', color: PRIVATE_C }}>
-                          {t('home.next')}: {dayLabel(nextPriv.when)}{nextPriv.when.getHours() !== 23 ? ` · ${nextPriv.when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}` : ''}
-                        </span>
-                      )}
-                      {k.duePayment > 0 && (
-                        <span className="text-xs font-bold rounded-full px-2 py-0.5"
-                          style={{ background: 'rgba(239,68,68,0.10)', color: '#B91C1C' }}>
-                          {t('home.due')}: {k.duePayment.toLocaleString()} {k.packageCurrency ?? ''}
-                        </span>
-                      )}
-                    </div>
-                    {low && (
-                      <p className="text-xs font-bold mt-2 inline-flex items-center gap-1 rounded-full px-2 py-1"
-                        style={{ background: 'rgba(245,158,11,0.12)', color: '#B45309' }}>
-                        {t('home.lowSessions')}
-                      </p>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </>
-        )}
-
         {/* ── Payments ── */}
         <Section icon={<Wallet className="size-4" style={{ color: totalDue > 0 ? '#DC2626' : '#047857' }} />}
           tint={totalDue > 0 ? 'rgba(239,68,68,0.10)' : 'rgba(16,185,129,0.10)'} title={t('home.payments')} />
@@ -423,7 +282,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
         </Link>
 
         {/* ── Attendance headline (when not shown per-course above) ── */}
-        {attPercent != null && registrations.length === 0 && (
+        {attPercent != null && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5">
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs font-semibold" style={{ color: '#64748B' }}>Attendance this season</span>

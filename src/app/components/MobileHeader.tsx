@@ -3,6 +3,7 @@ import { LogOut, ArrowLeft, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getUnreadCount, unsubscribeFromStudentTopic } from '../utils/notifications';
 import { LanguageButton } from './LanguageButton';
+import { t } from '../i18n';
 
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
 
@@ -65,12 +66,16 @@ export function MobileHeader({
             <Link to="/" className="flex items-center">
               <img src={proswimLogo} alt="ProSwim" className="h-8 w-auto" />
             </Link>
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <LanguageButton />
-              {canSignOut && (
+              {canSignOut ? (
                 <button onClick={handleSignOut} className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors" aria-label="Sign Out">
                   <LogOut className="size-5 text-slate-400" />
                 </button>
+              ) : (
+                <Link to="/signin" className="px-3 py-1.5 rounded-xl bg-[#1e5c97] text-xs font-semibold" style={{ color: '#ffffff' }}>
+                  {t('nav.signin')}
+                </Link>
               )}
             </div>
           </>
@@ -109,7 +114,7 @@ export function MobileHeader({
                   )}
                 </Link>
               )}
-              {canSignOut && (
+              {canSignOut ? (
                 <button
                   onClick={handleSignOut}
                   className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
@@ -117,8 +122,11 @@ export function MobileHeader({
                 >
                   <LogOut className="size-5 text-slate-400" />
                 </button>
+              ) : (
+                <Link to="/signin" className="px-3 py-1.5 rounded-xl bg-[#1e5c97] text-xs font-semibold" style={{ color: '#ffffff' }}>
+                  {t('nav.signin')}
+                </Link>
               )}
-              {!canSignOut && !showBell && <div className="w-10" />}
             </div>
           </>
         )}

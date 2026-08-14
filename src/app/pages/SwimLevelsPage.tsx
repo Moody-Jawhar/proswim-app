@@ -218,7 +218,7 @@ export function SwimLevelsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Swim Levels" showBack />
+      <MobileHeader title="Swim Levels" />
 
       <div className="px-4 py-6">
         <div className="text-center mb-6">

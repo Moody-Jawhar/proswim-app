@@ -50,8 +50,9 @@ export function MobileNav() {
               className="flex flex-col items-center justify-center flex-1 gap-1 active:opacity-60 transition-opacity"
             >
               <div
-                className="flex items-center justify-center w-16 h-8 rounded-full transition-all"
+                className="flex items-center justify-center h-8 rounded-full transition-all"
                 style={isActive ? {
+                  width: 72,
                   backgroundImage: 'linear-gradient(120deg, #2d7dc4, #1e5c97)',
                   boxShadow: '0 4px 10px -4px rgba(30,92,151,0.6)',
                 } : undefined}

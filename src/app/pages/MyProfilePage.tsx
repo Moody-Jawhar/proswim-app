@@ -53,7 +53,7 @@ export function MyProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Profile" showBack />
+        <MobileHeader title="My Profile" />
         <PageLoader label="Loading profile..." />
         <MobileNav />
       </div>
@@ -63,7 +63,7 @@ export function MyProfilePage() {
   if (error || !student) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Profile" showBack />
+        <MobileHeader title="My Profile" />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           <AlertCircle className="size-10 text-red-400" />
           <p className="text-sm text-red-600 text-center">{error || 'Profile not available'}</p>
@@ -101,7 +101,7 @@ export function MyProfilePage() {
   ].filter(Boolean) as string[];
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('profile.title')} showBack showSignOut />
+      <MobileHeader title={t('profile.title')} showSignOut />
       <PageHero title={t('profile.title')} subtitle={t('profile.subtitle')} slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(14,100,144,0.55))" />
       <div className="px-4 pt-3 pb-5 space-y-4">
 
@@ -256,13 +256,6 @@ export function MyProfilePage() {
             )}
           </Section>
         )}
-
-        {/* Go to Dashboard */}
-        <Link to="/dashboard"
-          className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
-          style={{ background: 'rgba(30,92,151,0.60)' }}>
-          <span className="text-sm font-semibold text-white">Go to Dashboard</span>
-        </Link>
 
         {/* Change password */}
         <Link to="/change-password"

@@ -22,7 +22,7 @@ export function RegistrationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Group Registrations" showBack backTo="/dashboard" />
+        <MobileHeader title="Group Registrations" />
         <PageLoader label="Loading registrations…" />
         <MobileNav />
       </div>
@@ -31,7 +31,7 @@ export function RegistrationsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Group Registrations" showBack backTo="/dashboard" />
+      <MobileHeader title="Group Registrations" />
       <PageHero title="Group Registrations" subtitle="Group classes & semesters" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { PageHero } from '../components/PageHero';
 import { Newspaper, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
 import { getNews, type NewsItemDto } from '../api/pswmApi';
@@ -54,10 +55,7 @@ export function NewsPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="News" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading…</p>
-        </div>
+        <PageLoader label="Loading…" />
         <MobileNav />
       </div>
     );

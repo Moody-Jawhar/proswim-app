@@ -13,13 +13,15 @@ export function MobileNav() {
     setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
   }, [location.pathname]);
 
-  // Signed in: the swimmer's world. Signed out: the public-facing pages.
+  // Signed in: the swimmer's world (5 tabs, Home first).
+  // Signed out: the public-facing pages.
   const navItems = isAuthenticated
     ? [
-        { path: '/profile', icon: User, label: t('nav.profile') },
+        { path: '/dashboard', icon: Home, label: t('nav.home') },
         { path: '/registrations', icon: Users, label: t('nav.group') },
         { path: '/private', icon: GraduationCap, label: t('nav.private') },
         { path: '/news', icon: Newspaper, label: t('nav.news') },
+        { path: '/profile', icon: User, label: t('nav.profile') },
       ]
     : [
         { path: '/', icon: Home, label: t('nav.home') },
@@ -48,7 +50,7 @@ export function MobileNav() {
               className="flex flex-col items-center justify-center flex-1 gap-1 active:opacity-60 transition-opacity"
             >
               <div
-                className="flex items-center justify-center w-20 h-8 rounded-full transition-all"
+                className="flex items-center justify-center w-16 h-8 rounded-full transition-all"
                 style={isActive ? {
                   backgroundImage: 'linear-gradient(120deg, #2d7dc4, #1e5c97)',
                   boxShadow: '0 4px 10px -4px rgba(30,92,151,0.6)',

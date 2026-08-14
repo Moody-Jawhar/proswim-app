@@ -51,10 +51,18 @@ async function apiRequest<T>(
     if (token) headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
-  });
+  // Hard timeout: on flaky mobile networks a request can hang forever
+  // (Capacitor's native HTTP has no default timeout), leaving screens stuck
+  // on their spinners. Racing a rejection guarantees every call settles.
+  const res = await Promise.race([
+    fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
+    }),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new ApiError("Request timed out — check your connection.", 0)), 20000)
+    ),
+  ]);
 
   // A 401 on an authenticated call means the session is gone (expired, or the
   // server stopped honouring old tokens) — sign out and return to sign-in.

@@ -12,6 +12,8 @@ interface MobileHeaderProps {
   showSignOut?: boolean;
   showBack?: boolean;
   showBell?: boolean;
+  /** When set, the back arrow always goes to this route instead of history-back. */
+  backTo?: string;
 }
 
 export function MobileHeader({
@@ -20,6 +22,7 @@ export function MobileHeader({
   showSignOut = false,
   showBack = false,
   showBell = false,
+  backTo,
 }: MobileHeaderProps) {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -76,7 +79,7 @@ export function MobileHeader({
             <div className="w-10 flex items-center">
               {showBack && (
                 <button
-                  onClick={() => navigate(-1)}
+                  onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
                   className="p-2 rounded-xl bg-transparent hover:bg-slate-50 active:bg-slate-100 transition-colors"
                   aria-label="Go Back"
                 >

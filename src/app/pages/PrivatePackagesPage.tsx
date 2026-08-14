@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle } from 'lucide-react';
 import { getPrivatePackages, formatMoney, type PrivatePackageDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
@@ -22,10 +23,7 @@ export function PrivatePackagesPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Private Packages" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading packages…</p>
-        </div>
+        <PageLoader label="Loading packages…" />
         <MobileNav />
       </div>
     );

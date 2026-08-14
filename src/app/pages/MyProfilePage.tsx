@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t } from '../i18n';
@@ -36,37 +37,24 @@ export function MyProfilePage() {
     if (!userData) { navigate('/signin'); return; }
     const user = JSON.parse(userData);
     if (!user.studentId) { navigate('/dashboard'); return; }
-    (async () => {
-      try {
-        const [studentData, attendanceData, registrationsData, packagesData, levelData] = await Promise.allSettled([
-          getStudentById(user.studentId),
-          getGroupAttendanceSummary(),
-          getGroupRegistrations(),
-          getPrivatePackages(),
-          getProfileLevelHistory(),
-        ]);
-        if (studentData.status === 'fulfilled') setStudent(studentData.value);
-        else throw new Error('Failed to load profile');
-        if (attendanceData.status === 'fulfilled') setAttendance(attendanceData.value);
-        if (levelData.status === 'fulfilled') setLevels(levelData.value);
-        if (registrationsData.status === 'fulfilled') setGroupCount(registrationsData.value.length);
-        if (packagesData.status === 'fulfilled') setPrivateCount(packagesData.value.length);
-      } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : 'Failed to load profile');
-      } finally {
-        setLoading(false);
-      }
-    })();
+    // The page renders as soon as the student record arrives; the secondary
+    // data (attendance, levels, counts) fills in whenever it lands. Gating on
+    // everything meant one slow call kept the whole page on its spinner.
+    getStudentById(user.studentId)
+      .then(setStudent)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load profile'))
+      .finally(() => setLoading(false));
+    getGroupAttendanceSummary().then(setAttendance).catch(() => {});
+    getProfileLevelHistory().then(setLevels).catch(() => {});
+    getGroupRegistrations().then((r) => setGroupCount(r.length)).catch(() => {});
+    getPrivatePackages().then((p) => setPrivateCount(p.length)).catch(() => {});
   }, [navigate]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Profile" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading profile...</p>
-        </div>
+        <PageLoader label="Loading profile..." />
         <MobileNav />
       </div>
     );

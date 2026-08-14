@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, Waves, BookOpen } from 'lucide-react';
 import {
   getStoredToken,
@@ -89,10 +90,7 @@ export function SchedulePage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="My Schedule" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading your schedule…</p>
-        </div>
+        <PageLoader label="Loading your schedule…" />
         <MobileNav />
       </div>
     );

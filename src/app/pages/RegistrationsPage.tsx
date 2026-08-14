@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users } from 'lucide-react';
 import { getGroupRegistrations, type RegistrationDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
@@ -21,11 +22,8 @@ export function RegistrationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Group Registrations" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading registrations…</p>
-        </div>
+        <MobileHeader title="Group Registrations" showBack backTo="/dashboard" />
+        <PageLoader label="Loading registrations…" />
         <MobileNav />
       </div>
     );
@@ -33,7 +31,7 @@ export function RegistrationsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Group Registrations" showBack />
+      <MobileHeader title="Group Registrations" showBack backTo="/dashboard" />
       <PageHero title="Group Registrations" subtitle="Group classes & semesters" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

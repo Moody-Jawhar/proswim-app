@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
 import { t } from '../i18n';
 import {
@@ -156,10 +157,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('home.title')} showSignOut showBell />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 animate-spin" style={{ color: BRAND }} />
-          <p className="text-sm" style={{ color: '#64748B' }}>Getting everything ready…</p>
-        </div>
+        <PageLoader label="Getting everything ready…" />
         <MobileNav />
       </div>
     );

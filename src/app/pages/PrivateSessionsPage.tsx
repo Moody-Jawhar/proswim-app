@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat } from 'lucide-react';
 import { getPrivateSessions, type PrivateSessionDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
@@ -40,10 +41,7 @@ export function PrivateSessionsPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Sessions" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading sessions…</p>
-        </div>
+        <PageLoader label="Loading sessions…" />
         <MobileNav />
       </div>
     );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Loader2, AlertCircle, Waves, User } from 'lucide-react';
 import {
   getGroupPayments,
@@ -70,10 +71,7 @@ export function PaymentsHistoryPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Payment History" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading payments…</p>
-        </div>
+        <PageLoader label="Loading payments…" />
         <MobileNav />
       </div>
     );

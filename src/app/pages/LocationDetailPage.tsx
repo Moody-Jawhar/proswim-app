@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Loader2, AlertCircle, MapPin, Phone, Mail, Navigation } from 'lucide-react';
 import { PageHero } from '../components/PageHero';
 import { getLocationById, type LocationDetailDto } from '../api/pswmApi';
@@ -25,10 +26,7 @@ export function LocationDetailPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Location" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading…</p>
-        </div>
+        <PageLoader label="Loading…" />
         <MobileNav />
       </div>
     );

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Calendar, Loader2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import {
   getGroupSessions,
@@ -46,10 +47,7 @@ export function RegistrationSessionsPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Sessions" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading sessions…</p>
-        </div>
+        <PageLoader label="Loading sessions…" />
         <MobileNav />
       </div>
     );

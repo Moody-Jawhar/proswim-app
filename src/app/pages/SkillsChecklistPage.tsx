@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { PageLoader } from '../components/PageLoader';
 import { Loader2, AlertCircle, CheckSquare, Square } from 'lucide-react';
 import { getChecklist, type ChecklistItemDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
@@ -48,10 +49,7 @@ export function SkillsChecklistPage() {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title="Skills Checklist" showBack />
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <Loader2 className="size-8 text-[#1e5c97] animate-spin" />
-          <p className="text-sm text-slate-500">Loading checklist…</p>
-        </div>
+        <PageLoader label="Loading checklist…" />
         <MobileNav />
       </div>
     );

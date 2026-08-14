@@ -62,6 +62,11 @@ body {
 /* Soft elevated card shadow */
 .shadow-soft { box-shadow: 0 6px 20px -10px rgba(30, 60, 100, 0.18); }
 
+/* The checked-in Tailwind dump never included the spin animation, so every
+   loading spinner in the app rendered as a FROZEN circle. Define it here. */
+@keyframes psSpin { to { transform: rotate(360deg); } }
+.animate-spin { animation: psSpin 1s linear infinite; }
+
 /* Bottom padding for every page that sits above the fixed bottom nav:
    nav height (64px) + breathing room + the iPhone home-indicator inset.
    Without the inset, the last card hides behind the nav and the page

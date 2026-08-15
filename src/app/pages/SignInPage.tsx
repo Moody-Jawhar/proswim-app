@@ -46,9 +46,10 @@ export function SignInPage() {
         if (res.studentId) subscribeToStudentTopic(res.studentId);
         if (res.mustChangePassword) {
           navigate('/change-password', { state: { required: true, verified: res.verified } });
-        } else if (res.verified === false) {
-          navigate('/verify');
         } else {
+          // First-time WhatsApp verification is DISABLED (client-side skip;
+          // the /verify page still exists). To re-enable, restore:
+          //   else if (res.verified === false) navigate('/verify');
           navigate('/dashboard');
         }
       } else {

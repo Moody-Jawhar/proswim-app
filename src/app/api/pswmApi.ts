@@ -386,6 +386,7 @@ export interface LocationDto {
   locationFullName: string | null;
   locationCity: string | null;
   locationActive: boolean;
+  locationPhotoUrl: string | null;
 }
 
 export interface LocationDetailDto extends LocationDto {

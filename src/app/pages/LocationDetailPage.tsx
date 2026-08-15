@@ -73,6 +73,18 @@ export function LocationDetailPage() {
 
       <div className="px-4 pt-3 pb-4 space-y-3">
 
+        {/* Location photo */}
+        {location.locationPhotoUrl && (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <img
+              src={location.locationPhotoUrl}
+              alt={location.locationNickName || ''}
+              className="w-full object-cover"
+              style={{ maxHeight: 220 }}
+            />
+          </div>
+        )}
+
         {/* Details card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {location.locationAddress && (

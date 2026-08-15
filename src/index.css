@@ -129,3 +129,48 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ── Missing Tailwind utilities ──────────────────────────────────
+   The checked-in tailwind.css is a frozen dump; any class not in it
+   silently does nothing. Every utility below is used somewhere in the
+   app but absent from the dump (audited 2026-08-14) — spacing looked
+   cramped because margins/paddings never applied. Values match
+   Tailwind's scale (0.25rem unit). */
+.-mt-5 { margin-top: -1.25rem; }
+.-mt-8 { margin-top: -2rem; }
+.m-4  { margin: 1rem; }
+.mb-5 { margin-bottom: 1.25rem; }
+.ml-6 { margin-left: 1.5rem; }
+.mt-px { margin-top: 1px; }
+.pb-10 { padding-bottom: 2.5rem; }
+.pb-12 { padding-bottom: 3rem; }
+.pb-16 { padding-bottom: 4rem; }
+.pb-24 { padding-bottom: 6rem; }
+.pl-5 { padding-left: 1.25rem; }
+.pr-3 { padding-right: 0.75rem; }
+.pr-12 { padding-right: 3rem; }
+.pt-5 { padding-top: 1.25rem; }
+.pt-10 { padding-top: 2.5rem; }
+.pt-14 { padding-top: 3.5rem; }
+.px-3\.5 { padding-left: 0.875rem; padding-right: 0.875rem; }
+.py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+.py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+.py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+.py-24 { padding-top: 6rem; padding-bottom: 6rem; }
+.gap-0\.5 { gap: 0.125rem; }
+.gap-2\.5 { gap: 0.625rem; }
+.h-11 { height: 2.75rem; }
+.h-64 { height: 16rem; }
+.w-10 { width: 2.5rem; }
+.w-11 { width: 2.75rem; }
+.w-12 { width: 3rem; }
+.w-14 { width: 3.5rem; }
+.w-16 { width: 4rem; }
+.leading-snug { line-height: 1.375; }
+.rounded-3xl { border-radius: 1.5rem; }
+.rounded-t-3xl { border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; }
+.space-y-0 > * + * { margin-top: 0; }
+.divide-x > * + * { border-left-width: 1px; border-left-style: solid; }
+.divide-y > * + * { border-top-width: 1px; border-top-style: solid; }
+.divide-slate-100 > * + * { border-color: #f1f5f9; }

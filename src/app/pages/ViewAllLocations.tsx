@@ -82,8 +82,17 @@ export function ViewAllLocations() {
         {/* List */}
         <div className="space-y-3">
           {filtered.map((l) => (
-            <Link key={l.locationId} to={`/locations/${l.locationId}`} className="block active:scale-[0.98] transition-transform bg-white rounded-xl shadow-md border border-gray-100 p-4">
-              <div>
+            <Link key={l.locationId} to={`/locations/${l.locationId}`} className="block active:scale-[0.98] transition-transform bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+              {l.locationPhotoUrl && (
+                <img
+                  src={l.locationPhotoUrl}
+                  alt={l.locationNickName || ''}
+                  className="w-full object-cover"
+                  style={{ height: 140 }}
+                  loading="lazy"
+                />
+              )}
+              <div className="p-4">
                 <div className="text-base text-gray-900">{l.locationNickName}</div>
                 <div className="text-sm text-gray-600">{l.locationFullName}</div>
                 <div className="text-xs text-gray-500 mt-1">{l.locationCity}</div>

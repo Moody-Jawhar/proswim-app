@@ -30,13 +30,14 @@ export function MobileNav() {
 
   // Signed in: the swimmer's world (Home first, Portfolio for team swimmers).
   // Signed out: the public-facing pages.
+  // News has no tab while signed in — it's reached from the Home shortcut
+  // tile instead (signed-out users keep their News tab).
   const navItems = isAuthenticated
     ? [
         { path: '/dashboard', icon: Home, label: t('nav.home') },
         { path: '/registrations', icon: Users, label: t('nav.group') },
         { path: '/private', icon: GraduationCap, label: t('nav.private') },
         ...(isElite ? [{ path: '/profile/portfolio', icon: Trophy, label: t('nav.portfolio') }] : []),
-        { path: '/news', icon: Newspaper, label: t('nav.news') },
         { path: '/profile', icon: User, label: t('nav.profile') },
       ]
     : [

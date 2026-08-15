@@ -34,8 +34,11 @@ export function ChangePasswordPage() {
       await changePassword(current, next);
       setDone(true);
       setTimeout(() => {
-        if (required && needsVerify) navigate('/verify', { replace: true });
-        else if (required) navigate('/dashboard', { replace: true });
+        // WhatsApp verification is DISABLED — everyone lands on the dashboard.
+        // To re-enable, restore:
+        //   if (required && needsVerify) navigate('/verify', { replace: true });
+        void needsVerify;
+        if (required) navigate('/dashboard', { replace: true });
         else navigate(-1);
       }, 1200);
     } catch (e: unknown) {

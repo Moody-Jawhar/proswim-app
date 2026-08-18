@@ -39,13 +39,25 @@ export function PrivateSessionsPage() {
     requests.find((r) => Number(r.PrivateSessionId) === sessionId && String(r.Status) !== 'Rejected')
     ?? requests.find((r) => Number(r.PrivateSessionId) === sessionId);
 
-  // A change can only be requested >= 24h before the session starts.
-  const canRequest = (s: PrivateSessionDto) => {
-    if (s.privateSessionAttended !== null || !s.privateSessionDate) return false;
+  // The DB stores only an attended bit — "upcoming" is any unattended
+  // session whose start is still in the future.
+  const startOf = (s: PrivateSessionDto): Date | null => {
+    if (!s.privateSessionDate) return null;
     const d = new Date(s.privateSessionDate);
     const m = (s.privateSessionTime ?? '').match(/^(\d{1,2}):(\d{2})/);
     if (m) d.setHours(Number(m[1]), Number(m[2]), 0, 0); else d.setHours(23, 59, 0, 0);
-    return d.getTime() - Date.now() >= 24 * 3600 * 1000;
+    return d;
+  };
+  const isUpcoming = (s: PrivateSessionDto) => {
+    const d = startOf(s);
+    return s.privateSessionAttended !== true && d !== null && d.getTime() > Date.now();
+  };
+
+  // A change can only be requested >= 24h before the session starts.
+  const canRequest = (s: PrivateSessionDto) => {
+    if (s.privateSessionAttended === true) return false;
+    const d = startOf(s);
+    return d !== null && d.getTime() - Date.now() >= 24 * 3600 * 1000;
   };
 
   async function submitRequest(sessionId: number) {
@@ -84,7 +96,7 @@ export function PrivateSessionsPage() {
   }, [packageId]);
 
   const attended = sessions.filter(s => s.privateSessionAttended === true).length;
-  const absent = sessions.filter(s => s.privateSessionAttended === false).length;
+  const absent = sessions.filter(s => s.privateSessionAttended !== true && !isUpcoming(s)).length;
 
   if (loading) {
     return (
@@ -143,7 +155,8 @@ export function PrivateSessionsPage() {
         <div className="space-y-2">
           {sessions.map((s) => {
             const attended = s.privateSessionAttended === true;
-            const absent = s.privateSessionAttended === false;
+            const upcoming = isUpcoming(s);
+            const absent = s.privateSessionAttended !== true && !upcoming;
             const cardStyle = attended
               ? { backgroundColor: '#22c55e', borderColor: '#22c55e' }
               : absent
@@ -187,7 +200,7 @@ export function PrivateSessionsPage() {
                 <div className="shrink-0 flex flex-col items-end gap-1">
                   {attended && <CheckCircle2 className="size-5" style={{ color: w }} />}
                   {absent && <XCircle className="size-5" style={{ color: w }} />}
-                  {s.privateSessionAttended === null && (
+                  {upcoming && (
                     <div className="size-5 rounded-full border-2 border-slate-200" />
                   )}
                   {s.privateSessionState && s.privateSessionState !== 'Regular' && (

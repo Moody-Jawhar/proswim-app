@@ -5,6 +5,7 @@ import { MobileNav } from "../components/MobileNav";
 import { Search, RefreshCw } from "lucide-react";
 import { PageHero } from "../components/PageHero";
 import { getLocations, type LocationDto } from "../api/pswmApi";
+import { t } from '../i18n';
 
 export function ViewAllLocations() {
   const [locations, setLocations] = useState<LocationDto[]>([]);
@@ -20,7 +21,7 @@ export function ViewAllLocations() {
       const data = await getLocations();
       setLocations(data);
     } catch (e: any) {
-      setError(e?.message || "Failed to load locations");
+      setError(e?.message || t('loc.loadFail'));
     } finally {
       setLoading(false);
     }
@@ -47,8 +48,8 @@ export function ViewAllLocations() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <MobileHeader title="All Locations" showBack />
-      <PageHero title="Our Locations" subtitle="Find a ProSwim pool near you" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
+      <MobileHeader title={t('loc.header')} showBack />
+      <PageHero title={t('loc.title')} subtitle={t('loc.subtitle')} slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-6 space-y-4">
         {/* Search + Refresh */}
         <div className="relative">
@@ -56,13 +57,13 @@ export function ViewAllLocations() {
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search locations..."
+            placeholder={t('loc.searchPh')}
             className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 bg-white"
           />
           <button
             onClick={load}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg"
-            title="Refresh"
+            title={t('loc.refresh')}
           >
             <RefreshCw className={`size-5 ${loading ? "animate-spin" : ""} text-gray-500`} />
           </button>
@@ -101,7 +102,7 @@ export function ViewAllLocations() {
           ))}
         </div>
 
-        {loading && <div className="text-sm text-gray-500">Loading...</div>}
+        {loading && <div className="text-sm text-gray-500">{t('common.loading')}</div>}
       </div>
 
       <MobileNav />

@@ -6,12 +6,12 @@ import { PageLoader } from '../components/PageLoader';
 import { CreditCard, Loader2, AlertCircle, X, FileText } from 'lucide-react';
 import { getGroupPayments, type GroupPaymentDto, getGroupReceipt, type GroupReceiptDto, formatMoney, effectiveCurrency } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, monthShort, dayShort, dateLocale } from '../i18n';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  return `${monthShort(d.getMonth())} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 export function RegistrationPaymentsPage() {
@@ -24,13 +24,13 @@ export function RegistrationPaymentsPage() {
   useEffect(() => {
     const sid = semesterId ? parseInt(semesterId) : NaN;
     if (!Number.isFinite(sid)) {
-      setError('Missing semester.');
+      setError(t('pay.missingSem'));
       setLoading(false);
       return;
     }
     getGroupPayments(sid)
       .then(setPayments)
-      .catch(() => setError('Could not load payments.'))
+      .catch(() => setError(t('pay.loadError')))
       .finally(() => setLoading(false));
   }, [semesterId]);
 
@@ -54,8 +54,8 @@ export function RegistrationPaymentsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Payments" showBack />
-        <PageLoader label="Loading payments…" />
+        <MobileHeader title={t('common.payments')} showBack />
+        <PageLoader label={t('pay.loading')} />
         <MobileNav />
       </div>
     );
@@ -63,8 +63,8 @@ export function RegistrationPaymentsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Group Payments" showBack />
-      <PageHero title="Group Payments" subtitle="Registration payment history" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
+      <MobileHeader title={t('pay.groupTitle')} showBack />
+      <PageHero title={t('pay.groupTitle')} subtitle={t('pay.groupSubtitle')} slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -75,7 +75,7 @@ export function RegistrationPaymentsPage() {
 
         {payments.length > 0 && (
           <div className="bg-[#1e5c97] rounded-2xl p-5 mb-4">
-            <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>Total Paid</p>
+            <p className="text-xs font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>{t('pay.totalPaid')}</p>
             {Object.entries(totalsByCurrency).map(([cur, amount]) => (
               <p key={cur} className="num-stat text-3xl font-extrabold" style={{ color: '#ffffff' }}>
                 {amount.toLocaleString()} {cur}
@@ -85,7 +85,7 @@ export function RegistrationPaymentsPage() {
         )}
 
         {payments.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No payments found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('pay.none')}</div>
         )}
 
         <div className="space-y-2">
@@ -140,22 +140,22 @@ export function RegistrationPaymentsPage() {
               const balance = d.paymentTotalAmount - d.paymentPaidAmount;
               return (
                 <div className="space-y-0">
-                  {d.studentName && <ReceiptRow label="Student" value={d.studentName} />}
-                  {d.semesterName && <ReceiptRow label="Semester" value={d.semesterName} />}
-                  {d.paymentDate && <ReceiptRow label="Payment Date" value={new Date(d.paymentDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />}
-                  <ReceiptRow label="Total Amount" value={formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency)} />
-                  <ReceiptRow label="Amount Paid" value={formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency)} highlight />
+                  {d.studentName && <ReceiptRow label={t('common.student')} value={d.studentName} />}
+                  {d.semesterName && <ReceiptRow label={t('pay.semester')} value={d.semesterName} />}
+                  {d.paymentDate && <ReceiptRow label={t('pay.paymentDate')} value={new Date(d.paymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' })} />}
+                  <ReceiptRow label={t('pay.totalAmount')} value={formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency)} />
+                  <ReceiptRow label={t('pay.amountPaid')} value={formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency)} highlight />
                   <ReceiptRow
-                    label="Balance Due"
-                    value={balance <= 0 ? 'Paid in Full' : formatMoney(balance, d.paymentPaidCurrency)}
+                    label={t('pay.balanceDue')}
+                    value={balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.paymentPaidCurrency)}
                     status={balance <= 0 ? 'paid' : 'due'}
                   />
-                  {d.paymentNotes && <ReceiptRow label="Notes" value={d.paymentNotes} />}
+                  {d.paymentNotes && <ReceiptRow label={t('common.notes')} value={d.paymentNotes} />}
                 </div>
               );
             })()}
             {!receipt.loading && !receipt.data && (
-              <p className="text-sm text-slate-400 text-center py-4">Receipt not available</p>
+              <p className="text-sm text-slate-400 text-center py-4">{t('pay.receiptNA')}</p>
             )}
           </div>
         </div>

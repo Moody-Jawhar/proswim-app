@@ -6,13 +6,12 @@ import { PageLoader } from '../components/PageLoader';
 import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat } from 'lucide-react';
 import { getPrivateSessions, type PrivateSessionDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, monthShort, dayShort } from '../i18n';
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return `${dayShort(d.getDay())}, ${monthShort(d.getMonth())} ${d.getDate()}`;
 }
 
 export function PrivateSessionsPage() {
@@ -24,13 +23,13 @@ export function PrivateSessionsPage() {
   useEffect(() => {
     const pid = packageId ? parseInt(packageId) : NaN;
     if (!Number.isFinite(pid)) {
-      setError('Missing package.');
+      setError(t('sess.missingPkg'));
       setLoading(false);
       return;
     }
     getPrivateSessions(pid)
       .then(setSessions)
-      .catch(() => setError('Could not load sessions.'))
+      .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
   }, [packageId]);
 
@@ -40,8 +39,8 @@ export function PrivateSessionsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Sessions" showBack />
-        <PageLoader label="Loading sessions…" />
+        <MobileHeader title={t('common.sessions')} showBack />
+        <PageLoader label={t('sess.loading')} />
         <MobileNav />
       </div>
     );
@@ -49,8 +48,8 @@ export function PrivateSessionsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Private Sessions" showBack />
-      <PageHero title="Private Sessions" subtitle="Your 1-on-1 coaching sessions" slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
+      <MobileHeader title={t('sess.privTitle')} showBack />
+      <PageHero title={t('sess.privTitle')} subtitle={t('sess.privSubtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -63,21 +62,21 @@ export function PrivateSessionsPage() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-4 grid grid-cols-3 divide-x divide-slate-100">
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-violet-600">{sessions.length}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Total</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.total')}</p>
             </div>
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-emerald-600">{attended}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Attended</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.attended')}</p>
             </div>
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-red-500">{absent}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Absent</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.absent')}</p>
             </div>
           </div>
         )}
 
         {sessions.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No sessions found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('sess.none')}</div>
         )}
 
         <div className="space-y-2">
@@ -142,7 +141,7 @@ export function PrivateSessionsPage() {
                 <div className="mt-2 pt-2 space-y-1" style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: colored ? w : '#6d28d9' }}>
                     <Repeat className="size-3.5 shrink-0" />
-                    <span>Makeup</span>
+                    <span>{t('sess.makeup')}</span>
                   </div>
                   {s.privateSessionMkupDate && (
                     <p className="text-xs pl-5" style={{ color: colored ? ws : '#64748b' }}>

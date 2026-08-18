@@ -9,7 +9,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
-import { t } from '../i18n';
+import { t, dateLocale } from '../i18n';
 import {
   getStoredToken, getProfile, getGroupRegistrations, getGroupAttendanceSummary,
   getPrivatePackages, getGroupSessions, getPrivateSessions, getPaymentSummary,
@@ -51,7 +51,7 @@ function dayLabel(d: Date): string {
   const diff = Math.round((that.getTime() - today.getTime()) / 86400000);
   if (diff === 0) return t('home.today');
   if (diff === 1) return t('home.tomorrow');
-  return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
 export function StudentDashboard({ userName }: { userName: string; userEmail?: string }) {
@@ -126,7 +126,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
       if (!when || when < now) continue;
       cands.push({
         kind: 'Group', when, time: s.classTimeFrom ?? '',
-        label: s.className ?? 'Group session', location: s.locationNickName ?? '',
+        label: s.className ?? t('home.groupSession'), location: s.locationNickName ?? '',
       });
     }
     for (const s of Object.values(privSessions).flat()) {
@@ -136,7 +136,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
       if (!when || when < now) continue;
       cands.push({
         kind: 'Private', when, time: s.privateSessionTime ?? '',
-        label: s.coachFullName ? `Private with ${s.coachFullName}` : 'Private session', location: '',
+        label: s.coachFullName ? t('home.privateWith', { name: s.coachFullName }) : t('home.privateSession'), location: '',
       });
     }
     cands.sort((a, b) => a.when.getTime() - b.when.getTime());
@@ -154,7 +154,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
     return (
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('home.title')} showSignOut showBell />
-        <PageLoader label="Getting everything ready…" />
+        <PageLoader label={t('home.loading')} />
         <MobileNav />
       </div>
     );
@@ -212,7 +212,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             <div style={{ minWidth: 0 }}>
               <p className="text-xs font-bold uppercase tracking-wide"
                 style={{ color: (announcement.type ?? '').toLowerCase() === 'urgent' ? '#DC2626' : '#B45309' }}>
-                {(announcement.type ?? '').toLowerCase() === 'urgent' ? 'Urgent' : 'Announcement'}
+                {(announcement.type ?? '').toLowerCase() === 'urgent' ? t('home.urgent') : t('home.announcement')}
               </p>
               <p className="text-sm mt-0.5 text-slate-900">{announcement.desc}</p>
             </div>

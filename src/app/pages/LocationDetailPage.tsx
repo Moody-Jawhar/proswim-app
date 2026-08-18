@@ -6,6 +6,7 @@ import { PageLoader } from '../components/PageLoader';
 import { Loader2, AlertCircle, MapPin, Phone, Mail, Navigation } from 'lucide-react';
 import { PageHero } from '../components/PageHero';
 import { getLocationById, type LocationDetailDto } from '../api/pswmApi';
+import { t } from '../i18n';
 
 export function LocationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -15,18 +16,18 @@ export function LocationDetailPage() {
 
   useEffect(() => {
     const lid = id ? parseInt(id) : NaN;
-    if (!Number.isFinite(lid)) { setError('Invalid location.'); setLoading(false); return; }
+    if (!Number.isFinite(lid)) { setError(t('loc.invalid')); setLoading(false); return; }
     getLocationById(lid)
       .then(setLocation)
-      .catch(() => setError('Could not load location details.'))
+      .catch(() => setError(t('loc.detailFail')))
       .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Location" showBack />
-        <PageLoader label="Loading…" />
+        <MobileHeader title={t('loc.one')} showBack />
+        <PageLoader label={t('common.loading')} />
         <MobileNav />
       </div>
     );
@@ -35,10 +36,10 @@ export function LocationDetailPage() {
   if (error || !location) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Location" showBack />
+        <MobileHeader title={t('loc.one')} showBack />
         <div className="flex items-center gap-2 m-4 bg-red-50 border border-red-100 rounded-2xl p-4">
           <AlertCircle className="size-4 text-red-500 shrink-0" />
-          <p className="text-sm text-red-600">{error || 'Not found'}</p>
+          <p className="text-sm text-red-600">{error || t('loc.notFound')}</p>
         </div>
         <MobileNav />
       </div>
@@ -63,10 +64,10 @@ export function LocationDetailPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={location.locationNickName || 'Location'} showBack />
+      <MobileHeader title={location.locationNickName || t('loc.one')} showBack />
       <PageHero
-        title={location.locationNickName || 'Location'}
-        subtitle={[location.locationCity, location.locationActive ? 'Active' : 'Inactive'].filter(Boolean).join(' · ')}
+        title={location.locationNickName || t('loc.one')}
+        subtitle={[location.locationCity, location.locationActive ? t('common.active') : t('common.inactive')].filter(Boolean).join(' · ')}
         slide={2}
         tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))"
       />
@@ -88,33 +89,33 @@ export function LocationDetailPage() {
         {/* Details card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {location.locationAddress && (
-            <DetailRow icon={<MapPin className="size-4 text-[#1e5c97]" />} label="Address" value={location.locationAddress} />
+            <DetailRow icon={<MapPin className="size-4 text-[#1e5c97]" />} label={t('common.address')} value={location.locationAddress} />
           )}
           {location.locationPhone1 && (
             <DetailRow
               icon={<Phone className="size-4 text-[#1e5c97]" />}
-              label="Phone"
+              label={t('common.phone')}
               value={location.locationPhone1}
               onTap={() => handleCall(location.locationPhone1!)}
-              tapLabel="Call"
+              tapLabel={t('common.call')}
             />
           )}
           {location.locationPhone2 && (
             <DetailRow
               icon={<Phone className="size-4 text-[#1e5c97]" />}
-              label="Phone 2"
+              label={t('profile.phone2')}
               value={location.locationPhone2}
               onTap={() => handleCall(location.locationPhone2!)}
-              tapLabel="Call"
+              tapLabel={t('common.call')}
             />
           )}
           {location.locationEmail && (
             <DetailRow
               icon={<Mail className="size-4 text-[#1e5c97]" />}
-              label="Email"
+              label={t('common.email')}
               value={location.locationEmail}
               onTap={() => handleEmail(location.locationEmail!)}
-              tapLabel="Email"
+              tapLabel={t('common.email')}
             />
           )}
         </div>
@@ -125,7 +126,7 @@ export function LocationDetailPage() {
           className="w-full flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors"
         >
           <Navigation className="size-4 text-[#1e5c97]" />
-          <span className="text-sm font-semibold text-[#1e5c97]">Get Directions</span>
+          <span className="text-sm font-semibold text-[#1e5c97]">{t('loc.directions')}</span>
         </button>
       </div>
 

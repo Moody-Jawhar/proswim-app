@@ -289,6 +289,7 @@ export interface PrivatePackageDto {
   packageAmount: number;
   packageNetToPay: number;
   packageStartDate: string | null;
+  lastSessionDate: string | null;
   coachFullName: string | null;
   locationNickName: string | null;
   duePayment: number;

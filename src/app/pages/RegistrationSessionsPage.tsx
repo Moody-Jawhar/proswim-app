@@ -9,13 +9,12 @@ import {
   type SessionDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, monthShort, dayShort } from '../i18n';
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return `${dayShort(d.getDay())}, ${monthShort(d.getMonth())} ${d.getDate()}`;
 }
 
 export function RegistrationSessionsPage() {
@@ -27,7 +26,7 @@ export function RegistrationSessionsPage() {
   useEffect(() => {
     const id = semesterId ? parseInt(semesterId) : NaN;
     if (!Number.isFinite(id)) {
-      setError('Invalid registration.');
+      setError(t('sess.invalidReg'));
       setLoading(false);
       return;
     }
@@ -36,7 +35,7 @@ export function RegistrationSessionsPage() {
     // old second call to /Group/Attendance is gone.
     getGroupSessions(id)
       .then(setSessions)
-      .catch(() => setError('Could not load sessions.'))
+      .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
   }, [semesterId]);
 
@@ -46,8 +45,8 @@ export function RegistrationSessionsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Sessions" showBack />
-        <PageLoader label="Loading sessions…" />
+        <MobileHeader title={t('common.sessions')} showBack />
+        <PageLoader label={t('sess.loading')} />
         <MobileNav />
       </div>
     );
@@ -55,8 +54,8 @@ export function RegistrationSessionsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Sessions & Attendance" showBack />
-      <PageHero title="Sessions & Attendance" subtitle="Your class attendance record" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
+      <MobileHeader title={t('sess.title')} showBack />
+      <PageHero title={t('sess.title')} subtitle={t('sess.subtitle')} slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -69,21 +68,21 @@ export function RegistrationSessionsPage() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-4 grid grid-cols-3 divide-x divide-slate-100">
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-[#1e5c97]">{sessions.length}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Total</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.total')}</p>
             </div>
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-emerald-600">{attended}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Attended</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.attended')}</p>
             </div>
             <div className="flex flex-col items-center py-4">
               <p className="num-stat text-xl font-extrabold text-red-500">{absent}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Absent</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{t('common.absent')}</p>
             </div>
           </div>
         )}
 
         {sessions.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No sessions found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('sess.none')}</div>
         )}
 
         <div className="space-y-2">

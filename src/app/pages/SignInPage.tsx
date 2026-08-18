@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { MobileNav } from '../components/MobileNav';
 import { login, setStoredToken } from '../api/pswmApi';
 import { subscribeToStudentTopic } from '../utils/notifications';
+import { t } from '../i18n';
 
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
 
@@ -53,10 +54,10 @@ export function SignInPage() {
           navigate('/dashboard');
         }
       } else {
-        setError(res.message || 'Invalid credentials');
+        setError(res.message || t('signin.invalid'));
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Login failed');
+      setError(e instanceof Error ? e.message : t('signin.failed'));
     } finally {
       setLoading(false);
     }
@@ -68,8 +69,8 @@ export function SignInPage() {
       {/* Top brand area */}
       <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>
         <img src={proswimLogo} alt="ProSwim" className="h-16 w-auto mx-auto mb-6" />
-        <p className="text-2xl font-bold text-slate-900">Welcome back</p>
-        <p className="mt-1.5 text-slate-500" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: 14, fontStyle: 'italic' }}>Sign in to view your courses and progress</p>
+        <p className="text-2xl font-bold text-slate-900">{t('signin.welcome')}</p>
+        <p className="mt-1.5 text-slate-500" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: 14, fontStyle: 'italic' }}>{t('signin.tagline')}</p>
       </div>
 
       <div className="flex-1 px-4 pt-6 space-y-3">
@@ -84,21 +85,21 @@ export function SignInPage() {
             )}
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">Username</label>
+              <label className="block text-sm font-semibold text-slate-500 mb-2">{t('signin.username')}</label>
               <input
                 type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-                required autoComplete="username" placeholder="Enter your username"
+                required autoComplete="username" placeholder={t('signin.usernamePh')}
                 className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">Password</label>
+              <label className="block text-sm font-semibold text-slate-500 mb-2">{t('signin.password')}</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'} value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required autoComplete="current-password" placeholder="Enter your password"
+                  required autoComplete="current-password" placeholder={t('signin.passwordPh')}
                   className="w-full px-4 py-4 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-[#1e5c97] focus:ring-2 focus:ring-[#1e5c97]/10 outline-none transition-all text-base"
                 />
                 <button type="button" tabIndex={-1}
@@ -111,7 +112,7 @@ export function SignInPage() {
 
             <button type="submit" disabled={loading}
               className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
-              {loading ? 'Signing in…' : 'Sign In'}
+              {loading ? t('signin.signingIn') : t('signin.button')}
             </button>
           </form>
         </div>

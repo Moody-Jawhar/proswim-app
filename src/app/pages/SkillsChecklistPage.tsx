@@ -5,6 +5,7 @@ import { PageLoader } from '../components/PageLoader';
 import { Loader2, AlertCircle, CheckSquare, Square } from 'lucide-react';
 import { getChecklist, type ChecklistItemDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t } from '../i18n';
 
 function getStudentId(): number | null {
   try {
@@ -22,13 +23,13 @@ export function SkillsChecklistPage() {
   useEffect(() => {
     const studentId = getStudentId();
     if (!studentId) {
-      setError('Could not determine student ID.');
+      setError(t('checklist.noStudent'));
       setLoading(false);
       return;
     }
     getChecklist(studentId)
       .then(setItems)
-      .catch(() => setError('Could not load checklist.'))
+      .catch(() => setError(t('checklist.loadError')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -48,8 +49,8 @@ export function SkillsChecklistPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Skills Checklist" showBack />
-        <PageLoader label="Loading checklist…" />
+        <MobileHeader title={t('checklist.title')} showBack />
+        <PageLoader label={t('checklist.loading')} />
         <MobileNav />
       </div>
     );
@@ -57,8 +58,8 @@ export function SkillsChecklistPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Skills Checklist" showBack />
-      <PageHero title="Skills Checklist" subtitle="Track your swimming progress" slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.85), rgba(5,120,90,0.72))" />
+      <MobileHeader title={t('checklist.title')} showBack />
+      <PageHero title={t('checklist.title')} subtitle={t('checklist.subtitle')} slide={3} tint="linear-gradient(120deg, rgba(36,44,67,0.85), rgba(5,120,90,0.72))" />
       <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
@@ -71,7 +72,7 @@ export function SkillsChecklistPage() {
         {/* Overall progress */}
         {items.length > 0 && (
           <div className="rounded-2xl px-5 py-5" style={{ background: 'rgba(91,173,255,0.18)' }}>
-            <p className="text-xs font-semibold text-slate-500">Overall Progress</p>
+            <p className="text-xs font-semibold text-slate-500">{t('checklist.overall')}</p>
             <div className="flex items-end justify-between mt-1 mb-3">
               <p className="num-stat text-3xl font-extrabold text-[#1e5c97]">
                 {totalChecked} <span className="text-lg font-semibold text-slate-400">/ {items.length}</span>
@@ -94,7 +95,7 @@ export function SkillsChecklistPage() {
         )}
 
         {items.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No checklist items found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('checklist.none')}</div>
         )}
 
         {/* Groups */}

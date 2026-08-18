@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { sendVerificationCode, verifyCode } from '../api/pswmApi';
+import { t } from '../i18n';
 
 export function VerifyPage() {
   const navigate = useNavigate();
@@ -29,10 +30,10 @@ export function VerifyPage() {
         setCode('');
         setStep('enter');
       } else {
-        setError(res.message || 'Could not send the WhatsApp code.');
+        setError(res.message || t('verify.sendFail'));
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Could not send the WhatsApp code.');
+      setError(e instanceof Error ? e.message : t('verify.sendFail'));
     } finally {
       setSending(false);
     }
@@ -48,10 +49,10 @@ export function VerifyPage() {
         setDone(true);
         setTimeout(() => navigate('/dashboard', { replace: true }), 1200);
       } else {
-        setError(res.message || 'Incorrect code.');
+        setError(res.message || t('verify.incorrect'));
       }
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Verification failed.';
+      const msg = e instanceof Error ? e.message : t('verify.failed');
       // These outcomes invalidate the code — user must request a new one.
       if (/new code|new one/i.test(msg)) {
         setStep('send');
@@ -66,7 +67,7 @@ export function VerifyPage() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <MobileHeader title="Verify Account" />
+      <MobileHeader title={t('verify.title')} />
 
       <div className="px-4 pt-6 space-y-4">
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
@@ -75,9 +76,9 @@ export function VerifyPage() {
               <ShieldCheck className="size-5" style={{ color: '#1DA851' }} />
             </div>
             <div>
-              <p className="text-base font-bold text-slate-900">Verify your account</p>
+              <p className="text-base font-bold text-slate-900">{t('verify.heading')}</p>
               <p className="text-xs text-slate-400 mt-0.5">
-                One-time check — we'll send a 6-digit code to your WhatsApp.
+                {t('verify.oneTime')}
               </p>
             </div>
           </div>
@@ -85,7 +86,7 @@ export function VerifyPage() {
           {done ? (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm">
               <CheckCircle2 className="size-4 shrink-0" />
-              Verified! Taking you to your dashboard…
+              {t('verify.done')}
             </div>
           ) : step === 'send' ? (
             <div className="space-y-4">
@@ -103,14 +104,13 @@ export function VerifyPage() {
                 className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl font-semibold text-base text-white disabled:opacity-50 active:scale-[0.98] transition-transform"
                 style={{ backgroundColor: '#25D366' }}>
                 <MessageCircle className="size-5" />
-                {sending ? 'Sending…' : 'Send code to WhatsApp'}
+                {sending ? t('verify.sending') : t('verify.send')}
               </button>
             </div>
           ) : (
             <form onSubmit={handleVerify} className="space-y-4">
               <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm text-slate-600">
-                Code sent by WhatsApp to <span className="font-semibold text-slate-900">{phone}</span>.
-                It expires in {expiresIn} minutes.
+                {t('verify.sentTo', { phone: phone ?? '', m: expiresIn })}
               </div>
 
               {error && (
@@ -129,12 +129,12 @@ export function VerifyPage() {
 
               <button type="submit" disabled={verifying || code.length !== 6}
                 className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
-                {verifying ? 'Verifying…' : 'Verify'}
+                {verifying ? t('verify.verifying') : t('verify.verify')}
               </button>
 
               <button type="button" onClick={handleSend} disabled={sending}
                 className="w-full py-2 text-sm font-semibold text-[#1e5c97] disabled:opacity-50">
-                {sending ? 'Resending…' : "Didn't get it? Resend code"}
+                {sending ? t('verify.resending') : t('verify.resend')}
               </button>
             </form>
           )}

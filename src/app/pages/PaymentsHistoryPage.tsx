@@ -13,12 +13,12 @@ import {
   type PrivatePaymentDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, monthShort } from '../i18n';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  return `${monthShort(d.getMonth())} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 export function PaymentsHistoryPage() {
@@ -59,7 +59,7 @@ export function PaymentsHistoryPage() {
       const nothingToLoad = regsRes.status === 'rejected' && pkgsRes.status === 'rejected';
 
       if (nothingToLoad || (allGroupFailed && allPrivateFailed)) {
-        setError('Could not load payment history.');
+        setError(t('payhist.loadError'));
       }
 
       setLoading(false);
@@ -70,8 +70,8 @@ export function PaymentsHistoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Payment History" showBack />
-        <PageLoader label="Loading payments…" />
+        <MobileHeader title={t('payhist.title')} showBack />
+        <PageLoader label={t('pay.loading')} />
         <MobileNav />
       </div>
     );
@@ -79,8 +79,8 @@ export function PaymentsHistoryPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Payment History" showBack />
-      <PageHero title="Payment History" subtitle="All your payments in one place" slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(5,120,90,0.55))" />
+      <MobileHeader title={t('payhist.title')} showBack />
+      <PageHero title={t('payhist.title')} subtitle={t('payhist.subtitle')} slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(5,120,90,0.55))" />
       <div className="px-4 pt-3 pb-4 space-y-4">
 
         {error && (
@@ -92,7 +92,7 @@ export function PaymentsHistoryPage() {
 
         {groupPayments.length > 0 && (
           <div>
-            <p className="text-sm font-semibold text-slate-900 mb-2">Group Payments</p>
+            <p className="text-sm font-semibold text-slate-900 mb-2">{t('pay.groupTitle')}</p>
             <div className="space-y-2">
               {groupPayments.map((p) => (
                 <div key={p.paymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
@@ -122,7 +122,7 @@ export function PaymentsHistoryPage() {
 
         {privatePayments.length > 0 && (
           <div>
-            <p className="text-sm font-semibold text-slate-900 mb-2">Private Payments</p>
+            <p className="text-sm font-semibold text-slate-900 mb-2">{t('pay.privTitle')}</p>
             <div className="space-y-2">
               {privatePayments.map((p) => (
                 <div key={p.privatePaymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
@@ -151,7 +151,7 @@ export function PaymentsHistoryPage() {
         )}
 
         {groupPayments.length === 0 && privatePayments.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No payment history found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('payhist.none')}</div>
         )}
       </div>
       <MobileNav />

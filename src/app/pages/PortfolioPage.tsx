@@ -7,6 +7,7 @@ import {
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { getCompPortfolio, type CompPortfolioDto, type PortfolioRow } from '../api/pswmApi';
+import { t } from '../i18n';
 
 const str = (r: PortfolioRow, k: string) => (r[k] == null ? '' : String(r[k]));
 const num = (r: PortfolioRow, k: string) => Number(r[k] ?? 0);
@@ -44,7 +45,7 @@ export function PortfolioPage() {
     }
     getCompPortfolio()
       .then(setData)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load the portfolio.'));
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : t('portfolio.loadError')));
   }, [navigate]);
 
   const chartEvents = useMemo(() => {
@@ -68,7 +69,7 @@ export function PortfolioPage() {
   if (!data) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Portfolio" showBack />
+        <MobileHeader title={t('portfolio.title')} showBack />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           {error
             ? <><AlertCircle className="size-10 text-red-400" /><p className="text-sm text-red-600 text-center">{error}</p></>
@@ -84,22 +85,22 @@ export function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="My Portfolio" showBack />
+      <MobileHeader title={t('portfolio.title')} showBack />
 
       <div className="px-4 pt-4 pb-5">
         {empty && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center mb-4">
             <Trophy className="size-8 mx-auto mb-2" style={{ color: '#F59E0B' }} />
-            <p className="text-sm text-slate-900 font-semibold">Your portfolio is just getting started</p>
+            <p className="text-sm text-slate-900 font-semibold">{t('portfolio.empty')}</p>
             <p className="text-xs mt-1" style={{ color: '#64748B' }}>
-              Results, awards and coach evaluations will appear here as your coach records them.
+              {t('portfolio.emptyHint')}
             </p>
           </div>
         )}
 
         {/* Personal bests */}
         {data.personalBests.length > 0 && (
-          <Card icon={<Timer className="size-4" style={{ color: '#1e5c97' }} />} iconBg="rgba(91,173,255,0.18)" title="Personal Best Times">
+          <Card icon={<Timer className="size-4" style={{ color: '#1e5c97' }} />} iconBg="rgba(91,173,255,0.18)" title={t('portfolio.pb')}>
             <div className="grid grid-cols-2 gap-3">
               {data.personalBests.map((b) => (
                 <div key={str(b, 'EventName')} className="rounded-xl p-3" style={{ background: 'rgba(30,92,151,0.06)' }}>
@@ -111,7 +112,7 @@ export function PortfolioPage() {
                   {b.IsRecord === true && (
                     <span className="inline-block mt-1 text-xs font-bold rounded-full px-2 py-0.5"
                       style={{ background: 'rgba(139,92,246,0.15)', color: '#6D28D9' }}>
-                      ★ {str(b, 'RecordLevel') || 'Record'}
+                      ★ {str(b, 'RecordLevel') || t('portfolio.record')}
                     </span>
                   )}
                 </div>
@@ -122,7 +123,7 @@ export function PortfolioPage() {
 
         {/* Progress chart */}
         {chartEvents.length > 0 && (
-          <Card icon={<TrendingUp className="size-4" style={{ color: '#10B981' }} />} iconBg="rgba(52,211,153,0.18)" title="Progress">
+          <Card icon={<TrendingUp className="size-4" style={{ color: '#10B981' }} />} iconBg="rgba(52,211,153,0.18)" title={t('portfolio.progress')}>
             {chartEvents.length > 1 && (
               <div className="flex gap-2 mb-3" style={{ flexWrap: 'wrap' }}>
                 {chartEvents.map((ev) => (
@@ -142,7 +143,7 @@ export function PortfolioPage() {
 
         {/* Results */}
         {data.results.length > 0 && (
-          <Card icon={<Medal className="size-4" style={{ color: '#1e5c97' }} />} iconBg="rgba(91,173,255,0.18)" title="Competition Results">
+          <Card icon={<Medal className="size-4" style={{ color: '#1e5c97' }} />} iconBg="rgba(91,173,255,0.18)" title={t('portfolio.results')}>
             <div>
               {data.results.map((r) => (
                 <div key={num(r, 'ResultId')} className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid #F1F5F9' }}>
@@ -162,7 +163,7 @@ export function PortfolioPage() {
                     {r.IsRecord === true && (
                       <span className="inline-block mt-1 text-xs font-bold rounded-full px-2 py-0.5"
                         style={{ background: 'rgba(139,92,246,0.15)', color: '#6D28D9' }}>
-                        ★ {str(r, 'RecordLevel') || 'Official record'}
+                        ★ {str(r, 'RecordLevel') || t('portfolio.officialRecord')}
                       </span>
                     )}
                   </div>
@@ -175,7 +176,7 @@ export function PortfolioPage() {
 
         {/* Awards */}
         {data.awards.length > 0 && (
-          <Card icon={<Trophy className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title="Awards & Medals">
+          <Card icon={<Trophy className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title={t('portfolio.awards')}>
             <div className="grid grid-cols-1 gap-2">
               {data.awards.map((a) => {
                 const s = AWARD_STYLE[str(a, 'AwardType')] ?? { bg: 'rgba(148,163,184,0.12)', fg: '#475569' };
@@ -197,7 +198,7 @@ export function PortfolioPage() {
 
         {/* Upcoming competitions */}
         {data.upcomingCompetitions.length > 0 && (
-          <Card icon={<CalendarDays className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)" title="Upcoming Competitions">
+          <Card icon={<CalendarDays className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)" title={t('portfolio.upcoming')}>
             {data.upcomingCompetitions.map((c) => (
               <div key={num(c, 'CompetitionId')} className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid #F1F5F9' }}>
                 <div className="flex-1" style={{ minWidth: 0 }}>
@@ -216,7 +217,7 @@ export function PortfolioPage() {
 
         {/* Documents */}
         {data.documents.length > 0 && (
-          <Card icon={<FileText className="size-4" style={{ color: '#64748B' }} />} iconBg="rgba(148,163,184,0.16)" title="Competition Documents">
+          <Card icon={<FileText className="size-4" style={{ color: '#64748B' }} />} iconBg="rgba(148,163,184,0.16)" title={t('portfolio.documents')}>
             {data.documents.map((d) => (
               <button key={num(d, 'DocumentId')} onClick={() => window.open(str(d, 'Url'))}
                 className="w-full flex items-center gap-2 py-2 text-left" style={{ borderBottom: '1px solid #F1F5F9' }}>
@@ -232,7 +233,7 @@ export function PortfolioPage() {
 
         {/* Coach evaluations */}
         {data.evaluations.length > 0 && (
-          <Card icon={<Star className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title="Coach Evaluations">
+          <Card icon={<Star className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title={t('portfolio.evals')}>
             {data.evaluations.map((ev) => (
               <div key={num(ev, 'EvaluationId')} className="py-2" style={{ borderBottom: '1px solid #F1F5F9' }}>
                 <div className="flex items-center justify-between gap-2">

@@ -83,12 +83,10 @@ export function LandingPage() {
         </div>
         <div className="pt-4 px-1">
           <h1 className="text-xl font-bold text-slate-900 leading-snug">
-            Swim Safe. Build Confidence. Reach Your Potential.
+            {t('landing.heroTitle')}
           </h1>
           <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-            Learn to swim in a safe, enjoyable, and supportive environment. ProSwim offers
-            swimming programs for babies, children, adults, developing swimmers, and
-            competitive athletes.
+            {t('landing.heroBody')}
           </p>
         </div>
       </div>
@@ -100,7 +98,7 @@ export function LandingPage() {
             to="/dashboard"
             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl font-bold text-sm"
             style={{ background: 'rgba(30,92,151,0.60)', color: '#ffffff', fontFamily: "'Abadi MT Condensed Extra Bold', 'Abadi MT Condensed', 'Abadi', 'Century Gothic', 'Futura', sans-serif", letterSpacing: '0.04em' }}>
-            Continue, {userName || "swimmer"}
+            {t('landing.continue', { name: userName || t('landing.swimmer') })}
             <ArrowRight className="size-6" style={{ color: "#ffffff" }} />
           </Link>
         )}
@@ -108,13 +106,13 @@ export function LandingPage() {
           <Link to="/levels"
             className="flex items-center justify-center py-3 rounded-2xl font-semibold text-sm text-white"
             style={{ background: 'linear-gradient(135deg,rgba(167,139,250,0.55) 0%,rgba(139,92,246,0.55) 100%)' }}>
-            View Swim Levels
+            {t('landing.viewLevels')}
           </Link>
           <a href="https://www.proswim-lb.com/"
             target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-1.5 py-3 rounded-2xl font-semibold text-sm text-white"
             style={{ background: 'rgba(30,92,151,0.60)' }}>
-            For More Info
+            {t('landing.moreInfo')}
             <ArrowRight className="size-4" />
           </a>
         </div>
@@ -123,9 +121,9 @@ export function LandingPage() {
       {/* Trust strip */}
       <div className="px-4 mt-4 grid grid-cols-3 gap-2">
         {[
-          { icon: <Users className="size-3.5" />, label: "6 per coach" },
-          { icon: <BadgeCheck className="size-3.5" />, label: "Certified" },
-          { icon: <Calendar className="size-3.5" />, label: "Flexible" },
+          { icon: <Users className="size-3.5" />, label: t('landing.perCoach') },
+          { icon: <BadgeCheck className="size-3.5" />, label: t('landing.certified') },
+          { icon: <Calendar className="size-3.5" />, label: t('landing.flexible') },
         ].map(({ icon, label }) => (
           <div key={label}
             className="bg-transparent border border-slate-100 rounded-xl py-2.5 flex items-center justify-center gap-1.5">
@@ -138,7 +136,7 @@ export function LandingPage() {
 
       {/* ProSwim Photo Gallery */}
       <section className="mt-6">
-        <p className="text-base font-bold text-slate-900 mb-3 px-4">At ProSwim</p>
+        <p className="text-base font-bold text-slate-900 mb-3 px-4">{t('landing.gallery')}</p>
         <div
           className="flex gap-3 pl-4 overflow-x-auto"
           style={{ paddingRight: 16, paddingBottom: 4, scrollbarWidth: 'none' }}
@@ -163,15 +161,14 @@ export function LandingPage() {
       {/* Welcome to ProSwim */}
       <section className="px-4 mt-3">
         <div className="rounded-2xl border border-slate-100 p-5" style={{ background: 'rgba(91,173,255,0.10)' }}>
-          <p className="text-base font-bold text-slate-900 mb-1.5">Welcome to ProSwim</p>
+          <p className="text-base font-bold text-slate-900 mb-1.5">{t('landing.welcome')}</p>
           <p className="text-sm text-slate-600 leading-relaxed">
-            At ProSwim, every swimmer is unique. Teaching methods are adapted to each
-            swimmer's needs, abilities, goals, strengths, and areas for improvement.
+            {t('landing.welcomeBody')}
           </p>
           <a href="https://www.proswim-lb.com/"
             target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-sm font-semibold text-[#1e5c97] mt-3">
-            Visit our website
+            {t('landing.visitSite')}
             <ArrowRight className="size-4" />
           </a>
         </div>
@@ -183,13 +180,13 @@ export function LandingPage() {
         <div className="bg-transparent border border-slate-100 rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-1">
             <MapPin className="size-4 text-[#1e5c97] shrink-0" />
-            <p className="text-sm font-semibold text-slate-900">Multiple locations across Lebanon</p>
+            <p className="text-sm font-semibold text-slate-900">{t('landing.locations')}</p>
           </div>
-          <p className="text-sm text-slate-500 mb-4 ml-6">View pools, schedules, and availability.</p>
+          <p className="text-sm text-slate-500 mb-4 ml-6">{t('landing.locationsHint')}</p>
           <Link to="/locations"
             className="block py-3 rounded-xl text-center text-sm font-semibold"
             style={{ background: 'rgba(91,173,255,0.55)', color: '#ffffff' }}>
-            View locations
+            {t('landing.viewLocations')}
           </Link>
         </div>
       </section>
@@ -205,7 +202,7 @@ export function LandingPage() {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
           </svg>
-          <span className="text-base font-bold" style={{ color: '#ffffff' }}>Contact ProSwim on WhatsApp</span>
+          <span className="text-base font-bold" style={{ color: '#ffffff' }}>{t('landing.whatsapp')}</span>
         </button>
       </section>
 

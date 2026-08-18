@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
+import { t } from '../i18n';
 import {
   getProfile, updatePersonalInfo, getContactChangeRequests, submitContactChangeRequest,
   type ProfileDto, type ContactChangeRequestDto,
@@ -72,7 +73,7 @@ export function PersonalInfoPage() {
           studentMedicalNotes: p.studentMedicalNotes ?? '',
         });
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load your information.'))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : t('personal.loadError')))
       .finally(() => setLoading(false));
   }, [navigate]);
 
@@ -97,10 +98,10 @@ export function PersonalInfoPage() {
         studentAllergies: form.studentAllergies || null,
         studentMedicalNotes: form.studentMedicalNotes || null,
       });
-      setSuccess('Personal information saved.');
+      setSuccess(t('personal.saved'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Could not save. Please try again.');
+      setError(e instanceof Error ? e.message : t('personal.saveFail'));
     } finally {
       setSaving(false);
     }
@@ -120,13 +121,13 @@ export function PersonalInfoPage() {
   async function handleSubmitRequest() {
     if (!editingField) return;
     const value = reqValue.trim();
-    if (!value) { setError('Please enter the new value.'); return; }
+    if (!value) { setError(t('personal.enterNew')); return; }
     if (editingField === 'Email' && !/^\S+@\S+\.\S+$/.test(value)) {
-      setError('Please enter a valid email address.');
+      setError(t('personal.validEmail'));
       return;
     }
     if (editingField === 'Phone' && !/^[0-9 ]{6,}$/.test(value)) {
-      setError('Please enter a valid phone number (digits only).');
+      setError(t('personal.validPhone'));
       return;
     }
     setSubmitting(true);
@@ -138,7 +139,7 @@ export function PersonalInfoPage() {
       setEditingField(null);
       setRequests(await getContactChangeRequests());
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Could not submit the request.');
+      setError(e instanceof Error ? e.message : t('personal.submitFail'));
     } finally {
       setSubmitting(false);
     }
@@ -146,15 +147,15 @@ export function PersonalInfoPage() {
 
   const currentPhone = profile?.studentPhoneNumber1
     ? `${profile.studentPhoneNumberCode1 ? profile.studentPhoneNumberCode1 + ' ' : ''}${profile.studentPhoneNumber1}`
-    : 'Not set';
-  const currentEmail = profile?.studentEmail || 'Not set';
+    : t('common.notSet');
+  const currentEmail = profile?.studentEmail || t('common.notSet');
   const history = requests.filter((r) => r.status !== 'Pending').slice(0, 5);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Personal Information" showBack />
-        <div className="px-4 pt-10 text-center text-sm" style={{ color: '#64748B' }}>Loading…</div>
+        <MobileHeader title={t('personal.title')} showBack />
+        <div className="px-4 pt-10 text-center text-sm" style={{ color: '#64748B' }}>{t('common.loading')}</div>
         <MobileNav />
       </div>
     );
@@ -162,7 +163,7 @@ export function PersonalInfoPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Personal Information" showBack />
+      <MobileHeader title={t('personal.title')} showBack />
 
       <div className="px-4 pt-4 pb-5">
         {error && (
@@ -179,36 +180,36 @@ export function PersonalInfoPage() {
         )}
 
         {/* ── Address ── */}
-        <SectionCard icon={<MapPin className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title="Address">
-          <Field label="City"><input className={inputClass} value={form.studentAddressCity} onChange={set('studentAddressCity')} /></Field>
-          <Field label="Region"><input className={inputClass} value={form.studentAddressRegion} onChange={set('studentAddressRegion')} /></Field>
-          <Field label="Street"><input className={inputClass} value={form.studentAddressStreet} onChange={set('studentAddressStreet')} /></Field>
+        <SectionCard icon={<MapPin className="size-4" style={{ color: '#F59E0B' }} />} iconBg="rgba(245,158,11,0.16)" title={t('common.address')}>
+          <Field label={t('personal.city')}><input className={inputClass} value={form.studentAddressCity} onChange={set('studentAddressCity')} /></Field>
+          <Field label={t('personal.region')}><input className={inputClass} value={form.studentAddressRegion} onChange={set('studentAddressRegion')} /></Field>
+          <Field label={t('personal.street')}><input className={inputClass} value={form.studentAddressStreet} onChange={set('studentAddressStreet')} /></Field>
           <div className="flex gap-3">
-            <div style={{ flex: 2 }}><Field label="Building"><input className={inputClass} value={form.studentAddressBuilding} onChange={set('studentAddressBuilding')} /></Field></div>
-            <div style={{ flex: 1 }}><Field label="Floor"><input className={inputClass} value={form.studentAddressFloor} onChange={set('studentAddressFloor')} /></Field></div>
+            <div style={{ flex: 2 }}><Field label={t('personal.building')}><input className={inputClass} value={form.studentAddressBuilding} onChange={set('studentAddressBuilding')} /></Field></div>
+            <div style={{ flex: 1 }}><Field label={t('personal.floor')}><input className={inputClass} value={form.studentAddressFloor} onChange={set('studentAddressFloor')} /></Field></div>
           </div>
         </SectionCard>
 
         {/* ── Emergency contact ── */}
-        <SectionCard icon={<PhoneCall className="size-4" style={{ color: '#EF4444' }} />} iconBg="rgba(239,68,68,0.14)" title="Emergency Contact">
-          <Field label="Full name"><input className={inputClass} value={form.studentEmergencyContactName} onChange={set('studentEmergencyContactName')} placeholder="Who should we call?" /></Field>
-          <Field label="Relation to swimmer"><input className={inputClass} value={form.studentEmergencyContactRelation} onChange={set('studentEmergencyContactRelation')} placeholder="Mother, father, uncle…" /></Field>
+        <SectionCard icon={<PhoneCall className="size-4" style={{ color: '#EF4444' }} />} iconBg="rgba(239,68,68,0.14)" title={t('personal.emergency')}>
+          <Field label={t('personal.fullName')}><input className={inputClass} value={form.studentEmergencyContactName} onChange={set('studentEmergencyContactName')} placeholder={t('personal.whoCall')} /></Field>
+          <Field label={t('personal.relation')}><input className={inputClass} value={form.studentEmergencyContactRelation} onChange={set('studentEmergencyContactRelation')} placeholder={t('personal.relationPh')} /></Field>
           <div className="flex gap-3">
-            <div style={{ flex: 1 }}><Field label="Code"><input className={inputClass} value={form.studentEmergencyContactPhoneCode} onChange={set('studentEmergencyContactPhoneCode')} placeholder="+961" /></Field></div>
-            <div style={{ flex: 2.5 }}><Field label="Phone number"><input className={inputClass} inputMode="tel" value={form.studentEmergencyContactPhone} onChange={set('studentEmergencyContactPhone')} /></Field></div>
+            <div style={{ flex: 1 }}><Field label={t('personal.code')}><input className={inputClass} value={form.studentEmergencyContactPhoneCode} onChange={set('studentEmergencyContactPhoneCode')} placeholder="+961" /></Field></div>
+            <div style={{ flex: 2.5 }}><Field label={t('personal.phoneNumber')}><input className={inputClass} inputMode="tel" value={form.studentEmergencyContactPhone} onChange={set('studentEmergencyContactPhone')} /></Field></div>
           </div>
         </SectionCard>
 
         {/* ── Medical ── */}
-        <SectionCard icon={<HeartPulse className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.16)" title="Medical Information">
+        <SectionCard icon={<HeartPulse className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.16)" title={t('personal.medical')}>
           <p className="text-xs mb-3" style={{ color: '#64748B' }}>
             Coaches and staff see this so they can keep your swimmer safe. Please keep it up to date.
           </p>
-          <Field label="Allergies">
-            <textarea className={inputClass} rows={2} value={form.studentAllergies} onChange={set('studentAllergies')} placeholder="e.g. Peanuts, penicillin — or leave empty" />
+          <Field label={t('personal.allergies')}>
+            <textarea className={inputClass} rows={2} value={form.studentAllergies} onChange={set('studentAllergies')} placeholder={t('personal.allergiesPh')} />
           </Field>
-          <Field label="Medical notes">
-            <textarea className={inputClass} rows={3} value={form.studentMedicalNotes} onChange={set('studentMedicalNotes')} placeholder="Asthma, medication, conditions your coach should know about" />
+          <Field label={t('personal.medNotes')}>
+            <textarea className={inputClass} rows={3} value={form.studentMedicalNotes} onChange={set('studentMedicalNotes')} placeholder={t('personal.medNotesPh')} />
           </Field>
         </SectionCard>
 
@@ -220,18 +221,18 @@ export function PersonalInfoPage() {
           style={{ background: '#1e5c97', opacity: saving ? 0.7 : 1 }}
         >
           <Save className="size-4" style={{ color: 'white' }} />
-          <span className="text-sm font-bold" style={{ color: 'white' }}>{saving ? 'Saving…' : 'Save Personal Information'}</span>
+          <span className="text-sm font-bold" style={{ color: 'white' }}>{saving ? t('personal.saving') : t('personal.save')}</span>
         </button>
 
         {/* ── Phone & Email (approval required) ── */}
-        <SectionCard icon={<Lock className="size-4" style={{ color: '#1A6FBF' }} />} iconBg="rgba(91,173,255,0.18)" title="Phone & Email">
+        <SectionCard icon={<Lock className="size-4" style={{ color: '#1A6FBF' }} />} iconBg="rgba(91,173,255,0.18)" title={t('personal.phoneEmail')}>
           <p className="text-xs mb-3" style={{ color: '#64748B' }}>
             For your security, changes to your main phone number or email must be approved by ProSwim before they take effect.
           </p>
 
           <ContactRow
             icon={<Phone className="size-4" style={{ color: '#10B981' }} />}
-            label="Main phone"
+            label={t('personal.mainPhone')}
             value={currentPhone}
             pending={pendingFor('Phone')}
             onEdit={() => openEditor('Phone')}
@@ -239,7 +240,7 @@ export function PersonalInfoPage() {
           />
           <ContactRow
             icon={<Mail className="size-4" style={{ color: '#3B82F6' }} />}
-            label="Email"
+            label={t('common.email')}
             value={currentEmail}
             pending={pendingFor('Email')}
             onEdit={() => openEditor('Email')}
@@ -249,7 +250,7 @@ export function PersonalInfoPage() {
           {editingField && (
             <div className="rounded-xl p-4 mt-3" style={{ background: 'rgba(30,92,151,0.06)', border: '1px solid rgba(30,92,151,0.18)' }}>
               <p className="text-sm font-semibold text-slate-900 mb-3">
-                Request a new {editingField === 'Phone' ? 'phone number' : 'email'}
+                {editingField === 'Phone' ? t('personal.requestPhone') : t('personal.requestEmail')}
               </p>
               {editingField === 'Phone' ? (
                 <div className="flex gap-3">
@@ -257,7 +258,7 @@ export function PersonalInfoPage() {
                     <input className={inputClass} value={reqCode} onChange={(e) => setReqCode(e.target.value)} placeholder="+961" />
                   </div>
                   <div style={{ flex: 2.5 }}>
-                    <input className={inputClass} inputMode="tel" value={reqValue} onChange={(e) => setReqValue(e.target.value)} placeholder="New phone number" />
+                    <input className={inputClass} inputMode="tel" value={reqValue} onChange={(e) => setReqValue(e.target.value)} placeholder={t('personal.newPhonePh')} />
                   </div>
                 </div>
               ) : (
@@ -270,7 +271,7 @@ export function PersonalInfoPage() {
                   className="flex-1 py-3 rounded-xl text-sm font-bold active:scale-[0.98] transition-transform"
                   style={{ background: '#1e5c97', color: 'white', opacity: submitting ? 0.7 : 1 }}
                 >
-                  {submitting ? 'Sending…' : 'Submit for Approval'}
+                  {submitting ? t('personal.sending') : t('personal.submit')}
                 </button>
                 <button
                   onClick={() => setEditingField(null)}
@@ -287,7 +288,7 @@ export function PersonalInfoPage() {
 
         {/* ── Request history ── */}
         {history.length > 0 && (
-          <SectionCard icon={<Clock className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)" title="Past Requests">
+          <SectionCard icon={<Clock className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.16)" title={t('personal.pastRequests')}>
             {history.map((r) => {
               const c = STATUS_COLORS[r.status ?? ''] ?? STATUS_COLORS.Cancelled;
               const value = r.fieldType === 'Phone'

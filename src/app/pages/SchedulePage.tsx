@@ -13,12 +13,11 @@ import {
   type PrivateSessionDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, monthShort, dayShort } from '../i18n';
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatDate(d: Date) {
-  return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  return `${dayShort(d.getDay())}, ${monthShort(d.getMonth())} ${d.getDate()}`;
 }
 
 function dateOnly(d: Date) {
@@ -59,10 +58,10 @@ export function SchedulePage() {
         setPrivateSessions(privateRes.status === 'fulfilled' ? privateRes.value : []);
 
         if (regsRes.status === 'rejected' && groupRes.status === 'rejected' && privateRes.status === 'rejected') {
-          setError('Could not load schedule.');
+          setError(t('sched.loadError'));
         }
       } catch {
-        setError('Could not load schedule.');
+        setError(t('sched.loadError'));
       } finally {
         setLoading(false);
       }
@@ -89,8 +88,8 @@ export function SchedulePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Schedule" showBack />
-        <PageLoader label="Loading your schedule…" />
+        <MobileHeader title={t('sched.title')} showBack />
+        <PageLoader label={t('sched.loading')} />
         <MobileNav />
       </div>
     );
@@ -98,8 +97,8 @@ export function SchedulePage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="My Schedule" showBack />
-      <PageHero title="My Schedule" subtitle="Upcoming sessions & classes" slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
+      <MobileHeader title={t('sched.title')} showBack />
+      <PageHero title={t('sched.title')} subtitle={t('sched.subtitle')} slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-4 pb-4 space-y-5">
 
         {error && (
@@ -112,7 +111,7 @@ export function SchedulePage() {
         {/* My Classes — from registrations */}
         {activeRegs.length > 0 && (
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">My Classes</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">{t('sched.myClasses')}</p>
             <div className="space-y-2">
               {activeRegs.map(r => (
                 <div key={r.registrationId} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
@@ -150,7 +149,7 @@ export function SchedulePage() {
         {/* Upcoming Sessions */}
         {upcoming.length > 0 && (
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">Upcoming Sessions</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">{t('sched.upcoming')}</p>
             <div className="space-y-2">
               {upcoming.map((s, i) => {
                 if ('sessionDate' in s && s.sessionId !== undefined) {
@@ -168,8 +167,8 @@ export function SchedulePage() {
             <div className="w-14 h-14 rounded-2xl bg-[#e8f0f8] flex items-center justify-center">
               <Waves className="size-7 text-[#1e5c97]" />
             </div>
-            <p className="text-sm font-medium text-slate-500">No schedule found</p>
-            <p className="text-xs text-slate-400 text-center px-8">Register for a class to see your schedule here</p>
+            <p className="text-sm font-medium text-slate-500">{t('sched.none')}</p>
+            <p className="text-xs text-slate-400 text-center px-8">{t('sched.noneHint')}</p>
           </div>
         )}
 
@@ -190,7 +189,7 @@ function GroupSessionCard({ session, showDate }: { session: SessionDto; showDate
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold text-slate-900">{session.className || 'Group Class'}</p>
+            <p className="text-sm font-semibold text-slate-900">{session.className || t('sched.groupClass')}</p>
             {session.sessionStatus && (
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-[#e8f0f8] text-[#1e5c97]">
                 {session.sessionStatus}
@@ -238,7 +237,7 @@ function PrivateSessionCard({ session, showDate }: { session: PrivateSessionDto;
           <User className="size-5" style={{ color: colored ? w : '#7c3aed' }} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold" style={{ color: colored ? w : '#0f172a' }}>Private Session</p>
+          <p className="text-sm font-semibold" style={{ color: colored ? w : '#0f172a' }}>{t('sched.privateSession')}</p>
           <div className="mt-1.5 space-y-1">
             {showDate && date && (
               <div className="flex items-center gap-1.5 text-xs">

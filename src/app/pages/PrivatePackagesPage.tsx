@@ -6,24 +6,42 @@ import { PageLoader } from '../components/PageLoader';
 import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle } from 'lucide-react';
 import { getPrivatePackages, formatMoney, type PrivatePackageDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { t, dateLocale } from '../i18n';
+
+function fmtDay(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
 export function PrivatePackagesPage() {
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     getPrivatePackages()
-      .then(setPackages)
-      .catch(() => setError('Could not load packages.'))
+      // Only the 3 most recent packages — older ones just add noise.
+      .then((pkgs) => {
+        setTotalCount(pkgs.length);
+        setPackages(
+        [...pkgs]
+          .sort((a, b) =>
+            new Date(b.packageStartDate ?? 0).getTime() - new Date(a.packageStartDate ?? 0).getTime()
+            || b.packageId - a.packageId)
+          .slice(0, 3),
+        );
+      })
+      .catch(() => setError(t('priv.loadError')))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Private Packages" />
-        <PageLoader label="Loading packages…" />
+        <MobileHeader title={t('priv.title')} />
+        <PageLoader label={t('priv.loading')} />
         <MobileNav />
       </div>
     );
@@ -31,8 +49,8 @@ export function PrivatePackagesPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Private Packages" />
-      <PageHero title="Private Packages" subtitle="Personal coaching sessions" slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
+      <MobileHeader title={t('priv.title')} />
+      <PageHero title={t('priv.title')} subtitle={t('priv.subtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
@@ -47,16 +65,16 @@ export function PrivatePackagesPage() {
               <User className="size-5 text-white" />
             </div>
             <div>
-              <p className="num-stat text-3xl font-extrabold text-white leading-none">{packages.length}</p>
+              <p className="num-stat text-3xl font-extrabold text-white leading-none">{totalCount}</p>
               <p className="text-xs font-semibold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                Private package{packages.length === 1 ? '' : 's'} bought
+                {t('priv.bought')}
               </p>
             </div>
           </div>
         )}
 
         {packages.length === 0 && !error && (
-          <div className="text-center py-16 text-slate-400 text-sm">No private packages found.</div>
+          <div className="text-center py-16 text-slate-400 text-sm">{t('priv.none')}</div>
         )}
 
         <div className="space-y-3">
@@ -67,7 +85,7 @@ export function PrivatePackagesPage() {
                     <User className="size-5 text-[#1A6FBF]" />
                   </div>
                   <p className="flex-1 min-w-0 text-sm font-bold text-slate-900">
-                    <span className="font-medium text-slate-400">Package: </span>
+                    <span className="font-medium text-slate-400">{t('priv.package')}</span>
                     {pkg.packageName}
                   </p>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
@@ -97,15 +115,30 @@ export function PrivatePackagesPage() {
                   </div>
                 )}
 
+                {(pkg.packageStartDate || pkg.lastSessionDate) && (
+                  <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
+                    <div>
+                      <p className="text-slate-400">{t('priv.starts')}</p>
+                      <p className="font-semibold text-slate-700">{fmtDay(pkg.packageStartDate)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-slate-400">{t('priv.expires')}</p>
+                      <p className="font-semibold" style={{ color: pkg.lastSessionDate && new Date(pkg.lastSessionDate) < new Date() ? '#DC2626' : '#334155' }}>
+                        {fmtDay(pkg.lastSessionDate)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
                   <div>
-                    <p className="text-slate-400">Sessions</p>
+                    <p className="text-slate-400">{t('common.sessions')}</p>
                     <p className="font-semibold text-slate-700">
-                      {pkg.countAttended} attended · {pkg.sessionsLeft} left
+                      {pkg.packageNumberOfSessions} {t('priv.purchased').toLowerCase()} · {t('priv.attendedLeft', { a: pkg.countAttended, l: pkg.sessionsLeft })}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-slate-400">Due</p>
+                    <p className="text-slate-400">{t('priv.due')}</p>
                     <p className={`font-semibold ${pkg.duePayment > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
                       {formatMoney(pkg.duePayment, pkg.packageCurrency)}
                     </p>
@@ -119,7 +152,7 @@ export function PrivatePackagesPage() {
                     style={{ background: 'linear-gradient(135deg,rgba(91,173,255,0.55) 0%,rgba(59,130,246,0.55) 100%)' }}
                   >
                     <Calendar className="size-4" />
-                    Sessions
+                    {t('common.sessions')}
                   </Link>
                   <Link
                     to={`/private/${pkg.packageId}/payments`}
@@ -127,7 +160,7 @@ export function PrivatePackagesPage() {
                     style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
                   >
                     <CreditCard className="size-4" />
-                    Payments
+                    {t('common.payments')}
                   </Link>
                 </div>
               </div>

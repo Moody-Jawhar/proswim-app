@@ -9,7 +9,7 @@ import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { getStudentById, getGroupAttendanceSummary, getGroupRegistrations, getPrivatePackages, getProfileLevelHistory, uploadMyPhoto, type StudentDto, type AttendanceSummaryDto, type LevelHistoryDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
-import { t } from '../i18n';
+import { t, dateLocale } from '../i18n';
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   'Competitive Team': { bg: 'rgba(249,115,22,0.15)',  color: '#9A3412' },
@@ -28,13 +28,13 @@ async function shrinkImage(file: File): Promise<{ fileName: string; base64: stri
   const dataUrl = await new Promise<string>((resolve, reject) => {
     const fr = new FileReader();
     fr.onload = () => resolve(fr.result as string);
-    fr.onerror = () => reject(new Error('Could not read the image.'));
+    fr.onerror = () => reject(new Error(t('profile.photoReadFail')));
     fr.readAsDataURL(file);
   });
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
     const i = new Image();
     i.onload = () => resolve(i);
-    i.onerror = () => reject(new Error('That file is not a valid image.'));
+    i.onerror = () => reject(new Error(t('profile.photoInvalid')));
     i.src = dataUrl;
   });
   const MAX = 1000;
@@ -70,7 +70,7 @@ export function MyProfilePage() {
     // everything meant one slow call kept the whole page on its spinner.
     getStudentById(user.studentId)
       .then(setStudent)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load profile'))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : t('profile.failed')))
       .finally(() => setLoading(false));
     getGroupAttendanceSummary().then(setAttendance).catch(() => {});
     getProfileLevelHistory().then(setLevels).catch(() => {});
@@ -81,8 +81,8 @@ export function MyProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Profile" />
-        <PageLoader label="Loading profile..." />
+        <MobileHeader title={t('profile.title')} />
+        <PageLoader label={t('profile.loading')} />
         <MobileNav />
       </div>
     );
@@ -91,10 +91,10 @@ export function MyProfilePage() {
   if (error || !student) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="My Profile" />
+        <MobileHeader title={t('profile.title')} />
         <div className="flex flex-col items-center justify-center h-64 gap-3 px-6">
           <AlertCircle className="size-10 text-red-400" />
-          <p className="text-sm text-red-600 text-center">{error || 'Profile not available'}</p>
+          <p className="text-sm text-red-600 text-center">{error || t('profile.notAvailable')}</p>
         </div>
         <MobileNav />
       </div>
@@ -106,7 +106,7 @@ export function MyProfilePage() {
   const initials = [student.studentFirstName, student.studentLastName]
     .filter(Boolean).map(n => n![0]).join('').toUpperCase();
   const dob = student.studentDateOfBirth
-    ? new Date(student.studentDateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    ? new Date(student.studentDateOfBirth).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' })
     : null;
   const age = student.studentDateOfBirth
     ? Math.floor((Date.now() - new Date(student.studentDateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
@@ -155,7 +155,7 @@ export function MyProfilePage() {
                     const { url } = await uploadMyPhoto(fileName, base64);
                     setStudent((s) => (s ? { ...s, studentPhotoUrl: url } : s));
                   } catch (err) {
-                    setPhotoError(err instanceof Error ? err.message : 'Could not upload the photo.');
+                    setPhotoError(err instanceof Error ? err.message : t('profile.photoUploadFail'));
                   } finally {
                     setUploading(false);
                   }
@@ -187,11 +187,11 @@ export function MyProfilePage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
-                {age !== null && <p className="text-slate-500 text-xs mt-0.5">Age {age} • {student.studentGender || '—'}</p>}
+                {age !== null && <p className="text-slate-500 text-xs mt-0.5">{t('profile.age', { n: age })} • {student.studentGender || '—'}</p>}
                 {student.studentActive && (
                   <span className="mt-1.5 inline-block px-3 py-0.5 text-xs font-bold rounded-full text-white"
                     style={{ background: '#22C55E' }}>
-                    Active
+                    {t('common.active')}
                   </span>
                 )}
               </div>
@@ -202,11 +202,11 @@ export function MyProfilePage() {
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-slate-100 -mt-5 bg-white mx-3 rounded-xl shadow-sm border border-slate-100 relative z-10">
-            <StatChip label="Since" value={student.studentStartingDate
+            <StatChip label={t('profile.since')} value={student.studentStartingDate
               ? new Date(student.studentStartingDate).getFullYear().toString() : '—'}
               color="#3B82F6" />
-            <StatChip label="Group Classes" value={groupCount != null ? groupCount.toString() : '—'} color="#10B981" />
-            <StatChip label="Private Packages" value={privateCount != null ? privateCount.toString() : '—'} color="#8B5CF6" />
+            <StatChip label={t('profile.groupClasses')} value={groupCount != null ? groupCount.toString() : '—'} color="#10B981" />
+            <StatChip label={t('profile.privatePackages')} value={privateCount != null ? privateCount.toString() : '—'} color="#8B5CF6" />
           </div>
           <div className="h-4" />
         </div>
@@ -220,7 +220,7 @@ export function MyProfilePage() {
                 return (
                   <span key={type} className="px-3 py-1 rounded-full text-sm font-semibold"
                     style={{ background: c.bg, color: c.color }}>
-                    {type}
+                    {({'Group Training':t('prog.group'),'Private Training':t('prog.private'),'Competitive Team':t('prog.comp'),AquaBaby:t('prog.aquababy'),AquaGym:t('prog.aquagym'),School:t('prog.school'),Gifted:t('prog.gifted'),Others:t('prog.others')} as Record<string,string>)[type] ?? type}
                   </span>
                 );
               })}
@@ -231,24 +231,24 @@ export function MyProfilePage() {
         {/* Contact */}
         <Section title={t('profile.contact')} icon={<Phone className="size-4" style={{ color: '#3B82F6' }} />} iconBg="rgba(91,173,255,0.18)">
           {student.studentEmail && (
-            <InfoRow icon={<Mail className="size-4" style={{ color: '#3B82F6' }} />} label="Email" value={student.studentEmail} />
+            <InfoRow icon={<Mail className="size-4" style={{ color: '#3B82F6' }} />} label={t('common.email')} value={student.studentEmail} />
           )}
-          {phone1 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label="Phone 1" value={phone1} />}
-          {phone2 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label="Phone 2" value={phone2} />}
-          {address && <InfoRow icon={<MapPin className="size-4" style={{ color: '#F59E0B' }} />} label="Address" value={address} />}
+          {phone1 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label={t('profile.phone1')} value={phone1} />}
+          {phone2 && <InfoRow icon={<Phone className="size-4" style={{ color: '#10B981' }} />} label={t('profile.phone2')} value={phone2} />}
+          {address && <InfoRow icon={<MapPin className="size-4" style={{ color: '#F59E0B' }} />} label={t('common.address')} value={address} />}
         </Section>
 
         {/* Personal */}
         <Section title={t('profile.personal')} icon={<User className="size-4" style={{ color: '#8B5CF6' }} />} iconBg="rgba(139,92,246,0.18)">
-          {dob && <InfoRow icon={<Calendar className="size-4" style={{ color: '#8B5CF6' }} />} label="Date of Birth" value={dob} />}
+          {dob && <InfoRow icon={<Calendar className="size-4" style={{ color: '#8B5CF6' }} />} label={t('profile.dob')} value={dob} />}
           {student.studentSchool && (
-            <InfoRow icon={<GraduationCap className="size-4" style={{ color: '#F59E0B' }} />} label="School" value={student.studentSchool} />
+            <InfoRow icon={<GraduationCap className="size-4" style={{ color: '#F59E0B' }} />} label={t('common.school')} value={student.studentSchool} />
           )}
           {student.coachFullName && (
-            <InfoRow icon={<User className="size-4" style={{ color: '#10B981' }} />} label="Coach" value={student.coachFullName} />
+            <InfoRow icon={<User className="size-4" style={{ color: '#10B981' }} />} label={t('common.coach')} value={student.coachFullName} />
           )}
           {student.studentNationality1 && (
-            <InfoRow icon={<Flag className="size-4" style={{ color: '#EF4444' }} />} label="Nationality"
+            <InfoRow icon={<Flag className="size-4" style={{ color: '#EF4444' }} />} label={t('profile.nationality')}
               value={[student.studentNationality1, student.studentNationality2].filter(Boolean).join(' / ')} />
           )}
         </Section>
@@ -257,17 +257,17 @@ export function MyProfilePage() {
         {(student.studentMomOccupation || student.studentDadOccupation) && (
           <Section title={t('profile.family')} icon={<Shield className="size-4" style={{ color: '#EC4899' }} />} iconBg="rgba(236,72,153,0.18)">
             {student.studentMomOccupation && (
-              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label="Mom's Occupation" value={student.studentMomOccupation} />
+              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label={t('profile.momOcc')} value={student.studentMomOccupation} />
             )}
             {student.studentDadOccupation && (
-              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label="Dad's Occupation" value={student.studentDadOccupation} />
+              <InfoRow icon={<User className="size-4" style={{ color: '#EC4899' }} />} label={t('profile.dadOcc')} value={student.studentDadOccupation} />
             )}
           </Section>
         )}
 
         {/* Attendance by Class */}
         {attendance.length > 0 && (
-          <Section title="Attendance by Class" icon={<Calendar className="size-4" style={{ color: '#10B981' }} />} iconBg="rgba(52,211,153,0.18)">
+          <Section title={t('profile.attByClass')} icon={<Calendar className="size-4" style={{ color: '#10B981' }} />} iconBg="rgba(52,211,153,0.18)">
             <div className="space-y-4">
               {attendance.map((a, i) => {
                 const pct = a.totalSessions > 0 ? Math.round((a.attendedSessions / a.totalSessions) * 100) : 0;
@@ -304,7 +304,7 @@ export function MyProfilePage() {
               <div key={lv.levelHistoryId} className="flex items-start gap-3">
                 <div className="mt-1.5 shrink-0 rounded-full" style={{ width: 8, height: 8, background: '#8B5CF6' }} />
                 <div className="flex-1" style={{ minWidth: 0 }}>
-                  <p className="text-sm font-semibold text-slate-900">{lv.levelName || 'Level'}</p>
+                  <p className="text-sm font-semibold text-slate-900">{lv.levelName || t('common.level')}</p>
                   <p className="text-xs" style={{ color: '#64748B' }}>
                     {lv.levelDateFrom
                       ? new Date(lv.levelDateFrom).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
@@ -320,7 +320,7 @@ export function MyProfilePage() {
             ))}
             {student.studentEliteSwimmer && (
               <p className="text-xs" style={{ color: '#64748B' }}>
-                Competition results, medals and personal bests live in the <b>Competitive Portfolio</b> below.
+                {t('profile.progressHint')}
               </p>
             )}
           </Section>
@@ -329,7 +329,7 @@ export function MyProfilePage() {
         {/* Change password */}
         <Link to="/change-password"
           className="flex items-center justify-center gap-2 bg-white rounded-2xl border border-slate-100 shadow-sm py-4 active:bg-slate-50 transition-colors">
-          <span className="text-sm font-semibold text-[#1e5c97]">Change Password</span>
+          <span className="text-sm font-semibold text-[#1e5c97]">{t('profile.changePassword')}</span>
         </Link>
 
         {/* Competitive Team Portfolio */}
@@ -338,7 +338,7 @@ export function MyProfilePage() {
             className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
             style={{ background: 'linear-gradient(90deg, #B45309, #F59E0B)' }}>
             <Award className="size-4 text-white" />
-            <span className="text-sm font-bold text-white">Competitive Portfolio</span>
+            <span className="text-sm font-bold text-white">{t('profile.compPortfolio')}</span>
           </Link>
         )}
 
@@ -346,7 +346,7 @@ export function MyProfilePage() {
         <Link to="/profile/personal"
           className="flex items-center justify-center gap-2 rounded-2xl py-4 active:scale-[0.98] transition-transform"
           style={{ background: '#1e5c97' }}>
-          <span className="text-sm font-bold text-white">Edit Personal Information</span>
+          <span className="text-sm font-bold text-white">{t('profile.editPersonal')}</span>
         </Link>
 
         {/* Contact to edit */}

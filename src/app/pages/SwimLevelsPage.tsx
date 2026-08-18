@@ -2,6 +2,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { Baby, Waves, Fish, Star, Medal, Trophy, ChevronDown, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { t } from '../i18n';
 
 type LevelColor = 'rose' | 'sky' | 'emerald' | 'amber' | 'violet' | 'blue';
 
@@ -22,183 +23,136 @@ interface Level {
   subLevels: SubLevel[];
 }
 
-const LEVELS: Level[] = [
+const buildLevels = (): Level[] => [
   {
     id: 'aqua-baby',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Aquababy',
-    title: 'Aqua Baby',
-    ageRange: '3 months – 3 years',
+    title: t('lv.ab.title'),
+    ageRange: t('lv.ab.age'),
     color: 'rose',
     icon: <Baby className="size-6 text-rose-500" />,
     iconBg: 'bg-rose-50',
-    description:
-      'Introduces infants to water with parental participation — gentle water games, splashing, bobbing, and singing build comfort and confidence. Benefits include muscle development, coordination, balance, improved sleep, and social skills.',
+    description: t('lv.ab.desc'),
     subLevels: [
       {
-        name: 'Splashes (3 – 18 months)',
-        points: [
-          'One-on-one bonding and water safety education for parents',
-          '3 months: happily having water gently poured over the head',
-          '6 months: brief underwater passes',
-          '12 months: brief underwater swimming',
-          '18 months: maneuvering through the water for 3–5 seconds',
-        ],
+        name: t('lv.ab.s1'),
+        points: [t('lv.ab.s1p1'), t('lv.ab.s1p2'), t('lv.ab.s1p3'), t('lv.ab.s1p4'), t('lv.ab.s1p5')],
       },
       {
-        name: 'Bubblers (18 months – 3 years)',
-        points: [
-          'Wall-holding, kicking, and bubble-blowing',
-          '24 months: getting back to pool side from sitting entry',
-          '30 months: swimming with face in water',
-          '36 months: returning to pool side from standing entry',
-        ],
+        name: t('lv.ab.s2'),
+        points: [t('lv.ab.s2p1'), t('lv.ab.s2p2'), t('lv.ab.s2p3'), t('lv.ab.s2p4')],
       },
     ],
   },
   {
     id: 'active-start',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Active_Start',
-    title: 'Active Start',
-    ageRange: '3 – 12 years',
+    title: t('lv.as.title'),
+    ageRange: t('lv.as.age'),
     color: 'sky',
     icon: <Waves className="size-6 text-sky-500" />,
     iconBg: 'bg-sky-50',
-    description:
-      'Children progress without parental attendance, organized by skill and ability. Introduces front & back floating, gliding, turning over, jumping in, rhythmic breathing, and the leg/arm coordination fundamental to the freestyle stroke.',
+    description: t('lv.as.desc'),
     subLevels: [
       {
-        name: 'Ages 3 – 6',
-        points: [
-          'Level 1 – Sea Horse Bobbers: comfort with facial water contact and basic supported movements',
-          'Level 2 – Pumpkin Floaters: pool safety, underwater exploration, advanced floating/gliding, object retrieval',
-          'Level 3 – Spike Gliders: combines kicking with gliding for self-propulsion',
-        ],
+        name: t('lv.as.s1'),
+        points: [t('lv.as.s1p1'), t('lv.as.s1p2'), t('lv.as.s1p3')],
       },
       {
-        name: 'Fundamentals (Ages 6 – 12)',
-        points: [
-          'Beginner 1 – Otter: pool safety, underwater submersion, front and back crawl introduction',
-          'Beginner 2 – Seal: gliding, kicking, breathing coordination, front/back crawl technique',
-          'Beginner 3 – Dolphin: swim-float-swim sequences, 10-meter unassisted distances',
-          'Beginner 4 – Shark: 15-meter underwater streamline with side breathing techniques',
-        ],
+        name: t('lv.as.s2'),
+        points: [t('lv.as.s2p1'), t('lv.as.s2p2'), t('lv.as.s2p3'), t('lv.as.s2p4')],
       },
     ],
   },
   {
     id: 'learn-to-train',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Learn_to_Train',
-    title: 'Learn to Train',
-    ageRange: '6 – 12 years',
+    title: t('lv.lt.title'),
+    ageRange: t('lv.lt.age'),
     color: 'emerald',
     icon: <Fish className="size-6 text-emerald-500" />,
     iconBg: 'bg-emerald-50',
-    description:
-      'An intermediate progression for children who completed the beginner fundamentals, focused on stroke development and endurance building.',
+    description: t('lv.lt.desc'),
     subLevels: [
       {
-        name: 'Intermediate 1 – Whale One',
-        points: ['Breaststroke kicks', 'Crawl and back swimming without any assistance', 'Endurance building'],
+        name: t('lv.lt.s1'),
+        points: [t('lv.lt.s1p1'), t('lv.lt.s1p2'), t('lv.lt.s1p3')],
       },
       {
-        name: 'Intermediate 2 – Whale Two',
-        points: ['Crawl and back strokes for 25 meters', 'Introduction to breaststroke arm strokes and breathing', 'Continued endurance development'],
+        name: t('lv.lt.s2'),
+        points: [t('lv.lt.s2p1'), t('lv.lt.s2p2'), t('lv.lt.s2p3')],
       },
       {
-        name: 'Intermediate 3 – Whale Three',
-        points: ['Extended distance in crawl and backstroke', 'Crawl and back flips and turns', 'Combining breaststroke kicks with arm movements'],
+        name: t('lv.lt.s3'),
+        points: [t('lv.lt.s3p1'), t('lv.lt.s3p2'), t('lv.lt.s3p3')],
       },
     ],
   },
   {
     id: 'train-to-train',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Train_to_Train',
-    title: 'Train to Train',
-    ageRange: 'Advanced',
+    title: t('lv.tt.title'),
+    ageRange: t('lv.tt.age'),
     color: 'amber',
     icon: <Star className="size-6 text-amber-500" />,
     iconBg: 'bg-amber-50',
-    description:
-      'An advanced progression where swimmers master multiple techniques and increase athletic performance across five Advanced Star stages.',
+    description: t('lv.tt.desc'),
     subLevels: [
       {
-        name: 'Advanced Star 1 – 2',
-        points: [
-          'Crawl and backstroke over long distances',
-          'Breaststroke techniques and drills',
-          'Sculling introduction, flips and turns, underwater swimming, pace and speed work',
-        ],
+        name: t('lv.tt.s1'),
+        points: [t('lv.tt.s1p1'), t('lv.tt.s1p2'), t('lv.tt.s1p3')],
       },
       {
-        name: 'Advanced Star 3 – 4',
-        points: [
-          'Comfort with crawl, backstroke, and breaststroke with established flips and turns',
-          'Dolphin kicks and side stroke introduction',
-          'Learning the butterfly stroke and its drills, with notable speed and endurance gains',
-        ],
+        name: t('lv.tt.s2'),
+        points: [t('lv.tt.s2p1'), t('lv.tt.s2p2'), t('lv.tt.s2p3')],
       },
       {
-        name: 'Advanced Star 5',
-        points: [
-          'Swimming all four strokes perfectly with all drills and practices',
-          'Must pass the federation test to advance',
-        ],
+        name: t('lv.tt.s3'),
+        points: [t('lv.tt.s3p1'), t('lv.tt.s3p2')],
       },
     ],
   },
   {
     id: 'train-to-compete',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=Train_to_Compete',
-    title: 'Train to Compete',
-    ageRange: 'Pre-team',
+    title: t('lv.tc.title'),
+    ageRange: t('lv.tc.age'),
     color: 'violet',
     icon: <Medal className="size-6 text-violet-500" />,
     iconBg: 'bg-violet-50',
-    description:
-      'A transitional phase preparing swimmers for entry into the ProSwim Competitive Team, in three progressive stages.',
+    description: t('lv.tc.desc'),
     subLevels: [
       {
-        name: 'Stage 1 – Foundation',
-        points: ['Academy sessions plus 1–2 supplementary team training sessions', 'Team discipline, training protocols, swimming terminology, advanced drills'],
+        name: t('lv.tc.s1'),
+        points: [t('lv.tc.s1p1'), t('lv.tc.s1p2')],
       },
       {
-        name: 'Stage 2 – Integration',
-        points: ['One academy session per week with increased team participation', 'Emphasis on proper technique during the transition'],
+        name: t('lv.tc.s2'),
+        points: [t('lv.tc.s2p1'), t('lv.tc.s2p2')],
       },
       {
-        name: 'Stage 3 – Competitive Membership',
-        points: ['Formal level testing (Table assessment)', 'Full team membership and eligibility to compete under the ProSwim name'],
+        name: t('lv.tc.s3'),
+        points: [t('lv.tc.s3p1'), t('lv.tc.s3p2')],
       },
     ],
   },
   {
     id: 'competitive-team',
     url: 'https://www.proswim-lb.com/WebsiteLevels.aspx?Page=CompetitiveTeam',
-    title: 'Competitive Team',
-    ageRange: 'Elite',
+    title: t('lv.ct.title'),
+    ageRange: t('lv.ct.age'),
     color: 'blue',
     icon: <Trophy className="size-6 text-[#1e5c97]" />,
     iconBg: 'bg-blue-50',
-    description:
-      'ProSwim\'s highest level — swimmers who complete all levels compete nationally & internationally, led by Head Coach Mohamad Sakr.',
+    description: t('lv.ct.desc'),
     subLevels: [
       {
-        name: 'Training Structure',
-        points: [
-          '6 sessions weekly during school periods',
-          'Twice daily, 6 times weekly during summer and holiday breaks',
-          'Intensive drills covering all four strokes, speed, and endurance',
-        ],
+        name: t('lv.ct.s1'),
+        points: [t('lv.ct.s1p1'), t('lv.ct.s1p2'), t('lv.ct.s1p3')],
       },
       {
-        name: 'Support Services',
-        points: [
-          'Sports nutritionist with customized dietary guidance',
-          'Dryland trainers strengthening swimming-specific muscle groups',
-          'Physiotherapists for injury prevention',
-          'Yoga instructors for breathing efficiency and mental resilience',
-          'High-tech physical assessments and professional boot camps',
-        ],
+        name: t('lv.ct.s2'),
+        points: [t('lv.ct.s2p1'), t('lv.ct.s2p2'), t('lv.ct.s2p3'), t('lv.ct.s2p4'), t('lv.ct.s2p5')],
       },
     ],
   },
@@ -215,15 +169,16 @@ const colorConfig: Record<LevelColor, { border: string; check: string; tag: stri
 
 export function SwimLevelsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const LEVELS = buildLevels();
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Swim Levels" />
+      <MobileHeader title={t('nav.levels')} />
 
       <div className="px-4 py-6">
         <div className="text-center mb-6">
-          <p className="text-2xl font-bold text-slate-900">Our Swim Levels</p>
-          <p className="text-sm text-slate-500 mt-1">A clear path from first splash to competitive team</p>
+          <p className="text-2xl font-bold text-slate-900">{t('levels.header')}</p>
+          <p className="text-sm text-slate-500 mt-1">{t('levels.tagline')}</p>
         </div>
 
         <div className="space-y-3">
@@ -270,7 +225,7 @@ export function SwimLevelsPage() {
                     ))}
                     <a href={level.url} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#1e5c97]">
-                      For more information
+                      {t('levels.more')}
                       <ExternalLink className="size-3.5" />
                     </a>
                   </div>

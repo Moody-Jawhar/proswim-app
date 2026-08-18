@@ -10,6 +10,7 @@ import {
   type StoredNotification,
 } from '../utils/notifications';
 import { getNotifications, type NotificationDto } from '../api/pswmApi';
+import { t } from '../i18n';
 
 function timeAgo(isoDate: string): string {
   const diff = Date.now() - new Date(isoDate).getTime();
@@ -65,7 +66,7 @@ export function NotificationsPage() {
       } catch {
         // Fall back to local only
         const localItems = getStoredNotifications().map(fromLocal);
-        if (localItems.length === 0) setError('Could not load notifications.');
+        if (localItems.length === 0) setError(t('notif.loadError'));
         setItems(localItems);
       } finally {
         setLoading(false);
@@ -76,8 +77,8 @@ export function NotificationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="Notifications" showBack />
-        <PageLoader label="Loading…" />
+        <MobileHeader title={t('notif.title')} showBack />
+        <PageLoader label={t('common.loading')} />
         <MobileNav />
       </div>
     );
@@ -85,8 +86,8 @@ export function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Notifications" showBack />
-      <PageHero title="Notifications" subtitle="Announcements & session reminders" slide={4} />
+      <MobileHeader title={t('notif.title')} showBack />
+      <PageHero title={t('notif.title')} subtitle={t('notif.subtitle')} slide={4} />
       <div className="px-4 pt-3 pb-4 space-y-3">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
@@ -100,7 +101,7 @@ export function NotificationsPage() {
             <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
               <Bell className="size-8 text-slate-300" />
             </div>
-            <p className="text-sm text-slate-400">No notifications yet</p>
+            <p className="text-sm text-slate-400">{t('notif.none')}</p>
             <p className="text-xs text-slate-300 text-center px-8">
               You'll see session reminders and announcements from ProSwim here
             </p>
@@ -124,7 +125,7 @@ export function NotificationsPage() {
                 {n.body && (
                   <p className="text-sm text-slate-500 mt-0.5 leading-snug">{n.body}</p>
                 )}
-                <p className="text-xs font-medium text-[#1e5c97] mt-1.5">ProSwim Admin Team</p>
+                <p className="text-xs font-medium text-[#1e5c97] mt-1.5">{t('notif.team')}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{timeAgo(n.receivedAt)}</p>
               </div>
             </div>

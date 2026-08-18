@@ -4,6 +4,7 @@ import { Eye, EyeOff, KeyRound, CheckCircle2 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { changePassword, validatePasswordPolicy } from '../api/pswmApi';
+import { t } from '../i18n';
 
 export function ChangePasswordPage() {
   const navigate = useNavigate();
@@ -26,8 +27,8 @@ export function ChangePasswordPage() {
 
     const policyError = validatePasswordPolicy(next);
     if (policyError) { setError(policyError); return; }
-    if (next !== confirm) { setError('New passwords do not match.'); return; }
-    if (next === current) { setError('New password must be different from the current one.'); return; }
+    if (next !== confirm) { setError(t('changepw.mismatch')); return; }
+    if (next === current) { setError(t('changepw.sameAsOld')); return; }
 
     setLoading(true);
     try {
@@ -42,7 +43,7 @@ export function ChangePasswordPage() {
         else navigate(-1);
       }, 1200);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Could not change password.');
+      setError(e instanceof Error ? e.message : t('changepw.fail'));
     } finally {
       setLoading(false);
     }
@@ -53,7 +54,7 @@ export function ChangePasswordPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="Change Password" showBack={!required} />
+      <MobileHeader title={t('changepw.title')} showBack={!required} />
 
       <div className="px-4 pt-6 space-y-4">
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
@@ -63,12 +64,12 @@ export function ChangePasswordPage() {
             </div>
             <div>
               <p className="text-base font-bold text-slate-900">
-                {required ? 'Set a new password' : 'Change your password'}
+                {required ? t('changepw.setNew') : t('changepw.change')}
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
                 {required
-                  ? 'For your security, please replace the password you were given.'
-                  : 'Minimum 8 characters with at least one symbol.'}
+                  ? t('changepw.replaceGiven')
+                  : t('changepw.policy')}
               </p>
             </div>
           </div>
@@ -76,7 +77,7 @@ export function ChangePasswordPage() {
           {done ? (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm">
               <CheckCircle2 className="size-4 shrink-0" />
-              Password updated successfully.
+              {t('changepw.success')}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,22 +88,22 @@ export function ChangePasswordPage() {
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-slate-500 mb-2">Current password</label>
+                <label className="block text-sm font-semibold text-slate-500 mb-2">{t('changepw.current')}</label>
                 <input
                   type={show ? 'text' : 'password'} value={current}
                   onChange={(e) => setCurrent(e.target.value)}
-                  required autoComplete="current-password" placeholder="Enter current password"
+                  required autoComplete="current-password" placeholder={t('changepw.currentPh')}
                   className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-500 mb-2">New password</label>
+                <label className="block text-sm font-semibold text-slate-500 mb-2">{t('changepw.new')}</label>
                 <div className="relative">
                   <input
                     type={show ? 'text' : 'password'} value={next}
                     onChange={(e) => setNext(e.target.value)}
-                    required autoComplete="new-password" placeholder="Min 8 characters, one symbol"
+                    required autoComplete="new-password" placeholder={t('changepw.newPh')}
                     className={inputClass}
                   />
                   <button type="button" tabIndex={-1}
@@ -114,18 +115,18 @@ export function ChangePasswordPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-500 mb-2">Confirm new password</label>
+                <label className="block text-sm font-semibold text-slate-500 mb-2">{t('changepw.confirm')}</label>
                 <input
                   type={show ? 'text' : 'password'} value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  required autoComplete="new-password" placeholder="Repeat new password"
+                  required autoComplete="new-password" placeholder={t('changepw.confirmPh')}
                   className={inputClass}
                 />
               </div>
 
               <button type="submit" disabled={loading}
                 className="btn-grad w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 active:scale-[0.98] transition-transform">
-                {loading ? 'Updating…' : 'Update Password'}
+                {loading ? t('changepw.updating') : t('changepw.update')}
               </button>
             </form>
           )}

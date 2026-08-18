@@ -6,6 +6,7 @@ import { PageLoader } from '../components/PageLoader';
 import { PageHero } from '../components/PageHero';
 import { Newspaper, AlertCircle, ChevronRight, X } from 'lucide-react';
 import { getNews, type NewsItemDto } from '../api/pswmApi';
+import { t, dateLocale } from '../i18n';
 
 // Brand logo paths (24x24 viewBox) — same set as the About page.
 const SOCIAL_BUTTONS = [
@@ -25,7 +26,7 @@ const SOCIAL_BUTTONS = [
 
 function formatDate(iso: string | null): string {
   if (!iso) return '';
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(dateLocale(), {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -81,7 +82,7 @@ function NewsReader({ item, onClose }: { item: NewsItemDto; onClose: () => void 
             className="w-full flex items-center justify-center gap-2 py-3 mt-4 rounded-2xl"
             style={{ background: 'rgba(239,68,68,0.08)' }}
           >
-            <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 View document (PDF)</span>
+            <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 {t('news.pdf')}</span>
           </button>
         )}
 
@@ -126,15 +127,15 @@ export function NewsPage() {
   useEffect(() => {
     getNews()
       .then(setItems)
-      .catch(() => setError('Could not load news.'))
+      .catch(() => setError(t('news.loadError')))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title="News" />
-        <PageLoader label="Loading…" />
+        <MobileHeader title={t('news.title')} />
+        <PageLoader label={t('common.loading')} />
         <MobileNav />
       </div>
     );
@@ -142,8 +143,8 @@ export function NewsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title="News" />
-      <PageHero title="News" subtitle="What's happening at ProSwim" slide={3} />
+      <MobileHeader title={t('news.title')} />
+      <PageHero title={t('news.title')} subtitle={t('news.subtitle')} slide={3} />
       <div className="px-4 pt-3 pb-4 space-y-3">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
@@ -157,9 +158,9 @@ export function NewsPage() {
             <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
               <Newspaper className="size-8 text-slate-300" />
             </div>
-            <p className="text-sm text-slate-400">No news yet</p>
+            <p className="text-sm text-slate-400">{t('news.none')}</p>
             <p className="text-xs text-slate-300 text-center px-8">
-              Announcements, events and updates from ProSwim will appear here
+              {t('news.noneHint')}
             </p>
           </div>
         )}
@@ -176,7 +177,7 @@ export function NewsPage() {
                   className="w-full flex items-center justify-center gap-2 py-3"
                   style={{ background: 'rgba(239,68,68,0.08)' }}
                 >
-                  <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 Document (PDF)</span>
+                  <span className="text-sm font-bold" style={{ color: '#B91C1C' }}>📄 {t('news.pdfShort')}</span>
                 </div>
               ) : (
                 <img
@@ -203,7 +204,7 @@ export function NewsPage() {
                 {n.newsBody}
               </p>
               <span className="flex items-center gap-1 text-xs font-semibold text-[#1e5c97] mt-2">
-                Read more
+                {t('news.readMore')}
                 <ChevronRight className="size-3.5" />
               </span>
             </div>

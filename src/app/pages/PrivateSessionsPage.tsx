@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat } from 'lucide-react';
-import { getPrivateSessions, type PrivateSessionDto } from '../api/pswmApi';
+import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarClock, Info } from 'lucide-react';
+import { getPrivateSessions, getScheduleChanges, createScheduleChange, type PrivateSessionDto, type ScheduleChangeRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, monthShort, dayShort } from '../i18n';
 
@@ -19,6 +19,54 @@ export function PrivateSessionsPage() {
   const [sessions, setSessions] = useState<PrivateSessionDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Schedule-change requests for THIS package, keyed by session id.
+  const [requests, setRequests] = useState<ScheduleChangeRow[]>([]);
+  const [formFor, setFormFor] = useState<number | null>(null);
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+  const [reason, setReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const pid = packageId ? parseInt(packageId) : NaN;
+  const loadRequests = () =>
+    getScheduleChanges()
+      .then((rows) => setRequests(rows.filter((r) => Number(r.PackageId) === pid)))
+      .catch(() => {});
+
+  const usedCount = requests.filter((r) => String(r.Status) !== 'Rejected').length;
+  const requestFor = (sessionId: number) =>
+    requests.find((r) => Number(r.PrivateSessionId) === sessionId && String(r.Status) !== 'Rejected')
+    ?? requests.find((r) => Number(r.PrivateSessionId) === sessionId);
+
+  // A change can only be requested >= 24h before the session starts.
+  const canRequest = (s: PrivateSessionDto) => {
+    if (s.privateSessionAttended !== null || !s.privateSessionDate) return false;
+    const d = new Date(s.privateSessionDate);
+    const m = (s.privateSessionTime ?? '').match(/^(\d{1,2}):(\d{2})/);
+    if (m) d.setHours(Number(m[1]), Number(m[2]), 0, 0); else d.setHours(23, 59, 0, 0);
+    return d.getTime() - Date.now() >= 24 * 3600 * 1000;
+  };
+
+  async function submitRequest(sessionId: number) {
+    if (!newDate && !newTime) { setFormError(t('schg.needDate')); return; }
+    setFormError('');
+    setSubmitting(true);
+    try {
+      await createScheduleChange({
+        privateSessionId: sessionId,
+        newDate: newDate || null,
+        newTime: newTime || null,
+        reason: reason.trim() || null,
+      });
+      setFormFor(null); setNewDate(''); setNewTime(''); setReason('');
+      loadRequests();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : t('schg.fail'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     const pid = packageId ? parseInt(packageId) : NaN;
@@ -31,6 +79,8 @@ export function PrivateSessionsPage() {
       .then(setSessions)
       .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
+    loadRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageId]);
 
   const attended = sessions.filter(s => s.privateSessionAttended === true).length;
@@ -57,6 +107,17 @@ export function PrivateSessionsPage() {
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
+
+        {/* Schedule-change rules + usage */}
+        <div className="flex items-start gap-2 bg-white border border-slate-100 rounded-2xl p-3.5 mb-3 shadow-sm">
+          <Info className="size-4 shrink-0 mt-0.5" style={{ color: '#6D28D9' }} />
+          <div className="text-xs" style={{ color: '#64748B' }}>
+            <p>{t('schg.rules')}</p>
+            {usedCount > 0 && (
+              <p className="font-bold mt-1" style={{ color: '#6D28D9' }}>{t('schg.used', { n: usedCount })}</p>
+            )}
+          </div>
+        </div>
 
         {sessions.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm mb-4 grid grid-cols-3 divide-x divide-slate-100">
@@ -159,6 +220,71 @@ export function PrivateSessionsPage() {
                   <span className="text-xs" style={{ color: colored ? ws : '#94a3b8' }}>{s.privateSessionRemarks}</span>
                 </div>
               )}
+              {(() => {
+                const req = requestFor(s.privateSessionId);
+                const status = req ? String(req.Status) : null;
+                return (
+                  <>
+                    {status && (
+                      <div className="mt-2 pt-2 flex items-center gap-1.5"
+                        style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
+                        <CalendarClock className="size-3.5 shrink-0"
+                          style={{ color: status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }} />
+                        <span className="text-[11px] font-bold"
+                          style={{ color: colored ? '#ffffff' : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }}>
+                          {status === 'Approved' ? t('schg.approved') : status === 'Rejected' ? t('schg.rejected') : t('schg.pending')}
+                          {req && req.ReviewNote ? ` — ${String(req.ReviewNote)}` : ''}
+                        </span>
+                      </div>
+                    )}
+                    {!status && canRequest(s) && usedCount < 2 && formFor !== s.privateSessionId && (
+                      <button
+                        onClick={() => { setFormFor(s.privateSessionId); setFormError(''); }}
+                        className="mt-2 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold"
+                        style={{ background: 'rgba(109,40,217,0.10)', color: '#6D28D9' }}
+                      >
+                        <CalendarClock className="size-3.5" />
+                        {t('schg.request')}
+                      </button>
+                    )}
+                    {formFor === s.privateSessionId && (
+                      <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid #f1f5f9' }}>
+                        {formError && <p className="text-xs" style={{ color: '#DC2626' }}>{formError}</p>}
+                        <div className="flex gap-2">
+                          <div className="flex-1">
+                            <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.newDate')}</p>
+                            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                          </div>
+                          <div style={{ width: 110 }}>
+                            <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.newTime')}</p>
+                            <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.reason')}</p>
+                          <textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)}
+                            placeholder={t('schg.reasonPh')}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => submitRequest(s.privateSessionId)} disabled={submitting}
+                            className="flex-1 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50"
+                            style={{ background: '#6D28D9' }}>
+                            {submitting ? t('schg.submitting') : t('schg.submit')}
+                          </button>
+                          <button onClick={() => setFormFor(null)} disabled={submitting}
+                            className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 disabled:opacity-50"
+                            style={{ color: '#64748B' }}>
+                            {t('schg.cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
             );
           })}

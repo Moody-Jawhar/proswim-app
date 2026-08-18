@@ -538,6 +538,23 @@ export async function updateProfile(data: ProfileUpdateDto): Promise<void> {
   await apiRequest<void>("/api/Profile", { method: "PUT", body: JSON.stringify(data) });
 }
 
+// --- Private schedule-change requests ---
+// Rows come back with the proc's PascalCase column names.
+export type ScheduleChangeRow = Record<string, unknown>;
+
+export async function getScheduleChanges(): Promise<ScheduleChangeRow[]> {
+  return apiRequest<ScheduleChangeRow[]>("/api/Private/ScheduleChanges");
+}
+
+export async function createScheduleChange(data: {
+  privateSessionId: number; newDate: string | null; newTime: string | null; reason: string | null;
+}): Promise<{ requestId: number; used: number }> {
+  return apiRequest<{ requestId: number; used: number }>("/api/Private/ScheduleChange", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 // Swimmer sets their own profile picture. Base64 JSON body — Capacitor's
 // native HTTP layer doesn't reliably carry multipart FormData files.
 export async function uploadMyPhoto(fileName: string, base64: string): Promise<{ url: string }> {

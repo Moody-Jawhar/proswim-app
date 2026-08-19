@@ -538,20 +538,27 @@ export async function updateProfile(data: ProfileUpdateDto): Promise<void> {
   await apiRequest<void>("/api/Profile", { method: "PUT", body: JSON.stringify(data) });
 }
 
-// --- Private schedule-change requests ---
+// --- Private session cancellation requests ---
 // Rows come back with the proc's PascalCase column names.
-export type ScheduleChangeRow = Record<string, unknown>;
+export type CancelRequestRow = Record<string, unknown>;
 
-export async function getScheduleChanges(): Promise<ScheduleChangeRow[]> {
-  return apiRequest<ScheduleChangeRow[]>("/api/Private/ScheduleChanges");
+export async function getCancelRequests(): Promise<CancelRequestRow[]> {
+  return apiRequest<CancelRequestRow[]>("/api/Private/CancelRequests");
 }
 
-export async function createScheduleChange(data: {
-  privateSessionId: number; newDate: string | null; newTime: string | null; reason: string | null;
+export async function createCancelRequest(data: {
+  privateSessionId: number; reason: string | null;
 }): Promise<{ requestId: number; used: number }> {
-  return apiRequest<{ requestId: number; used: number }>("/api/Private/ScheduleChange", {
+  return apiRequest<{ requestId: number; used: number }>("/api/Private/CancelRequest", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+}
+
+export async function respondCancelAlt(requestId: number, accept: boolean): Promise<void> {
+  await apiRequest<void>(`/api/Private/CancelRequests/${requestId}/alt-response`, {
+    method: "POST",
+    body: JSON.stringify({ accept }),
   });
 }
 

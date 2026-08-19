@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarClock, Info } from 'lucide-react';
-import { getPrivateSessions, getScheduleChanges, createScheduleChange, type PrivateSessionDto, type ScheduleChangeRow } from '../api/pswmApi';
+import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarX, Info } from 'lucide-react';
+import { getPrivateSessions, getCancelRequests, createCancelRequest, respondCancelAlt, type PrivateSessionDto, type CancelRequestRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, monthShort, dayShort } from '../i18n';
 
@@ -19,18 +19,16 @@ export function PrivateSessionsPage() {
   const [sessions, setSessions] = useState<PrivateSessionDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Schedule-change requests for THIS package, keyed by session id.
-  const [requests, setRequests] = useState<ScheduleChangeRow[]>([]);
+  // Cancellation requests for THIS package, keyed by session id.
+  const [requests, setRequests] = useState<CancelRequestRow[]>([]);
   const [formFor, setFormFor] = useState<number | null>(null);
-  const [newDate, setNewDate] = useState('');
-  const [newTime, setNewTime] = useState('');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
 
   const pid = packageId ? parseInt(packageId) : NaN;
   const loadRequests = () =>
-    getScheduleChanges()
+    getCancelRequests()
       .then((rows) => setRequests(rows.filter((r) => Number(r.PackageId) === pid)))
       .catch(() => {});
 
@@ -60,21 +58,32 @@ export function PrivateSessionsPage() {
     return d !== null && d.getTime() - Date.now() >= 24 * 3600 * 1000;
   };
 
+  async function answerOffer(requestId: number, accept: boolean) {
+    setSubmitting(true);
+    try {
+      await respondCancelAlt(requestId, accept);
+      loadRequests();
+      // Accepting reschedules the session — refresh the list too.
+      if (accept && Number.isFinite(pid)) getPrivateSessions(pid).then(setSessions).catch(() => {});
+    } catch {
+      setFormError(t('cxl.altFail'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   async function submitRequest(sessionId: number) {
-    if (!newDate && !newTime) { setFormError(t('schg.needDate')); return; }
     setFormError('');
     setSubmitting(true);
     try {
-      await createScheduleChange({
+      await createCancelRequest({
         privateSessionId: sessionId,
-        newDate: newDate || null,
-        newTime: newTime || null,
         reason: reason.trim() || null,
       });
-      setFormFor(null); setNewDate(''); setNewTime(''); setReason('');
+      setFormFor(null); setReason('');
       loadRequests();
     } catch (e) {
-      setFormError(e instanceof Error ? e.message : t('schg.fail'));
+      setFormError(e instanceof Error ? e.message : t('cxl.fail'));
     } finally {
       setSubmitting(false);
     }
@@ -124,9 +133,9 @@ export function PrivateSessionsPage() {
         <div className="flex items-start gap-2 bg-white border border-slate-100 rounded-2xl p-3.5 mb-3 shadow-sm">
           <Info className="size-4 shrink-0 mt-0.5" style={{ color: '#6D28D9' }} />
           <div className="text-xs" style={{ color: '#64748B' }}>
-            <p>{t('schg.rules')}</p>
+            <p>{t('cxl.rules')}</p>
             {usedCount > 0 && (
-              <p className="font-bold mt-1" style={{ color: '#6D28D9' }}>{t('schg.used', { n: usedCount })}</p>
+              <p className="font-bold mt-1" style={{ color: '#6D28D9' }}>{t('cxl.used', { n: usedCount })}</p>
             )}
           </div>
         </div>
@@ -239,58 +248,76 @@ export function PrivateSessionsPage() {
                 return (
                   <>
                     {status && (
-                      <div className="mt-2 pt-2 flex items-center gap-1.5"
+                      <div className="mt-2 pt-2"
                         style={{ borderTop: `1px solid ${colored ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
-                        <CalendarClock className="size-3.5 shrink-0"
-                          style={{ color: status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }} />
-                        <span className="text-[11px] font-bold"
-                          style={{ color: colored ? '#ffffff' : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }}>
-                          {status === 'Approved' ? t('schg.approved') : status === 'Rejected' ? t('schg.rejected') : t('schg.pending')}
-                          {req && req.ReviewNote ? ` — ${String(req.ReviewNote)}` : ''}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <CalendarX className="size-3.5 shrink-0"
+                            style={{ color: status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }} />
+                          <span className="text-[11px] font-bold"
+                            style={{ color: colored ? '#ffffff' : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }}>
+                            {status === 'Approved'
+                              ? (String(req?.AltStatus ?? '') === 'Accepted' || String(req?.AltStatus ?? '') === 'AutoAccepted'
+                                  ? t('cxl.altAccepted')
+                                  : String(req?.AltStatus ?? '') === 'Declined' ? t('cxl.altDeclined') : t('cxl.approved'))
+                              : status === 'Rejected' ? t('cxl.rejected') : t('cxl.pending')}
+                            {req && req.ReviewNote ? ` — ${String(req.ReviewNote)}` : ''}
+                          </span>
+                        </div>
+
+                        {/* Staff-offered alternate slot: accept reschedules, decline keeps it cancelled */}
+                        {req && String(req.AltStatus ?? '') === 'Offered' && (
+                          <div className="mt-2 rounded-xl p-3" style={{ background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.25)' }}>
+                            <p className="text-xs font-bold" style={{ color: '#065F46' }}>{t('cxl.altOffer')}</p>
+                            <p className="text-sm font-bold mt-0.5" style={{ color: '#065F46' }}>
+                              {req.AltDate ? formatDate(String(req.AltDate)) : ''}
+                              {req.AltTime ? ` · ${String(req.AltTime)}` : ''}
+                            </p>
+                            {formError && <p className="text-xs mt-1" style={{ color: '#DC2626' }}>{formError}</p>}
+                            <div className="flex gap-2 mt-2">
+                              <button onClick={() => answerOffer(Number(req.RequestId), true)} disabled={submitting}
+                                className="flex-1 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50"
+                                style={{ background: '#059669' }}>
+                                {t('cxl.altAccept')}
+                              </button>
+                              <button onClick={() => answerOffer(Number(req.RequestId), false)} disabled={submitting}
+                                className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 disabled:opacity-50"
+                                style={{ color: '#64748B', background: '#ffffff' }}>
+                                {t('cxl.altDecline')}
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                     {!status && canRequest(s) && usedCount < 2 && formFor !== s.privateSessionId && (
                       <button
                         onClick={() => { setFormFor(s.privateSessionId); setFormError(''); }}
                         className="mt-2 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold"
-                        style={{ background: 'rgba(109,40,217,0.10)', color: '#6D28D9' }}
+                        style={{ background: 'rgba(220,38,38,0.08)', color: '#DC2626' }}
                       >
-                        <CalendarClock className="size-3.5" />
-                        {t('schg.request')}
+                        <CalendarX className="size-3.5" />
+                        {t('cxl.request')}
                       </button>
                     )}
                     {formFor === s.privateSessionId && (
                       <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid #f1f5f9' }}>
                         {formError && <p className="text-xs" style={{ color: '#DC2626' }}>{formError}</p>}
-                        <div className="flex gap-2">
-                          <div className="flex-1">
-                            <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.newDate')}</p>
-                            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
-                              className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
-                          </div>
-                          <div style={{ width: 110 }}>
-                            <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.newTime')}</p>
-                            <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)}
-                              className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
-                          </div>
-                        </div>
                         <div>
-                          <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('schg.reason')}</p>
+                          <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('cxl.reason')}</p>
                           <textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)}
-                            placeholder={t('schg.reasonPh')}
+                            placeholder={t('cxl.reasonPh')}
                             className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => submitRequest(s.privateSessionId)} disabled={submitting}
                             className="flex-1 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50"
-                            style={{ background: '#6D28D9' }}>
-                            {submitting ? t('schg.submitting') : t('schg.submit')}
+                            style={{ background: '#DC2626' }}>
+                            {submitting ? t('cxl.submitting') : t('cxl.submit')}
                           </button>
                           <button onClick={() => setFormFor(null)} disabled={submitting}
                             className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 disabled:opacity-50"
                             style={{ color: '#64748B' }}>
-                            {t('schg.cancel')}
+                            {t('cxl.cancel')}
                           </button>
                         </div>
                       </div>

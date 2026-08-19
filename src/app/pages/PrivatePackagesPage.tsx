@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle } from 'lucide-react';
-import { getPrivatePackages, formatMoney, type PrivatePackageDto } from '../api/pswmApi';
+import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle, Snowflake } from 'lucide-react';
+import { getPrivatePackages, formatMoney, getFreezeRequests, createFreezeRequest, type PrivatePackageDto, type FreezeRequestRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, dateLocale } from '../i18n';
 
@@ -17,6 +17,30 @@ function fmtDay(iso: string | null): string {
 export function PrivatePackagesPage() {
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [freezes, setFreezes] = useState<FreezeRequestRow[]>([]);
+  const [freezeFor, setFreezeFor] = useState<number | null>(null);
+  const [frzFrom, setFrzFrom] = useState('');
+  const [frzTo, setFrzTo] = useState('');
+  const [frzReason, setFrzReason] = useState('');
+  const [frzBusy, setFrzBusy] = useState(false);
+  const [frzError, setFrzError] = useState('');
+
+  const loadFreezes = () => getFreezeRequests().then(setFreezes).catch(() => {});
+
+  async function submitFreeze(packageId: number) {
+    if (!frzFrom || !frzTo) { setFrzError(t('frz.needDates')); return; }
+    setFrzError('');
+    setFrzBusy(true);
+    try {
+      await createFreezeRequest({ packageId, freezeFrom: frzFrom, freezeTo: frzTo, reason: frzReason.trim() || null });
+      setFreezeFor(null); setFrzFrom(''); setFrzTo(''); setFrzReason('');
+      loadFreezes();
+    } catch (e) {
+      setFrzError(e instanceof Error ? e.message : t('frz.fail'));
+    } finally {
+      setFrzBusy(false);
+    }
+  }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -35,6 +59,8 @@ export function PrivatePackagesPage() {
       })
       .catch(() => setError(t('priv.loadError')))
       .finally(() => setLoading(false));
+    loadFreezes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -144,6 +170,84 @@ export function PrivatePackagesPage() {
                     </p>
                   </div>
                 </div>
+
+                {(() => {
+                  const reqs = freezes.filter((f) => Number(f.PackageId) === pkg.packageId);
+                  const open = reqs.find((f) => String(f.Status) === 'Pending');
+                  const fmtD = (v: unknown) => v ? fmtDay(String(v)) : '—';
+                  return (
+                    <div className="mt-2">
+                      {reqs.slice(0, 2).map((f) => {
+                        const st = String(f.Status);
+                        const color = st === 'Approved' ? '#059669' : st === 'Rejected' ? '#DC2626' : '#B45309';
+                        return (
+                          <div key={Number(f.RequestId)} className="rounded-xl p-2.5 mt-1.5"
+                            style={{ background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)' }}>
+                            <div className="flex items-center gap-1.5">
+                              <Snowflake className="size-3.5 shrink-0" style={{ color: '#0284C7' }} />
+                              <span className="text-[11px] font-bold" style={{ color }}>
+                                {st === 'Approved' ? t('frz.approved') : st === 'Rejected' ? t('frz.rejected') : t('frz.pending')}
+                              </span>
+                            </div>
+                            <p className="text-xs mt-0.5" style={{ color: '#334155' }}>
+                              {fmtD(f.FreezeFrom)} → {fmtD(f.FreezeTo)}
+                            </p>
+                            {f.Reason ? <p className="text-[11px] mt-0.5" style={{ color: '#64748B' }}>{String(f.Reason)}</p> : null}
+                            {f.ReviewNote ? <p className="text-[11px] mt-0.5 italic" style={{ color: '#64748B' }}>“{String(f.ReviewNote)}”</p> : null}
+                          </div>
+                        );
+                      })}
+
+                      {!open && freezeFor !== pkg.packageId && pkg.packageStatus === 'Active' && (
+                        <button
+                          onClick={() => { setFreezeFor(pkg.packageId); setFrzError(''); }}
+                          className="mt-2 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold"
+                          style={{ background: 'rgba(2,132,199,0.08)', color: '#0284C7' }}
+                        >
+                          <Snowflake className="size-3.5" />
+                          {t('frz.request')}
+                        </button>
+                      )}
+
+                      {freezeFor === pkg.packageId && (
+                        <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid #f1f5f9' }}>
+                          <p className="text-[11px]" style={{ color: '#64748B' }}>{t('frz.note')}</p>
+                          {frzError && <p className="text-xs" style={{ color: '#DC2626' }}>{frzError}</p>}
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('frz.from')}</p>
+                              <input type="date" value={frzFrom} onChange={(e) => setFrzFrom(e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('frz.to')}</p>
+                              <input type="date" value={frzTo} onChange={(e) => setFrzTo(e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('frz.reason')}</p>
+                            <textarea rows={2} value={frzReason} onChange={(e) => setFrzReason(e.target.value)}
+                              placeholder={t('frz.reasonPh')}
+                              className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => submitFreeze(pkg.packageId)} disabled={frzBusy}
+                              className="flex-1 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50"
+                              style={{ background: '#0284C7' }}>
+                              {frzBusy ? t('frz.submitting') : t('frz.submit')}
+                            </button>
+                            <button onClick={() => setFreezeFor(null)} disabled={frzBusy}
+                              className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 disabled:opacity-50"
+                              style={{ color: '#64748B' }}>
+                              {t('frz.cancel')}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="flex gap-2 pt-3 border-t border-slate-100 mt-3">
                   <Link

@@ -562,6 +562,22 @@ export async function respondCancelAlt(requestId: number, accept: boolean): Prom
   });
 }
 
+// --- Package freeze requests ---
+export type FreezeRequestRow = Record<string, unknown>;
+
+export async function getFreezeRequests(): Promise<FreezeRequestRow[]> {
+  return apiRequest<FreezeRequestRow[]>("/api/Private/FreezeRequests");
+}
+
+export async function createFreezeRequest(data: {
+  packageId: number; freezeFrom: string; freezeTo: string; reason: string | null;
+}): Promise<{ requestId: number }> {
+  return apiRequest<{ requestId: number }>("/api/Private/FreezeRequest", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 // Swimmer sets their own profile picture. Base64 JSON body — Capacitor's
 // native HTTP layer doesn't reliably carry multipart FormData files.
 export async function uploadMyPhoto(fileName: string, base64: string): Promise<{ url: string }> {

@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarX, Info } from 'lucide-react';
-import { getPrivateSessions, getCancelRequests, createCancelRequest, respondCancelAlt, type PrivateSessionDto, type CancelRequestRow } from '../api/pswmApi';
+import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarX, Info, Snowflake } from 'lucide-react';
+import { getPrivateSessions, getCancelRequests, createCancelRequest, respondCancelAlt, getFreezeRequests, type PrivateSessionDto, type CancelRequestRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, monthShort, dayShort } from '../i18n';
 
@@ -27,6 +27,9 @@ export function PrivateSessionsPage() {
   const [formError, setFormError] = useState('');
 
   const pid = packageId ? parseInt(packageId) : NaN;
+  // Currently inside an approved freeze window? Then the sessions are paused
+  // and the page is locked behind a notice.
+  const [frozen, setFrozen] = useState<{ from: string; to: string } | null>(null);
   const loadRequests = () =>
     getCancelRequests()
       .then((rows) => setRequests(rows.filter((r) => Number(r.PackageId) === pid)))
@@ -73,6 +76,7 @@ export function PrivateSessionsPage() {
   }
 
   async function submitRequest(sessionId: number) {
+    if (!window.confirm(t('cxl.confirm'))) return;
     setFormError('');
     setSubmitting(true);
     try {
@@ -101,6 +105,14 @@ export function PrivateSessionsPage() {
       .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
     loadRequests();
+    getFreezeRequests().then((rows) => {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const f = rows.find((r) =>
+        Number(r.PackageId) === pid && String(r.Status) === 'Approved'
+        && r.FreezeFrom != null && r.FreezeTo != null
+        && new Date(String(r.FreezeFrom)) <= today && new Date(String(r.FreezeTo)) >= today);
+      if (f) setFrozen({ from: String(f.FreezeFrom), to: String(f.FreezeTo) });
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageId]);
 
@@ -112,6 +124,30 @@ export function PrivateSessionsPage() {
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('common.sessions')} showBack />
         <PageLoader label={t('sess.loading')} />
+        <MobileNav />
+      </div>
+    );
+  }
+
+  if (frozen) {
+    const fmtD = (v: string) => {
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? v : `${dayShort(d.getDay())}, ${monthShort(d.getMonth())} ${d.getDate()}`;
+    };
+    return (
+      <div className="min-h-screen bg-transparent pb-nav">
+        <MobileHeader title={t('sess.privTitle')} showBack />
+        <div className="px-4 pt-6">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(56,189,248,0.14)' }}>
+              <Snowflake className="size-7" style={{ color: '#0284C7' }} />
+            </div>
+            <p className="text-base font-bold text-slate-900">{t('frz.blockedTitle')}</p>
+            <p className="text-sm mt-1.5" style={{ color: '#64748B', lineHeight: 1.6 }}>
+              {t('frz.blockedBody', { from: fmtD(frozen.from), to: fmtD(frozen.to) })}
+            </p>
+          </div>
+        </div>
         <MobileNav />
       </div>
     );

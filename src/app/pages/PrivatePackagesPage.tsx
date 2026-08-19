@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle, Snowflake } from 'lucide-react';
-import { getPrivatePackages, formatMoney, getFreezeRequests, createFreezeRequest, type PrivatePackageDto, type FreezeRequestRow } from '../api/pswmApi';
+import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle, Snowflake, ScrollText } from 'lucide-react';
+import { getPrivatePackages, formatMoney, getFreezeRequests, createFreezeRequest, getPrivateRulesStatus, acceptPrivateRules, type PrivatePackageDto, type FreezeRequestRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, dateLocale } from '../i18n';
 
@@ -16,7 +16,6 @@ function fmtDay(iso: string | null): string {
 
 export function PrivatePackagesPage() {
   const [packages, setPackages] = useState<PrivatePackageDto[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [freezes, setFreezes] = useState<FreezeRequestRow[]>([]);
   const [freezeFor, setFreezeFor] = useState<number | null>(null);
   const [frzFrom, setFrzFrom] = useState('');
@@ -27,8 +26,28 @@ export function PrivatePackagesPage() {
 
   const loadFreezes = () => getFreezeRequests().then(setFreezes).catch(() => {});
 
+  // Rules gate: parents must read & accept the private-training rules once
+  // before using the Private area. null = still checking (no flash).
+  const [rulesAccepted, setRulesAccepted] = useState<boolean | null>(null);
+  const [accepting, setAccepting] = useState(false);
+  const [rulesError, setRulesError] = useState('');
+
+  async function acceptRules() {
+    setAccepting(true);
+    setRulesError('');
+    try {
+      await acceptPrivateRules();
+      setRulesAccepted(true);
+    } catch {
+      setRulesError(t('rules.fail'));
+    } finally {
+      setAccepting(false);
+    }
+  }
+
   async function submitFreeze(packageId: number) {
     if (!frzFrom || !frzTo) { setFrzError(t('frz.needDates')); return; }
+    if (!window.confirm(t('frz.confirm'))) return;
     setFrzError('');
     setFrzBusy(true);
     try {
@@ -48,7 +67,6 @@ export function PrivatePackagesPage() {
     getPrivatePackages()
       // Only the 3 most recent packages — older ones just add noise.
       .then((pkgs) => {
-        setTotalCount(pkgs.length);
         setPackages(
         [...pkgs]
           .sort((a, b) =>
@@ -60,6 +78,9 @@ export function PrivatePackagesPage() {
       .catch(() => setError(t('priv.loadError')))
       .finally(() => setLoading(false));
     loadFreezes();
+    getPrivateRulesStatus()
+      .then((r) => setRulesAccepted(r.accepted))
+      .catch(() => setRulesAccepted(true)); // fail open — never lock parents out on a network error
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,6 +89,47 @@ export function PrivatePackagesPage() {
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('priv.title')} />
         <PageLoader label={t('priv.loading')} />
+        <MobileNav />
+      </div>
+    );
+  }
+
+  // Full-screen rules gate until accepted.
+  if (rulesAccepted === false) {
+    return (
+      <div className="min-h-screen bg-transparent pb-nav">
+        <MobileHeader title={t('priv.title')} />
+        <div className="px-4 pt-4">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'rgba(30,92,151,0.08)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(30,92,151,0.15)' }}>
+                <ScrollText className="size-5" style={{ color: '#1e5c97' }} />
+              </div>
+              <p className="text-base font-bold text-slate-900">{t('rules.title')}</p>
+            </div>
+            <div className="px-5 py-4">
+              <div className="space-y-3">
+                {t('rules.body').split('\n\n').map((line, i) => {
+                  const m = line.match(/^(\S{1,3}\.)\s*([\s\S]*)$/);
+                  return (
+                    <div key={i} className="flex gap-2.5">
+                      <span className="text-sm font-bold shrink-0" style={{ color: '#1e5c97' }}>{m ? m[1] : '•'}</span>
+                      <span className="text-sm" style={{ color: '#475569', lineHeight: 1.6 }}>{m ? m[2] : line}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {rulesError && <p className="text-xs mt-3" style={{ color: '#DC2626' }}>{rulesError}</p>}
+              <button
+                onClick={acceptRules}
+                disabled={accepting}
+                className="btn-grad w-full py-3.5 rounded-xl font-semibold text-sm mt-4 disabled:opacity-50 active:scale-[0.98] transition-transform"
+              >
+                {accepting ? t('rules.accepting') : t('rules.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
         <MobileNav />
       </div>
     );
@@ -82,20 +144,6 @@ export function PrivatePackagesPage() {
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        {packages.length > 0 && (
-          <div className="bg-[#1e5c97] rounded-2xl p-5 mb-4 flex items-center gap-4">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <User className="size-5 text-white" />
-            </div>
-            <div>
-              <p className="num-stat text-3xl font-extrabold text-white leading-none">{totalCount}</p>
-              <p className="text-xs font-semibold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                {t('priv.bought')}
-              </p>
-            </div>
           </div>
         )}
 
@@ -173,27 +221,44 @@ export function PrivatePackagesPage() {
 
                 {(() => {
                   const reqs = freezes.filter((f) => Number(f.PackageId) === pkg.packageId);
-                  const open = reqs.find((f) => String(f.Status) === 'Pending');
+                  // No new request while one is pending OR an approved freeze
+                  // is still current/upcoming — the package is already frozen.
+                  const today = new Date(); today.setHours(0, 0, 0, 0);
+                  const open = reqs.find((f) =>
+                    String(f.Status) === 'Pending'
+                    || (String(f.Status) === 'Approved' && f.FreezeTo != null && new Date(String(f.FreezeTo)) >= today));
                   const fmtD = (v: unknown) => v ? fmtDay(String(v)) : '—';
                   return (
                     <div className="mt-2">
                       {reqs.slice(0, 2).map((f) => {
                         const st = String(f.Status);
-                        const color = st === 'Approved' ? '#059669' : st === 'Rejected' ? '#DC2626' : '#B45309';
+                        const tone = st === 'Approved'
+                          ? { fg: '#047857', bg: 'rgba(5,150,105,0.10)' }
+                          : st === 'Rejected'
+                          ? { fg: '#B91C1C', bg: 'rgba(220,38,38,0.10)' }
+                          : { fg: '#0369A1', bg: 'rgba(2,132,199,0.10)' };
                         return (
-                          <div key={Number(f.RequestId)} className="rounded-xl p-2.5 mt-1.5"
-                            style={{ background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)' }}>
-                            <div className="flex items-center gap-1.5">
-                              <Snowflake className="size-3.5 shrink-0" style={{ color: '#0284C7' }} />
-                              <span className="text-[11px] font-bold" style={{ color }}>
+                          <div key={Number(f.RequestId)} className="rounded-xl mt-2 overflow-hidden bg-white"
+                            style={{ border: '1px solid #E2E8F0' }}>
+                            <div className="flex items-center gap-2 px-3 py-2" style={{ background: tone.bg }}>
+                              <Snowflake className="size-3.5 shrink-0" style={{ color: tone.fg }} />
+                              <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: tone.fg }}>
                                 {st === 'Approved' ? t('frz.approved') : st === 'Rejected' ? t('frz.rejected') : t('frz.pending')}
                               </span>
+                              <span className="text-[11px] font-semibold ml-auto" style={{ color: tone.fg }}>
+                                {fmtD(f.FreezeFrom)} → {fmtD(f.FreezeTo)}
+                              </span>
                             </div>
-                            <p className="text-xs mt-0.5" style={{ color: '#334155' }}>
-                              {fmtD(f.FreezeFrom)} → {fmtD(f.FreezeTo)}
-                            </p>
-                            {f.Reason ? <p className="text-[11px] mt-0.5" style={{ color: '#64748B' }}>{String(f.Reason)}</p> : null}
-                            {f.ReviewNote ? <p className="text-[11px] mt-0.5 italic" style={{ color: '#64748B' }}>“{String(f.ReviewNote)}”</p> : null}
+                            {(f.Reason || f.ReviewNote) ? (
+                              <div className="px-3 py-2">
+                                {f.Reason ? (
+                                  <p className="text-xs leading-snug" style={{ color: '#475569', overflowWrap: 'anywhere' }}>{String(f.Reason)}</p>
+                                ) : null}
+                                {f.ReviewNote ? (
+                                  <p className="text-[11px] italic mt-1" style={{ color: '#94A3B8' }}>ProSwim: “{String(f.ReviewNote)}”</p>
+                                ) : null}
+                              </div>
+                            ) : null}
                           </div>
                         );
                       })}
@@ -209,7 +274,7 @@ export function PrivatePackagesPage() {
                         </button>
                       )}
 
-                      {freezeFor === pkg.packageId && (
+                      {freezeFor === pkg.packageId && !open && (
                         <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid #f1f5f9' }}>
                           <p className="text-[11px]" style={{ color: '#64748B' }}>{t('frz.note')}</p>
                           {frzError && <p className="text-xs" style={{ color: '#DC2626' }}>{frzError}</p>}
@@ -227,7 +292,7 @@ export function PrivatePackagesPage() {
                           </div>
                           <div>
                             <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('frz.reason')}</p>
-                            <textarea rows={2} value={frzReason} onChange={(e) => setFrzReason(e.target.value)}
+                            <textarea rows={2} maxLength={2500} value={frzReason} onChange={(e) => setFrzReason(e.target.value)}
                               placeholder={t('frz.reasonPh')}
                               className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
                           </div>

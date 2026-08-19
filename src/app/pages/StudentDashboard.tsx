@@ -153,7 +153,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('home.title')} showSignOut showBell />
+        <MobileHeader title={t('home.title')} showBack={false} showSignOut showBell />
         <PageLoader label={t('home.loading')} />
         <MobileNav />
       </div>
@@ -162,7 +162,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('home.title')} showSignOut showBell />
+      <MobileHeader title={t('home.title')} showBack={false} showSignOut showBell />
 
       <div className="px-4 pt-4">
         {/* ── Hero: identity, calm and compact ── */}

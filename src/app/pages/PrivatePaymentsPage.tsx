@@ -6,6 +6,7 @@ import { PageLoader } from '../components/PageLoader';
 import { CreditCard, User, Loader2, AlertCircle, X, FileText } from 'lucide-react';
 import { getPrivatePayments, type PrivatePaymentDto, getPrivateReceipt, type PrivateReceiptDto, formatMoney, effectiveCurrency } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { PaperReceipt, type ReceiptLine } from '../components/PaperReceipt';
 import { t, monthShort, dayShort, dateLocale } from '../i18n';
 
 
@@ -127,8 +128,8 @@ export function PrivatePaymentsPage() {
         </div>
       </div>
       {receipt.paymentId !== null && (
-        <div className="fixed inset-0 z-50 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
-          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 100 }} onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" style={{ maxHeight: '86vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <p className="text-base font-bold text-slate-900">Receipt #{receipt.paymentId}</p>
               <button onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
@@ -143,22 +144,16 @@ export function PrivatePaymentsPage() {
             {!receipt.loading && receipt.data && (() => {
               const d = receipt.data;
               const balance = d.privatePaymentTotalAmount - d.privatePaymentPaidAmount;
-              return (
-                <div className="space-y-0">
-                  {d.studentName && <ReceiptRow label={t('common.student')} value={d.studentName} />}
-                  {d.packageName && <ReceiptRow label={t('pay.package')} value={d.packageName} />}
-                  {d.coachFullName && <ReceiptRow label={t('common.coach')} value={d.coachFullName} />}
-                  {d.privatePaymentDate && <ReceiptRow label={t('pay.paymentDate')} value={new Date(d.privatePaymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' })} />}
-                  <ReceiptRow label={t('pay.totalAmount')} value={formatMoney(d.privatePaymentTotalAmount, d.privatePaymentPaidCurrency)} />
-                  <ReceiptRow label={t('pay.amountPaid')} value={formatMoney(d.privatePaymentPaidAmount, d.privatePaymentPaidCurrency)} highlight />
-                  <ReceiptRow
-                    label={t('pay.balanceDue')}
-                    value={balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.privatePaymentPaidCurrency)}
-                    status={balance <= 0 ? 'paid' : 'due'}
-                  />
-                  {d.privatePaymentNotes && <ReceiptRow label={t('common.notes')} value={d.privatePaymentNotes} />}
-                </div>
-              );
+              const lines: ReceiptLine[] = [];
+              if (d.studentName) lines.push({ label: t('common.student'), value: d.studentName });
+              if (d.packageName) lines.push({ label: t('pay.package'), value: d.packageName });
+              if (d.coachFullName) lines.push({ label: t('common.coach'), value: d.coachFullName });
+              if (d.privatePaymentDate) lines.push({ label: t('pay.paymentDate'), value: new Date(d.privatePaymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' }) });
+              lines.push({ label: t('pay.totalAmount'), value: formatMoney(d.privatePaymentTotalAmount, d.privatePaymentPaidCurrency) });
+              lines.push({ label: t('pay.amountPaid'), value: formatMoney(d.privatePaymentPaidAmount, d.privatePaymentPaidCurrency), strong: true, tone: 'paid' });
+              lines.push({ label: t('pay.balanceDue'), value: balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.privatePaymentPaidCurrency), tone: balance <= 0 ? 'paid' : 'due' });
+              if (d.privatePaymentNotes) lines.push({ label: t('common.notes'), value: d.privatePaymentNotes });
+              return <PaperReceipt serial={`#${receipt.paymentId}`} lines={lines} />;
             })()}
             {!receipt.loading && !receipt.data && (
               <p className="text-sm text-slate-400 text-center py-4">{t('pay.receiptNA')}</p>

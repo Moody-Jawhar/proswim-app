@@ -3,11 +3,12 @@ import { useParams } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, Loader2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { Calendar, Loader2, AlertCircle, CheckCircle2, XCircle, CalendarX } from 'lucide-react';
 import {
   getGroupSessions,
   type SessionDto,
 } from '../api/pswmApi';
+import { getAbsenceNotices, createAbsenceNotice, type AbsenceNoticeRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, monthShort, dayShort } from '../i18n';
 
@@ -22,6 +23,38 @@ export function RegistrationSessionsPage() {
   const [sessions, setSessions] = useState<SessionDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notices, setNotices] = useState<AbsenceNoticeRow[]>([]);
+  const [formFor, setFormFor] = useState<number | null>(null);
+  const [reason, setReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const loadNotices = () => getAbsenceNotices().then(setNotices).catch(() => {});
+  const noticeFor = (sessionId: number) =>
+    notices.find((n) => Number(n.SessionId) === sessionId && String(n.Status) !== 'Rejected')
+    ?? notices.find((n) => Number(n.SessionId) === sessionId);
+
+  const isFuture = (s: SessionDto) => {
+    if (!s.sessionDate) return false;
+    const d = new Date(s.sessionDate);
+    d.setHours(23, 59, 0, 0);
+    return d.getTime() > Date.now();
+  };
+
+  async function submitNotice(sessionId: number) {
+    if (!window.confirm(t('abs.confirm'))) return;
+    setFormError('');
+    setSubmitting(true);
+    try {
+      await createAbsenceNotice({ sessionId, reason: reason.trim() || null });
+      setFormFor(null); setReason('');
+      loadNotices();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : t('abs.fail'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     const id = semesterId ? parseInt(semesterId) : NaN;
@@ -37,6 +70,7 @@ export function RegistrationSessionsPage() {
       .then(setSessions)
       .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
+    loadNotices();
   }, [semesterId]);
 
   const attended = sessions.filter(s => s.myAttended === true).length;
@@ -123,6 +157,61 @@ export function RegistrationSessionsPage() {
                     )}
                   </div>
                 </div>
+
+              {(() => {
+                const n = noticeFor(s.sessionId);
+                const status = n ? String(n.Status) : null;
+                return (
+                  <>
+                    {status && (
+                      <div className="mt-2 pt-2 flex items-center gap-1.5"
+                        style={{ borderTop: `1px solid ${(isAttended || isAbsent) ? 'rgba(255,255,255,0.3)' : '#f1f5f9'}` }}>
+                        <CalendarX className="size-3.5 shrink-0"
+                          style={{ color: (isAttended || isAbsent) ? white : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }} />
+                        <span className="text-[11px] font-bold"
+                          style={{ color: (isAttended || isAbsent) ? white : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }}>
+                          {status === 'Approved' ? t('abs.approved') : status === 'Rejected' ? t('abs.rejected') : t('abs.pending')}
+                          {n && n.ReviewNote ? ` — ${String(n.ReviewNote)}` : ''}
+                        </span>
+                      </div>
+                    )}
+                    {!status && isFuture(s) && s.myAttended == null && formFor !== s.sessionId && (
+                      <button
+                        onClick={() => { setFormFor(s.sessionId); setFormError(''); }}
+                        className="mt-2 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold"
+                        style={{ background: 'rgba(220,38,38,0.08)', color: '#DC2626' }}
+                      >
+                        <CalendarX className="size-3.5" />
+                        {t('abs.report')}
+                      </button>
+                    )}
+                    {formFor === s.sessionId && (
+                      <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid #f1f5f9' }}>
+                        <p className="text-[11px]" style={{ color: '#64748B' }}>{t('abs.note')}</p>
+                        {formError && <p className="text-xs" style={{ color: '#DC2626' }}>{formError}</p>}
+                        <div>
+                          <p className="text-[11px] font-semibold mb-1" style={{ color: '#64748B' }}>{t('abs.reason')}</p>
+                          <textarea rows={2} maxLength={2500} value={reason} onChange={(e) => setReason(e.target.value)}
+                            placeholder={t('abs.reasonPh')}
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm bg-white" />
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => submitNotice(s.sessionId)} disabled={submitting}
+                            className="flex-1 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50"
+                            style={{ background: '#DC2626' }}>
+                            {submitting ? t('abs.submitting') : t('abs.submit')}
+                          </button>
+                          <button onClick={() => setFormFor(null)} disabled={submitting}
+                            className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 disabled:opacity-50"
+                            style={{ color: '#64748B' }}>
+                            {t('abs.cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
               </div>
             );
           })}

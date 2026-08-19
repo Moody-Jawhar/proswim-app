@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users } from 'lucide-react';
-import { getGroupRegistrations, type RegistrationDto } from '../api/pswmApi';
+import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users, ScrollText } from 'lucide-react';
+import { getGroupRegistrations, getGroupRulesStatus, acceptGroupRules, type RegistrationDto } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t } from '../i18n';
 
@@ -12,6 +12,23 @@ export function RegistrationsPage() {
   const [registrations, setRegistrations] = useState<RegistrationDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Rules gate: parents must read & accept the group rules once.
+  const [rulesAccepted, setRulesAccepted] = useState<boolean | null>(null);
+  const [accepting, setAccepting] = useState(false);
+  const [rulesError, setRulesError] = useState('');
+
+  async function acceptRules() {
+    setAccepting(true);
+    setRulesError('');
+    try {
+      await acceptGroupRules();
+      setRulesAccepted(true);
+    } catch {
+      setRulesError(t('rules.fail'));
+    } finally {
+      setAccepting(false);
+    }
+  }
 
   useEffect(() => {
     getGroupRegistrations()
@@ -28,6 +45,9 @@ export function RegistrationsPage() {
       })
       .catch(() => setError(t('reg.loadError')))
       .finally(() => setLoading(false));
+    getGroupRulesStatus()
+      .then((r) => setRulesAccepted(r.accepted))
+      .catch(() => setRulesAccepted(true)); // fail open
   }, []);
 
   if (loading) {
@@ -35,6 +55,46 @@ export function RegistrationsPage() {
       <div className="min-h-screen bg-transparent pb-nav">
         <MobileHeader title={t('reg.title')} />
         <PageLoader label={t('reg.loading')} />
+        <MobileNav />
+      </div>
+    );
+  }
+
+  if (rulesAccepted === false) {
+    return (
+      <div className="min-h-screen bg-transparent pb-nav">
+        <MobileHeader title={t('reg.title')} />
+        <div className="px-4 pt-4">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'rgba(30,92,151,0.08)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(30,92,151,0.15)' }}>
+                <ScrollText className="size-5" style={{ color: '#1e5c97' }} />
+              </div>
+              <p className="text-base font-bold text-slate-900">{t('grules.title')}</p>
+            </div>
+            <div className="px-5 py-4">
+              <div className="space-y-3">
+                {t('grules.body').split('\n\n').map((line, i) => {
+                  const m = line.match(/^(\S{1,3}\.)\s*([\s\S]*)$/);
+                  return (
+                    <div key={i} className="flex gap-2.5">
+                      <span className="text-sm font-bold shrink-0" style={{ color: '#1e5c97' }}>{m ? m[1] : '•'}</span>
+                      <span className="text-sm" style={{ color: '#475569', lineHeight: 1.6 }}>{m ? m[2] : line}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {rulesError && <p className="text-xs mt-3" style={{ color: '#DC2626' }}>{rulesError}</p>}
+              <button
+                onClick={acceptRules}
+                disabled={accepting}
+                className="btn-grad w-full py-3.5 rounded-xl font-semibold text-sm mt-4 disabled:opacity-50 active:scale-[0.98] transition-transform"
+              >
+                {accepting ? t('rules.accepting') : t('rules.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
         <MobileNav />
       </div>
     );

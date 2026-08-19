@@ -73,27 +73,6 @@ body {
    feels like it "can't scroll far enough". */
 .pb-nav { padding-bottom: calc(132px + env(safe-area-inset-bottom)); }
 
-/* ── App-open splash bubbles ──────────────────────────────────────
-   A brief burst when the app opens, then gone. Content screens never
-   run a permanent background animation. */
-@keyframes psBubbleUp {
-  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
-  15%  { opacity: 0.55; }
-  100% { transform: translateY(-105vh) scale(1); opacity: 0; }
-}
-.splash-bubble {
-  position: absolute;
-  bottom: -60px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(45,125,196,0.16));
-  border: 1px solid rgba(45, 125, 196, 0.25);
-  animation: psBubbleUp 2.2s ease-in forwards;
-  will-change: transform, opacity;
-}
-@media (prefers-reduced-motion: reduce) {
-  .splash-bubble { display: none; }
-}
-
 /* Gradient primary button */
 .btn-grad {
   background-image: linear-gradient(120deg, #2d7dc4, #1e5c97);
@@ -174,3 +153,10 @@ body {
 .divide-x > * + * { border-left-width: 1px; border-left-style: solid; }
 .divide-y > * + * { border-top-width: 1px; border-top-style: solid; }
 .divide-slate-100 > * + * { border-color: #f1f5f9; }
+.whitespace-pre-line { white-space: pre-line; }
+
+/* Arbitrary text sizes used in the code — absent from the frozen dump, so
+   they rendered at the 16px default. */
+.text-\[10px\] { font-size: 10px; line-height: 1.4; }
+.text-\[11px\] { font-size: 11px; line-height: 1.4; }
+.text-\[12px\] { font-size: 12px; line-height: 1.4; }

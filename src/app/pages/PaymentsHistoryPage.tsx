@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Loader2, AlertCircle, Waves, User } from 'lucide-react';
+import { Loader2, AlertCircle, Waves, User, CalendarClock, Wallet } from 'lucide-react';
 import {
   getGroupPayments,
   getGroupRegistrations,
   getPrivatePackages,
   getPrivatePayments,
   formatMoney,
+  getPaymentOverview,
+  type PaymentOverviewRow,
   type GroupPaymentDto,
   type PrivatePaymentDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
-import { t, monthShort } from '../i18n';
+import { t, monthShort, dateLocale } from '../i18n';
 
 
 function formatDate(dateStr: string) {
@@ -25,9 +27,11 @@ export function PaymentsHistoryPage() {
   const [groupPayments, setGroupPayments] = useState<GroupPaymentDto[]>([]);
   const [privatePayments, setPrivatePayments] = useState<PrivatePaymentDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState<PaymentOverviewRow[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    getPaymentOverview().then(setOverview).catch(() => {});
     (async () => {
       const [regsRes, pkgsRes] = await Promise.allSettled([
         getGroupRegistrations(),
@@ -87,6 +91,63 @@ export function PaymentsHistoryPage() {
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4">
             <AlertCircle className="size-4 text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {overview.length > 0 && (
+          <div className="mb-5">
+            <p className="text-sm font-semibold text-slate-900 mb-2">{t('payov.title')}</p>
+            <div className="space-y-2.5">
+              {overview.map((o, i) => {
+                const status = String(o.Status ?? 'Pending');
+                const tone = status === 'Paid'
+                  ? { fg: '#047857', bg: 'rgba(5,150,105,0.10)' }
+                  : status === 'Overdue'
+                  ? { fg: '#B91C1C', bg: 'rgba(220,38,38,0.10)' }
+                  : { fg: '#92600A', bg: 'rgba(245,158,11,0.14)' };
+                const due = Number(o.Due ?? 0);
+                const cur = String(o.Currency ?? '');
+                const dd = o.DueDate ? new Date(String(o.DueDate)) : null;
+                const active = o.IsActive === 1 || o.IsActive === true;
+                return (
+                  <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-2 px-4 py-2.5" style={{ background: tone.bg }}>
+                      <Wallet className="size-4 shrink-0" style={{ color: tone.fg }} />
+                      <span className="text-xs font-bold truncate" style={{ color: '#0f172a' }}>{String(o.Name ?? '')}</span>
+                      {active && (
+                        <span className="text-[10px] font-bold rounded-full px-2 py-0.5 shrink-0"
+                          style={{ background: 'rgba(30,92,151,0.12)', color: '#1e5c97' }}>
+                          {t('payov.active')}
+                        </span>
+                      )}
+                      <span className="text-[11px] font-bold uppercase tracking-wide ml-auto shrink-0" style={{ color: tone.fg }}>
+                        {status === 'Paid' ? t('payov.statusPaid') : status === 'Overdue' ? t('payov.statusOverdue') : t('payov.statusPending')}
+                      </span>
+                    </div>
+                    <div className="px-4 py-3 flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[11px]" style={{ color: '#94A3B8' }}>{t('payov.due')}</p>
+                        <p className="num-stat text-xl font-extrabold" style={{ color: due > 0 ? tone.fg : '#047857' }}>
+                          {formatMoney(Math.max(0, due), cur)}
+                        </p>
+                        <p className="text-[11px] mt-0.5" style={{ color: '#94A3B8' }}>
+                          {t('payov.paidOf', { paid: formatMoney(Number(o.Paid ?? 0), cur), total: formatMoney(Number(o.Total ?? 0), cur) })}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[11px] flex items-center gap-1 justify-end" style={{ color: '#94A3B8' }}>
+                          <CalendarClock className="size-3.5" /> {t('payov.deadline')}
+                        </p>
+                        <p className="text-sm font-bold" style={{ color: dd && due > 0 && status === 'Overdue' ? '#B91C1C' : '#334155' }}>
+                          {dd ? dd.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' }) : t('payov.noDeadline')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-sm font-semibold text-slate-900 mt-5 mb-2">{t('payov.prev')}</p>
           </div>
         )}
 

@@ -578,6 +578,37 @@ export async function createFreezeRequest(data: {
   });
 }
 
+// --- Private-training rules acceptance ---
+export async function getPrivateRulesStatus(): Promise<{ accepted: boolean; acceptedDate: string | null }> {
+  return apiRequest<{ accepted: boolean; acceptedDate: string | null }>("/api/Private/RulesStatus");
+}
+
+export async function acceptPrivateRules(): Promise<void> {
+  await apiRequest<void>("/api/Private/AcceptRules", { method: "POST" });
+}
+
+// --- Group rules acceptance + absence notices ---
+export async function getGroupRulesStatus(): Promise<{ accepted: boolean; acceptedDate: string | null }> {
+  return apiRequest<{ accepted: boolean; acceptedDate: string | null }>("/api/Group/RulesStatus");
+}
+
+export async function acceptGroupRules(): Promise<void> {
+  await apiRequest<void>("/api/Group/AcceptRules", { method: "POST" });
+}
+
+export type AbsenceNoticeRow = Record<string, unknown>;
+
+export async function getAbsenceNotices(): Promise<AbsenceNoticeRow[]> {
+  return apiRequest<AbsenceNoticeRow[]>("/api/Group/AbsenceNotices");
+}
+
+export async function createAbsenceNotice(data: { sessionId: number; reason: string | null }): Promise<{ noticeId: number }> {
+  return apiRequest<{ noticeId: number }>("/api/Group/AbsenceNotice", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 // Swimmer sets their own profile picture. Base64 JSON body — Capacitor's
 // native HTTP layer doesn't reliably carry multipart FormData files.
 export async function uploadMyPhoto(fileName: string, base64: string): Promise<{ url: string }> {
@@ -755,6 +786,12 @@ export async function getPrivatePayments(packageId: number): Promise<PrivatePaym
 
 export async function getPrivatePaymentsDue(): Promise<PrivatePaymentDueDto[]> {
   return apiRequest<PrivatePaymentDueDto[]>("/api/Payments/PrivateDue");
+}
+
+export type PaymentOverviewRow = Record<string, unknown>;
+
+export async function getPaymentOverview(): Promise<PaymentOverviewRow[]> {
+  return apiRequest<PaymentOverviewRow[]>("/api/Payments/Overview");
 }
 
 export async function getPaymentSummary(): Promise<PaymentSummaryDto> {

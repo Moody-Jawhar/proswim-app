@@ -6,6 +6,7 @@ import { PageLoader } from '../components/PageLoader';
 import { CreditCard, Loader2, AlertCircle, X, FileText } from 'lucide-react';
 import { getGroupPayments, type GroupPaymentDto, getGroupReceipt, type GroupReceiptDto, formatMoney, effectiveCurrency } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { PaperReceipt, type ReceiptLine } from '../components/PaperReceipt';
 import { t, monthShort, dayShort, dateLocale } from '../i18n';
 
 
@@ -122,8 +123,8 @@ export function RegistrationPaymentsPage() {
         </div>
       </div>
       {receipt.paymentId !== null && (
-        <div className="fixed inset-0 z-50 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
-          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 100 }} onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" style={{ maxHeight: '86vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <p className="text-base font-bold text-slate-900">Receipt #{receipt.paymentId}</p>
               <button onClick={() => setReceipt({ data: null, loading: false, paymentId: null })}>
@@ -138,21 +139,15 @@ export function RegistrationPaymentsPage() {
             {!receipt.loading && receipt.data && (() => {
               const d = receipt.data;
               const balance = d.paymentTotalAmount - d.paymentPaidAmount;
-              return (
-                <div className="space-y-0">
-                  {d.studentName && <ReceiptRow label={t('common.student')} value={d.studentName} />}
-                  {d.semesterName && <ReceiptRow label={t('pay.semester')} value={d.semesterName} />}
-                  {d.paymentDate && <ReceiptRow label={t('pay.paymentDate')} value={new Date(d.paymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' })} />}
-                  <ReceiptRow label={t('pay.totalAmount')} value={formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency)} />
-                  <ReceiptRow label={t('pay.amountPaid')} value={formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency)} highlight />
-                  <ReceiptRow
-                    label={t('pay.balanceDue')}
-                    value={balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.paymentPaidCurrency)}
-                    status={balance <= 0 ? 'paid' : 'due'}
-                  />
-                  {d.paymentNotes && <ReceiptRow label={t('common.notes')} value={d.paymentNotes} />}
-                </div>
-              );
+              const lines: ReceiptLine[] = [];
+              if (d.studentName) lines.push({ label: t('common.student'), value: d.studentName });
+              if (d.semesterName) lines.push({ label: t('pay.semester'), value: d.semesterName });
+              if (d.paymentDate) lines.push({ label: t('pay.paymentDate'), value: new Date(d.paymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' }) });
+              lines.push({ label: t('pay.totalAmount'), value: formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency) });
+              lines.push({ label: t('pay.amountPaid'), value: formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency), strong: true, tone: 'paid' });
+              lines.push({ label: t('pay.balanceDue'), value: balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.paymentPaidCurrency), tone: balance <= 0 ? 'paid' : 'due' });
+              if (d.paymentNotes) lines.push({ label: t('common.notes'), value: d.paymentNotes });
+              return <PaperReceipt serial={`#${receipt.paymentId}`} lines={lines} />;
             })()}
             {!receipt.loading && !receipt.data && (
               <p className="text-sm text-slate-400 text-center py-4">{t('pay.receiptNA')}</p>

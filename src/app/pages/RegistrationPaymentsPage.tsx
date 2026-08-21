@@ -55,7 +55,7 @@ export function RegistrationPaymentsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('common.payments')} showBack />
+        <MobileHeader title={t('common.payments')} showBack backTo="/registrations" />
         <PageLoader label={t('pay.loading')} />
         <MobileNav />
       </div>
@@ -64,7 +64,7 @@ export function RegistrationPaymentsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('pay.groupTitle')} showBack />
+      <MobileHeader title={t('pay.groupTitle')} showBack backTo="/registrations" />
       <PageHero title={t('pay.groupTitle')} subtitle={t('pay.groupSubtitle')} slide={2} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

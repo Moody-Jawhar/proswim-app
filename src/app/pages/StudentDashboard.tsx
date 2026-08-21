@@ -31,6 +31,8 @@ interface NextSession {
   time: string;
   label: string;
   location: string;
+  /** Where a tap lands: the sessions tab of the registration/package. */
+  to: string;
 }
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -127,17 +129,21 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
       cands.push({
         kind: 'Group', when, time: s.classTimeFrom ?? '',
         label: s.className ?? t('home.groupSession'), location: s.locationNickName ?? '',
+        to: s.semesterId ? `/registrations/${s.semesterId}/sessions` : '/registrations',
       });
     }
-    for (const s of Object.values(privSessions).flat()) {
-      const state = (s.privateSessionState ?? '').toLowerCase().trim();
-      if (state === 'cancelled' || state === 'canceled') continue;
-      const when = combine(s.privateSessionDate, s.privateSessionTime);
-      if (!when || when < now) continue;
-      cands.push({
-        kind: 'Private', when, time: s.privateSessionTime ?? '',
-        label: s.coachFullName ? t('home.privateWith', { name: s.coachFullName }) : t('home.privateSession'), location: '',
-      });
+    for (const [pkgId, list] of Object.entries(privSessions)) {
+      for (const s of list) {
+        const state = (s.privateSessionState ?? '').toLowerCase().trim();
+        if (state === 'cancelled' || state === 'canceled') continue;
+        const when = combine(s.privateSessionDate, s.privateSessionTime);
+        if (!when || when < now) continue;
+        cands.push({
+          kind: 'Private', when, time: s.privateSessionTime ?? '',
+          label: s.coachFullName ? t('home.privateWith', { name: s.coachFullName }) : t('home.privateSession'), location: '',
+          to: `/private/${pkgId}/sessions`,
+        });
+      }
     }
     cands.sort((a, b) => a.when.getTime() - b.when.getTime());
     return cands[0] ?? null;
@@ -221,7 +227,10 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
         {/* ── Up next ── */}
         <Section icon={<CalendarClock className="size-4" style={{ color: BRAND }} />} tint="rgba(30,92,151,0.12)" title={t('home.upNext')} />
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5">
+        <div
+          className={`bg-white rounded-2xl border border-slate-100 shadow-soft p-4 mb-5 ${nextSession ? 'active:scale-[0.99] transition-transform cursor-pointer' : ''}`}
+          onClick={() => nextSession && navigate(nextSession.to)}
+        >
           {nextSession ? (
             <div className="flex items-center gap-4">
               <div className="rounded-xl text-center px-3 py-2" style={{ background: 'rgba(30,92,151,0.07)', minWidth: 64 }}>

@@ -122,7 +122,7 @@ export function PrivateSessionsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('common.sessions')} showBack />
+        <MobileHeader title={t('common.sessions')} showBack backTo="/private" />
         <PageLoader label={t('sess.loading')} />
         <MobileNav />
       </div>
@@ -136,7 +136,7 @@ export function PrivateSessionsPage() {
     };
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('sess.privTitle')} showBack />
+        <MobileHeader title={t('sess.privTitle')} showBack backTo="/private" />
         <div className="px-4 pt-6">
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col items-center text-center">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(56,189,248,0.14)' }}>
@@ -155,7 +155,7 @@ export function PrivateSessionsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('sess.privTitle')} showBack />
+      <MobileHeader title={t('sess.privTitle')} showBack backTo="/private" />
       <PageHero title={t('sess.privTitle')} subtitle={t('sess.privSubtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

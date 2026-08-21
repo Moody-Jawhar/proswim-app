@@ -79,7 +79,7 @@ export function RegistrationSessionsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('common.sessions')} showBack />
+        <MobileHeader title={t('common.sessions')} showBack backTo="/registrations" />
         <PageLoader label={t('sess.loading')} />
         <MobileNav />
       </div>
@@ -88,7 +88,7 @@ export function RegistrationSessionsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('sess.title')} showBack />
+      <MobileHeader title={t('sess.title')} showBack backTo="/registrations" />
       <PageHero title={t('sess.title')} subtitle={t('sess.subtitle')} slide={1} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(11,100,180,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

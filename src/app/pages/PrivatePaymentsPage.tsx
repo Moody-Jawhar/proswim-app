@@ -55,7 +55,7 @@ export function PrivatePaymentsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('common.payments')} showBack />
+        <MobileHeader title={t('common.payments')} showBack backTo="/private" />
         <PageLoader label={t('pay.loading')} />
         <MobileNav />
       </div>
@@ -64,7 +64,7 @@ export function PrivatePaymentsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('pay.privTitle')} showBack />
+      <MobileHeader title={t('pay.privTitle')} showBack backTo="/private" />
       <PageHero title={t('pay.privTitle')} subtitle={t('pay.privSubtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (

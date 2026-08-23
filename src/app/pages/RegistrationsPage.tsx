@@ -119,6 +119,9 @@ export function RegistrationsPage() {
         <div className="space-y-3">
           {registrations.map((reg) => {
             const names = [reg.className1, reg.className2, reg.className3].filter(Boolean) as string[];
+            // Registrations sold 2+ years ago are history: no payments UI.
+            const old2y = new Date(); old2y.setFullYear(old2y.getFullYear() - 2);
+            const isOld = !!reg.registrationDate && new Date(reg.registrationDate) < old2y;
             return (
               <div key={reg.registrationId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                 <div className="flex items-start gap-3 mb-2">
@@ -156,14 +159,16 @@ export function RegistrationsPage() {
                     <Calendar className="size-4" />
                     {t('common.sessions')}
                   </Link>
-                  <Link
-                    to={`/registrations/${reg.registrationSemesterId}/payments`}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
-                  >
-                    <CreditCard className="size-4" />
-                    {t('common.payments')}
-                  </Link>
+                  {!isOld && (
+                    <Link
+                      to={`/registrations/${reg.registrationSemesterId}/payments`}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
+                      style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
+                    >
+                      <CreditCard className="size-4" />
+                      {t('common.payments')}
+                    </Link>
+                  )}
                 </div>
               </div>
             );

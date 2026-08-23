@@ -152,7 +152,11 @@ export function PrivatePackagesPage() {
         )}
 
         <div className="space-y-3">
-          {packages.map((pkg) => (
+          {packages.map((pkg) => {
+            // Packages sold 2+ years ago are history: no amounts, no payments UI.
+            const old2y = new Date(); old2y.setFullYear(old2y.getFullYear() - 2);
+            const isOld = !!pkg.packageStartDate && new Date(pkg.packageStartDate) < old2y;
+            return (
               <div key={pkg.packageId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                 <div className="flex items-start gap-3 mb-1">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(91,173,255,0.18)' }}>
@@ -211,12 +215,14 @@ export function PrivatePackagesPage() {
                       {pkg.packageNumberOfSessions} {t('priv.purchased').toLowerCase()} · {t('priv.attendedLeft', { a: pkg.countAttended, l: pkg.sessionsLeft })}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-slate-400">{t('priv.due')}</p>
-                    <p className={`font-semibold ${pkg.duePayment > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                      {formatMoney(pkg.duePayment, pkg.packageCurrency)}
-                    </p>
-                  </div>
+                  {!isOld && (
+                    <div className="text-right">
+                      <p className="text-slate-400">{t('priv.due')}</p>
+                      <p className={`font-semibold ${pkg.duePayment > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                        {formatMoney(pkg.duePayment, pkg.packageCurrency)}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {(() => {
@@ -323,17 +329,20 @@ export function PrivatePackagesPage() {
                     <Calendar className="size-4" />
                     {t('common.sessions')}
                   </Link>
-                  <Link
-                    to={`/private/${pkg.packageId}/payments`}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
-                  >
-                    <CreditCard className="size-4" />
-                    {t('common.payments')}
-                  </Link>
+                  {!isOld && (
+                    <Link
+                      to={`/private/${pkg.packageId}/payments`}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white"
+                      style={{ background: 'linear-gradient(135deg,rgba(52,211,153,0.55) 0%,rgba(16,185,129,0.55) 100%)' }}
+                    >
+                      <CreditCard className="size-4" />
+                      {t('common.payments')}
+                    </Link>
+                  )}
                 </div>
               </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <MobileNav />

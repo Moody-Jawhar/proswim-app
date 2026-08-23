@@ -11,7 +11,7 @@ export function ChangePasswordPage() {
   const location = useLocation();
   // Forced mode: fresh accounts must change their password before continuing.
   const required = Boolean(location.state?.required);
-  const needsVerify = location.state?.verified === false;
+  const needsVerify = location.state?.deviceVerified === false;
 
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
@@ -35,11 +35,8 @@ export function ChangePasswordPage() {
       await changePassword(current, next);
       setDone(true);
       setTimeout(() => {
-        // WhatsApp verification is DISABLED — everyone lands on the dashboard.
-        // To re-enable, restore:
-        //   if (required && needsVerify) navigate('/verify', { replace: true });
-        void needsVerify;
-        if (required) navigate('/dashboard', { replace: true });
+        if (required && needsVerify) navigate('/verify', { replace: true });
+        else if (required) navigate('/dashboard', { replace: true });
         else navigate(-1);
       }, 1200);
     } catch (e: unknown) {

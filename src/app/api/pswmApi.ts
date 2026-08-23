@@ -9,6 +9,8 @@ const API_BASE_URL =
 
 const API_KEY = import.meta.env.VITE_API_KEY || "dev-api-key-12345";
 
+import { getDeviceId } from "../utils/device";
+
 // --- Auth storage ---
 
 export function getStoredToken(): string | null {
@@ -112,6 +114,8 @@ export interface LoginResponse {
   message: string;
   mustChangePassword: boolean;
   verified: boolean;
+  /** false only when THIS device still needs WhatsApp verification. */
+  deviceVerified: boolean;
 }
 
 export interface SendCodeResponse {
@@ -490,7 +494,7 @@ export interface StudentProfileUpdateDto {
 export async function login(username: string, password: string): Promise<LoginResponse> {
   return apiRequest<LoginResponse>(
     "/api/Auth/Login",
-    { method: "POST", body: JSON.stringify({ username, password }) },
+    { method: "POST", body: JSON.stringify({ username, password, deviceId: getDeviceId() }) },
     false
   );
 }
@@ -509,7 +513,7 @@ export async function sendVerificationCode(): Promise<SendCodeResponse> {
 export async function verifyCode(code: string): Promise<VerifyCodeResponse> {
   return apiRequest<VerifyCodeResponse>("/api/Auth/VerifyCode", {
     method: "POST",
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ code, deviceId: getDeviceId() }),
   });
 }
 

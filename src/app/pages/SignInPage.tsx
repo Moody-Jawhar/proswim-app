@@ -46,11 +46,12 @@ export function SignInPage() {
         }));
         if (res.studentId) subscribeToStudentTopic(res.studentId);
         if (res.mustChangePassword) {
-          navigate('/change-password', { state: { required: true, verified: res.verified } });
+          navigate('/change-password', { state: { required: true, deviceVerified: res.deviceVerified } });
+        } else if (res.deviceVerified === false) {
+          // Once-per-DEVICE WhatsApp verification: only a device that has
+          // never verified sees the code screen.
+          navigate('/verify');
         } else {
-          // First-time WhatsApp verification is DISABLED (client-side skip;
-          // the /verify page still exists). To re-enable, restore:
-          //   else if (res.verified === false) navigate('/verify');
           navigate('/dashboard');
         }
       } else {

@@ -99,6 +99,16 @@ export function PaymentsHistoryPage() {
             <p className="text-sm font-semibold text-slate-900 mb-2">{t('payov.title')}</p>
             <div className="space-y-2.5">
               {overview.map((o, i) => {
+                // Enrollments older than 2 years: listed for the record only —
+                // no amounts, no deadline, no payment status.
+                if (o.Old === 1 || o.Old === true) {
+                  return (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 py-3 flex items-center gap-2">
+                      <Wallet className="size-4 shrink-0" style={{ color: '#94A3B8' }} />
+                      <span className="text-xs font-bold truncate" style={{ color: '#334155' }}>{String(o.Name ?? '')}</span>
+                    </div>
+                  );
+                }
                 const status = String(o.Status ?? 'Pending');
                 const tone = status === 'Paid'
                   ? { fg: '#047857', bg: 'rgba(5,150,105,0.10)' }

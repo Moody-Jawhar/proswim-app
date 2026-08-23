@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import { t } from '../i18n';
 import logoUrl from '../../assets/proswim-logo.png';
 
@@ -137,9 +140,22 @@ async function downloadReceiptImage(serial: string, location: string | null, lin
   ctx.font = 'italic 11px -apple-system, Helvetica, Arial';
   ctx.fillText(t('receipt.thanks'), W / 2, y + 16);
 
+  const fileName = `ProSwim-Receipt-${serial.replace(/[^A-Za-z0-9-]/g, '')}.png`;
+
+  // Native (iOS/Android): the WebView can neither navigator.share files nor
+  // honor <a download> on a blob URL — write the PNG to the app cache and
+  // hand it to the system share sheet (Save to Files/Photos, WhatsApp…).
+  if (Capacitor.isNativePlatform()) {
+    const base64 = canvas.toDataURL('image/png').split(',')[1];
+    const written = await Filesystem.writeFile({ path: fileName, data: base64, directory: Directory.Cache });
+    try {
+      await Share.share({ title: 'ProSwim Receipt', files: [written.uri] });
+    } catch { /* user closed the sheet */ }
+    return;
+  }
+
   const blob: Blob = await new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('blob'))), 'image/png'));
-  const fileName = `ProSwim-Receipt-${serial.replace(/[^A-Za-z0-9-]/g, '')}.png`;
   const file = new File([blob], fileName, { type: 'image/png' });
 
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };

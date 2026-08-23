@@ -4,6 +4,8 @@ import {
   User, Mail, Phone, MapPin, Calendar, GraduationCap,
   Flag, Loader2, AlertCircle, Award, Shield, Camera
 } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { Camera as NativeCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
@@ -59,6 +61,42 @@ export function MyProfilePage() {
   const [privateCount, setPrivateCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const uploadPhoto = async (fileName: string, base64: string) => {
+    setPhotoError('');
+    setUploading(true);
+    try {
+      const { url } = await uploadMyPhoto(fileName, base64);
+      setStudent((s) => (s ? { ...s, studentPhotoUrl: url } : s));
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : t('profile.photoUploadFail'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // On device the WebView's <input type="file"> camera path crashes
+  // (no iOS usage strings, flaky Samsung camera intent) — go through the
+  // native Camera plugin instead. The browser keeps the plain file input.
+  const pickPhoto = async () => {
+    if (uploading) return;
+    if (!Capacitor.isNativePlatform()) { fileRef.current?.click(); return; }
+    setPhotoError('');
+    try {
+      const photo = await NativeCamera.getPhoto({
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt,
+        quality: 85,
+        width: 1000,
+        correctOrientation: true,
+      });
+      if (!photo.dataUrl) return;
+      await uploadPhoto('photo.jpg', photo.dataUrl.split(',')[1]);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (!/cancel/i.test(msg)) setPhotoError(msg || t('profile.photoUploadFail'));
+    }
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem('currentUser');
@@ -149,20 +187,16 @@ export function MyProfilePage() {
                   e.target.value = '';
                   if (!file) return;
                   setPhotoError('');
-                  setUploading(true);
                   try {
                     const { fileName, base64 } = await shrinkImage(file);
-                    const { url } = await uploadMyPhoto(fileName, base64);
-                    setStudent((s) => (s ? { ...s, studentPhotoUrl: url } : s));
+                    await uploadPhoto(fileName, base64);
                   } catch (err) {
                     setPhotoError(err instanceof Error ? err.message : t('profile.photoUploadFail'));
-                  } finally {
-                    setUploading(false);
                   }
                 }}
               />
               <button
-                onClick={() => !uploading && fileRef.current?.click()}
+                onClick={pickPhoto}
                 className="relative rounded-2xl flex items-center justify-center shrink-0 overflow-hidden active:opacity-80 transition-opacity"
                 style={{ width: 58, height: 58, background: 'rgba(30,92,151,0.15)', border: '1.5px solid rgba(30,92,151,0.20)', padding: 0 }}
                 aria-label="Change profile photo"

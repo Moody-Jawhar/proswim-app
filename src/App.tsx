@@ -50,6 +50,7 @@ import { PrivateSessionsPage } from "./app/pages/PrivateSessionsPage";
 import { PrivatePaymentsPage } from "./app/pages/PrivatePaymentsPage";
 import { PaymentsHistoryPage } from "./app/pages/PaymentsHistoryPage";
 import { SkillsChecklistPage } from "./app/pages/SkillsChecklistPage";
+import { InsightsPage } from "./app/pages/InsightsPage";
 import { NotificationsPage } from "./app/pages/NotificationsPage";
 import { NewsPage } from "./app/pages/NewsPage";
 import { LocationDetailPage } from "./app/pages/LocationDetailPage";
@@ -90,6 +91,7 @@ export default function App() {
         <Route path="/private/:packageId/payments" element={<PrivatePaymentsPage />} />
         <Route path="/payment-history" element={<PaymentsHistoryPage />} />
         <Route path="/checklist" element={<SkillsChecklistPage />} />
+        <Route path="/insights" element={<InsightsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/news" element={<NewsPage />} />
 

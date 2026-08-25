@@ -6,6 +6,7 @@ import {
   Newspaper, User,
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
+import { InsightsCard } from '../components/InsightsCard';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
@@ -257,11 +258,15 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
                   {nextSession.location && <span className="inline-flex items-center gap-1"><MapPin className="size-3" /> {nextSession.location}</span>}
                 </p>
               </div>
+              {nextSession.to && <ChevronRight className="size-5" style={{ color: '#94A3B8', flexShrink: 0 }} />}
             </div>
           ) : (
             <p className="text-sm py-1" style={{ color: '#64748B' }}>{t('home.noUpcoming')}</p>
           )}
         </div>
+
+        {/* ── Smart insights (on-device model) ── */}
+        {isRealAuth && <InsightsCard />}
 
         {/* ── Payments ── */}
         <Section icon={<Wallet className="size-4" style={{ color: totalDue > 0 ? '#DC2626' : '#047857' }} />}
@@ -359,6 +364,16 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
             </div>
             <p className="text-sm font-bold text-slate-900">{t('nav.profile')}</p>
             <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('home.tileProfileHint')}</p>
+          </Link>
+          <Link to="/locations" className="col-span-2 bg-white rounded-2xl border border-slate-100 shadow-soft p-4 flex items-center gap-3 active:scale-[0.98] transition-transform">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(11,100,180,0.12)' }}>
+              <MapPin className="size-5" style={{ color: '#0B64B4' }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-slate-900">{t('landing.viewLocations')}</p>
+              <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{t('loc.subtitle')}</p>
+            </div>
+            <ChevronRight className="size-5 shrink-0" style={{ color: '#94A3B8' }} />
           </Link>
         </div>
 

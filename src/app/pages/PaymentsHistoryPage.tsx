@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Loader2, AlertCircle, Waves, User, CalendarClock, Wallet } from 'lucide-react';
+import { Loader2, AlertCircle, Waves, User, CalendarClock, Wallet, X, FileText } from 'lucide-react';
 import {
   getGroupPayments,
   getGroupRegistrations,
   getPrivatePackages,
   getPrivatePayments,
+  getGroupReceipt,
+  getPrivateReceipt,
   formatMoney,
   getPaymentOverview,
   type PaymentOverviewRow,
@@ -15,6 +17,7 @@ import {
   type PrivatePaymentDto,
 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
+import { PaperReceipt, type ReceiptLine } from '../components/PaperReceipt';
 import { t, monthShort, dateLocale } from '../i18n';
 
 
@@ -29,6 +32,48 @@ export function PaymentsHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState<PaymentOverviewRow[]>([]);
   const [error, setError] = useState('');
+  // Bottom-sheet receipt for a tapped payment; lines are built at open time so
+  // the sheet renders group and private receipts the same way.
+  const [receipt, setReceipt] = useState<{ id: number; loading: boolean; lines: ReceiptLine[] | null } | null>(null);
+
+  const openGroupReceipt = async (paymentId: number) => {
+    setReceipt({ id: paymentId, loading: true, lines: null });
+    try {
+      const d = await getGroupReceipt(paymentId);
+      const balance = d.paymentTotalAmount - d.paymentPaidAmount;
+      const lines: ReceiptLine[] = [];
+      if (d.studentName) lines.push({ label: t('common.student'), value: d.studentName });
+      if (d.semesterName) lines.push({ label: t('pay.semester'), value: d.semesterName });
+      if (d.paymentDate) lines.push({ label: t('pay.paymentDate'), value: new Date(d.paymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' }) });
+      lines.push({ label: t('pay.totalAmount'), value: formatMoney(d.paymentTotalAmount, d.paymentPaidCurrency) });
+      lines.push({ label: t('pay.amountPaid'), value: formatMoney(d.paymentPaidAmount, d.paymentPaidCurrency), strong: true, tone: 'paid' });
+      lines.push({ label: t('pay.balanceDue'), value: balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.paymentPaidCurrency), tone: balance <= 0 ? 'paid' : 'due' });
+      if (d.paymentNotes) lines.push({ label: t('common.notes'), value: d.paymentNotes });
+      setReceipt({ id: paymentId, loading: false, lines });
+    } catch {
+      setReceipt({ id: paymentId, loading: false, lines: null });
+    }
+  };
+
+  const openPrivateReceipt = async (privatePaymentId: number) => {
+    setReceipt({ id: privatePaymentId, loading: true, lines: null });
+    try {
+      const d = await getPrivateReceipt(privatePaymentId);
+      const balance = d.privatePaymentTotalAmount - d.privatePaymentPaidAmount;
+      const lines: ReceiptLine[] = [];
+      if (d.studentName) lines.push({ label: t('common.student'), value: d.studentName });
+      if (d.packageName) lines.push({ label: t('pay.package'), value: d.packageName });
+      if (d.coachFullName) lines.push({ label: t('common.coach'), value: d.coachFullName });
+      if (d.privatePaymentDate) lines.push({ label: t('pay.paymentDate'), value: new Date(d.privatePaymentDate).toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long', day: 'numeric' }) });
+      lines.push({ label: t('pay.totalAmount'), value: formatMoney(d.privatePaymentTotalAmount, d.privatePaymentPaidCurrency) });
+      lines.push({ label: t('pay.amountPaid'), value: formatMoney(d.privatePaymentPaidAmount, d.privatePaymentPaidCurrency), strong: true, tone: 'paid' });
+      lines.push({ label: t('pay.balanceDue'), value: balance <= 0 ? t('pay.paidInFull') : formatMoney(balance, d.privatePaymentPaidCurrency), tone: balance <= 0 ? 'paid' : 'due' });
+      if (d.privatePaymentNotes) lines.push({ label: t('common.notes'), value: d.privatePaymentNotes });
+      setReceipt({ id: privatePaymentId, loading: false, lines });
+    } catch {
+      setReceipt({ id: privatePaymentId, loading: false, lines: null });
+    }
+  };
 
   useEffect(() => {
     getPaymentOverview().then(setOverview).catch(() => {});
@@ -166,7 +211,8 @@ export function PaymentsHistoryPage() {
             <p className="text-sm font-semibold text-slate-900 mb-2">{t('pay.groupTitle')}</p>
             <div className="space-y-2">
               {groupPayments.map((p) => (
-                <div key={p.paymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                <div key={p.paymentId} onClick={() => openGroupReceipt(p.paymentId)}
+                  className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 cursor-pointer active:scale-[0.99] transition-transform">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-[#e8f0f8] flex items-center justify-center shrink-0">
@@ -181,9 +227,12 @@ export function PaymentsHistoryPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-emerald-600">
-                      {formatMoney(p.paymentPaidAmount, p.paymentPaidCurrency)}
-                    </p>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <p className="text-sm font-bold text-emerald-600">
+                        {formatMoney(p.paymentPaidAmount, p.paymentPaidCurrency)}
+                      </p>
+                      <FileText className="size-4" style={{ color: '#94A3B8' }} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -196,7 +245,8 @@ export function PaymentsHistoryPage() {
             <p className="text-sm font-semibold text-slate-900 mb-2">{t('pay.privTitle')}</p>
             <div className="space-y-2">
               {privatePayments.map((p) => (
-                <div key={p.privatePaymentId} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                <div key={p.privatePaymentId} onClick={() => openPrivateReceipt(p.privatePaymentId)}
+                  className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 cursor-pointer active:scale-[0.99] transition-transform">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
@@ -211,9 +261,12 @@ export function PaymentsHistoryPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-emerald-600">
-                      {formatMoney(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency)}
-                    </p>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <p className="text-sm font-bold text-emerald-600">
+                        {formatMoney(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency)}
+                      </p>
+                      <FileText className="size-4" style={{ color: '#94A3B8' }} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -225,6 +278,29 @@ export function PaymentsHistoryPage() {
           <div className="text-center py-16 text-slate-400 text-sm">{t('payhist.none')}</div>
         )}
       </div>
+      {receipt !== null && (
+        <div className="fixed inset-0 flex items-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 100 }} onClick={() => setReceipt(null)}>
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4" style={{ maxHeight: '86vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-bold text-slate-900">Receipt #{receipt.id}</p>
+              <button onClick={() => setReceipt(null)}>
+                <X className="size-5 text-slate-400" />
+              </button>
+            </div>
+            {receipt.loading && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="size-6 text-[#1e5c97] animate-spin" />
+              </div>
+            )}
+            {!receipt.loading && receipt.lines && (
+              <PaperReceipt serial={`#${receipt.id}`} lines={receipt.lines} />
+            )}
+            {!receipt.loading && !receipt.lines && (
+              <p className="text-sm text-slate-400 text-center py-4">{t('pay.receiptNA')}</p>
+            )}
+          </div>
+        </div>
+      )}
       <MobileNav />
     </div>
   );

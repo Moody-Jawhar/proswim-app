@@ -4,7 +4,7 @@ import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { Calendar, Clock, MapPin, User, Loader2, AlertCircle, CheckCircle2, XCircle, Repeat, CalendarX, Info, Snowflake } from 'lucide-react';
-import { getPrivateSessions, getCancelRequests, createCancelRequest, respondCancelAlt, getFreezeRequests, type PrivateSessionDto, type CancelRequestRow } from '../api/pswmApi';
+import { getPrivateSessions, getPrivatePackages, getCancelRequests, createCancelRequest, respondCancelAlt, getFreezeRequests, type PrivateSessionDto, type PrivatePackageDto, type CancelRequestRow } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, monthShort, dayShort } from '../i18n';
 
@@ -17,6 +17,7 @@ function formatDate(dateStr: string) {
 export function PrivateSessionsPage() {
   const { packageId } = useParams<{ packageId: string }>();
   const [sessions, setSessions] = useState<PrivateSessionDto[]>([]);
+  const [pkg, setPkg] = useState<PrivatePackageDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // Cancellation requests for THIS package, keyed by session id.
@@ -104,6 +105,9 @@ export function PrivateSessionsPage() {
       .then(setSessions)
       .catch(() => setError(t('sess.loadError')))
       .finally(() => setLoading(false));
+    getPrivatePackages()
+      .then((pkgs) => setPkg(pkgs.find((k) => k.packageId === pid) ?? null))
+      .catch(() => {});
     loadRequests();
     getFreezeRequests().then((rows) => {
       const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -119,10 +123,17 @@ export function PrivateSessionsPage() {
   const attended = sessions.filter(s => s.privateSessionAttended === true).length;
   const absent = sessions.filter(s => s.privateSessionAttended !== true && !isUpcoming(s)).length;
 
+  // Package name headlines the page; the hero line carries coach + progress.
+  const pageTitle = pkg?.packageName || t('sess.privTitle');
+  const heroInfo = [
+    pkg?.coachFullName,
+    pkg ? t('priv.attendedLeft', { a: pkg.countAttended, l: pkg.sessionsLeft }) : null,
+  ].filter(Boolean).join(' · ');
+
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('common.sessions')} showBack backTo="/private" />
+        <MobileHeader title={pageTitle} showBack backTo="/private" />
         <PageLoader label={t('sess.loading')} />
         <MobileNav />
       </div>
@@ -136,7 +147,7 @@ export function PrivateSessionsPage() {
     };
     return (
       <div className="min-h-screen bg-transparent pb-nav">
-        <MobileHeader title={t('sess.privTitle')} showBack backTo="/private" />
+        <MobileHeader title={pageTitle} showBack backTo="/private" />
         <div className="px-4 pt-6">
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col items-center text-center">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(56,189,248,0.14)' }}>
@@ -155,8 +166,8 @@ export function PrivateSessionsPage() {
 
   return (
     <div className="min-h-screen bg-transparent pb-nav">
-      <MobileHeader title={t('sess.privTitle')} showBack backTo="/private" />
-      <PageHero title={t('sess.privTitle')} subtitle={t('sess.privSubtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
+      <MobileHeader title={pageTitle} showBack backTo="/private" />
+      <PageHero title={pageTitle} subtitle={heroInfo || t('sess.privSubtitle')} slide={4} tint="linear-gradient(120deg, rgba(36,44,67,0.78), rgba(79,70,229,0.55))" />
       <div className="px-4 pt-3 pb-4">
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">

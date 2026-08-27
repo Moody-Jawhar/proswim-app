@@ -23,6 +23,7 @@ export function FeedbackPage() {
   const navigate = useNavigate();
   const label = params.get('label') ?? '';
   const coachName = params.get('coach') ?? '';
+  const locationName = params.get('location') ?? '';
 
   const [questions, setQuestions] = useState<FeedbackQuestionV2[]>([]);
   const [ratings, setRatings] = useState<Record<number, number>>({});
@@ -63,6 +64,7 @@ export function FeedbackPage() {
         refId: Number(refId),
         refLabel: label,
         coachName,
+        locationName,
         answers: questions.map((q) => q.QuestionType === 'rating'
           ? { questionId: q.QuestionId, rating: ratings[q.QuestionId] }
           : { questionId: q.QuestionId, text: (texts[q.QuestionId] ?? '').trim() }),

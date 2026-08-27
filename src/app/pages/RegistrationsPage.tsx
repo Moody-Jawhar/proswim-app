@@ -184,7 +184,7 @@ export function RegistrationsPage() {
                     </div>
                   ) : (
                     <Link
-                      to={`/feedback/Group/${reg.registrationId}?label=${encodeURIComponent(reg.semesterName || '')}&coach=${encodeURIComponent((reg.className1 || '').split(' - ')[0].trim())}`}
+                      to={`/feedback/Group/${reg.registrationId}?label=${encodeURIComponent(reg.semesterName || '')}&coach=${encodeURIComponent((reg.className1 || '').split(' - ')[0].trim())}&location=${encodeURIComponent(reg.locationNickName || '')}`}
                       title={t('fb.give')}
                       className="flex items-center justify-center px-3 py-2.5 rounded-xl"
                       style={{ background: 'rgba(245,158,11,0.15)' }}

@@ -3,14 +3,21 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users, ScrollText, Star } from 'lucide-react';
-import { getGroupRegistrations, getGroupRulesStatus, acceptGroupRules, type RegistrationDto } from '../api/pswmApi';
+import { Calendar, CreditCard, MapPin, Loader2, AlertCircle, Users, ScrollText, Star, CheckCircle2 } from 'lucide-react';
+import { getGroupRegistrations, getGroupRulesStatus, acceptGroupRules, type RegistrationDto, getMyFeedbackV2 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t } from '../i18n';
 
 export function RegistrationsPage() {
   const [registrations, setRegistrations] = useState<RegistrationDto[]>([]);
   const [loading, setLoading] = useState(true);
+  // Courses this swimmer already rated — their star turns into a check.
+  const [ratedRefs, setRatedRefs] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    getMyFeedbackV2()
+      .then((rows) => setRatedRefs(new Set(rows.filter((r) => r.RefType === 'Group').map((r) => Number(r.RefId)))))
+      .catch(() => {});
+  }, []);
   const [error, setError] = useState('');
   // Rules gate: parents must read & accept the group rules once.
   const [rulesAccepted, setRulesAccepted] = useState<boolean | null>(null);
@@ -169,14 +176,22 @@ export function RegistrationsPage() {
                       {t('common.payments')}
                     </Link>
                   )}
-                  <Link
-                    to={`/feedback/Group/${reg.registrationId}?label=${encodeURIComponent(reg.semesterName || '')}&coach=${encodeURIComponent((reg.className1 || '').split(' - ')[0].trim())}`}
-                    title={t('fb.give')}
-                    className="flex items-center justify-center px-3 py-2.5 rounded-xl"
-                    style={{ background: 'rgba(245,158,11,0.15)' }}
-                  >
-                    <Star className="size-4" style={{ color: '#D97706' }} />
-                  </Link>
+                  {ratedRefs.has(reg.registrationId) ? (
+                    <div title={t('fb.alreadyDone')}
+                      className="flex items-center justify-center px-3 py-2.5 rounded-xl"
+                      style={{ background: 'rgba(16,185,129,0.12)' }}>
+                      <CheckCircle2 className="size-4" style={{ color: '#059669' }} />
+                    </div>
+                  ) : (
+                    <Link
+                      to={`/feedback/Group/${reg.registrationId}?label=${encodeURIComponent(reg.semesterName || '')}&coach=${encodeURIComponent((reg.className1 || '').split(' - ')[0].trim())}`}
+                      title={t('fb.give')}
+                      className="flex items-center justify-center px-3 py-2.5 rounded-xl"
+                      style={{ background: 'rgba(245,158,11,0.15)' }}
+                    >
+                      <Star className="size-4" style={{ color: '#D97706' }} />
+                    </Link>
+                  )}
                 </div>
               </div>
             );

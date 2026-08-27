@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MobileHeader } from '../components/MobileHeader';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
-import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle, Snowflake, ScrollText, Star } from 'lucide-react';
-import { getPrivatePackages, formatMoney, getFreezeRequests, createFreezeRequest, getPrivateRulesStatus, acceptPrivateRules, type PrivatePackageDto, type FreezeRequestRow } from '../api/pswmApi';
+import { Calendar, CreditCard, MapPin, User, Loader2, AlertCircle, Snowflake, ScrollText, Star, CheckCircle2 } from 'lucide-react';
+import { getPrivatePackages, formatMoney, getFreezeRequests, createFreezeRequest, getPrivateRulesStatus, acceptPrivateRules, type PrivatePackageDto, type FreezeRequestRow, getMyFeedbackV2 } from '../api/pswmApi';
 import { PageHero } from '../components/PageHero';
 import { t, dateLocale } from '../i18n';
 
@@ -61,6 +61,13 @@ export function PrivatePackagesPage() {
     }
   }
   const [loading, setLoading] = useState(true);
+  // Courses this swimmer already rated — their star turns into a check.
+  const [ratedRefs, setRatedRefs] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    getMyFeedbackV2()
+      .then((rows) => setRatedRefs(new Set(rows.filter((r) => r.RefType === 'Private').map((r) => Number(r.RefId)))))
+      .catch(() => {});
+  }, []);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -339,14 +346,22 @@ export function PrivatePackagesPage() {
                       {t('common.payments')}
                     </Link>
                   )}
-                  <Link
-                    to={`/feedback/Private/${pkg.packageId}?label=${encodeURIComponent(pkg.packageName || '')}&coach=${encodeURIComponent(pkg.coachFullName || '')}`}
-                    title={t('fb.give')}
-                    className="flex items-center justify-center px-3 py-2.5 rounded-xl"
-                    style={{ background: 'rgba(245,158,11,0.15)' }}
-                  >
-                    <Star className="size-4" style={{ color: '#D97706' }} />
-                  </Link>
+                  {ratedRefs.has(pkg.packageId) ? (
+                    <div title={t('fb.alreadyDone')}
+                      className="flex items-center justify-center px-3 py-2.5 rounded-xl"
+                      style={{ background: 'rgba(16,185,129,0.12)' }}>
+                      <CheckCircle2 className="size-4" style={{ color: '#059669' }} />
+                    </div>
+                  ) : (
+                    <Link
+                      to={`/feedback/Private/${pkg.packageId}?label=${encodeURIComponent(pkg.packageName || '')}&coach=${encodeURIComponent(pkg.coachFullName || '')}`}
+                      title={t('fb.give')}
+                      className="flex items-center justify-center px-3 py-2.5 rounded-xl"
+                      style={{ background: 'rgba(245,158,11,0.15)' }}
+                    >
+                      <Star className="size-4" style={{ color: '#D97706' }} />
+                    </Link>
+                  )}
                 </div>
               </div>
             );

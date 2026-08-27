@@ -906,3 +906,38 @@ export async function getGroupReceipt(paymentId: number): Promise<GroupReceiptDt
 export async function getPrivateReceipt(privatePaymentId: number): Promise<PrivateReceiptDto> {
   return apiRequest<PrivateReceiptDto>(`/api/Payments/Private/${privatePaymentId}/Receipt`);
 }
+
+// ─── Feedback v2 (15-question survey per registration / package) ─────────────
+
+export interface FeedbackQuestionV2 {
+  QuestionId: number;
+  QuestionOrder: number;
+  QuestionText: string;
+  QuestionType: 'rating' | 'text';
+}
+
+export interface MyFeedbackV2Row {
+  RefType: string;
+  RefId: number;
+  FilledDate: string;
+}
+
+export async function getFeedbackV2Questions(): Promise<FeedbackQuestionV2[]> {
+  return apiRequest<FeedbackQuestionV2[]>('/api/FeedbackV2/questions');
+}
+
+export async function getMyFeedbackV2(): Promise<MyFeedbackV2Row[]> {
+  return apiRequest<MyFeedbackV2Row[]>('/api/FeedbackV2/mine');
+}
+
+export async function submitFeedbackV2(data: {
+  refType: 'Group' | 'Private';
+  refId: number;
+  refLabel: string;
+  answers: { questionId: number; rating?: number; text?: string }[];
+}): Promise<{ ok: boolean }> {
+  return apiRequest<{ ok: boolean }>('/api/FeedbackV2/submit', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}

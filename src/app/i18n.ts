@@ -586,6 +586,23 @@ const en: Record<string, string> = {
   'ins.newLevel.body': 'Promoted to {level} on {date} — a big milestone. Congratulations!',
   'ins.newHere.title': 'Your insights are warming up',
   'ins.newHere.body': 'As sessions, skills and level changes are recorded, the model learns your rhythm and will surface personalised explanations and next steps here.',
+
+  // ── Feedback survey ──
+  'fb.title': 'Feedback',
+  'fb.subtitle': 'Tell us how it went',
+  'fb.loading': 'Loading questions…',
+  'fb.loadError': 'Could not load the survey.',
+  'fb.give': 'Give feedback',
+  'fb.progress': '{a} of {b} answered',
+  'fb.answerAll': 'Please answer every question',
+  'fb.optional': 'Optional — write anything you would like us to know',
+  'fb.submit': 'Send feedback',
+  'fb.submitting': 'Sending…',
+  'fb.submitFail': 'Could not send the feedback. Please try again.',
+  'fb.thanks': 'Thank you!',
+  'fb.thanksBody': 'Your feedback helps us make ProSwim better for every swimmer.',
+  'fb.alreadyDone': 'Feedback for this course was already submitted.',
+  'fb.back': 'Back',
 };
 
 const fr: Record<string, string> = {
@@ -1126,6 +1143,23 @@ const fr: Record<string, string> = {
   'ins.newLevel.body': 'Promotion au niveau {level} le {date} — une belle étape. Félicitations !',
   'ins.newHere.title': 'Vos analyses se préparent',
   'ins.newHere.body': 'À mesure que les séances, compétences et niveaux sont enregistrés, le modèle apprend votre rythme et affichera ici des explications et prochaines étapes personnalisées.',
+
+  // ── Feedback ──
+  'fb.title': 'Votre avis',
+  'fb.subtitle': 'Dites-nous comment ça s\'est passé',
+  'fb.loading': 'Chargement des questions…',
+  'fb.loadError': 'Impossible de charger le questionnaire.',
+  'fb.give': 'Donner mon avis',
+  'fb.progress': '{a} sur {b} répondues',
+  'fb.answerAll': 'Merci de répondre à toutes les questions',
+  'fb.optional': 'Facultatif — écrivez ce que vous souhaitez nous dire',
+  'fb.submit': 'Envoyer mon avis',
+  'fb.submitting': 'Envoi…',
+  'fb.submitFail': 'Impossible d\'envoyer votre avis. Réessayez.',
+  'fb.thanks': 'Merci !',
+  'fb.thanksBody': 'Votre avis nous aide à améliorer ProSwim pour chaque nageur.',
+  'fb.alreadyDone': 'L\'avis pour ce cours a déjà été envoyé.',
+  'fb.back': 'Retour',
 };
 
 const ar: Record<string, string> = {
@@ -1666,6 +1700,23 @@ const ar: Record<string, string> = {
   'ins.newLevel.body': 'الترقية إلى مستوى {level} بتاريخ {date} — إنجاز كبير. مبروك!',
   'ins.newHere.title': 'الرؤى قيد التحضير',
   'ins.newHere.body': 'مع تسجيل الحصص والمهارات وتغييرات المستوى، يتعلم النموذج إيقاعكم وسيعرض هنا شروحات وخطوات تالية مخصصة.',
+
+  // ── التقييم ──
+  'fb.title': 'التقييم',
+  'fb.subtitle': 'أخبرونا عن تجربتكم',
+  'fb.loading': 'جارٍ تحميل الأسئلة…',
+  'fb.loadError': 'تعذّر تحميل الاستبيان.',
+  'fb.give': 'قيّم التجربة',
+  'fb.progress': 'تمت الإجابة على {a} من {b}',
+  'fb.answerAll': 'يرجى الإجابة على جميع الأسئلة',
+  'fb.optional': 'اختياري — اكتبوا ما تودّون إخبارنا به',
+  'fb.submit': 'إرسال التقييم',
+  'fb.submitting': 'جارٍ الإرسال…',
+  'fb.submitFail': 'تعذّر إرسال التقييم. حاولوا مجدداً.',
+  'fb.thanks': 'شكراً لكم!',
+  'fb.thanksBody': 'تقييمكم يساعدنا على جعل ProSwim أفضل لكل سبّاح.',
+  'fb.alreadyDone': 'تم إرسال تقييم هذه الدورة مسبقاً.',
+  'fb.back': 'رجوع',
 };
 
 const dicts: Record<Locale, Record<string, string>> = { en, fr, ar };

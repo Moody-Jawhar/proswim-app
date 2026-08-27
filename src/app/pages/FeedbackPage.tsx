@@ -22,6 +22,7 @@ export function FeedbackPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const label = params.get('label') ?? '';
+  const coachName = params.get('coach') ?? '';
 
   const [questions, setQuestions] = useState<FeedbackQuestionV2[]>([]);
   const [ratings, setRatings] = useState<Record<number, number>>({});
@@ -61,6 +62,7 @@ export function FeedbackPage() {
         refType: refType === 'Private' ? 'Private' : 'Group',
         refId: Number(refId),
         refLabel: label,
+        coachName,
         answers: questions.map((q) => q.QuestionType === 'rating'
           ? { questionId: q.QuestionId, rating: ratings[q.QuestionId] }
           : { questionId: q.QuestionId, text: (texts[q.QuestionId] ?? '').trim() }),

@@ -934,6 +934,7 @@ export async function submitFeedbackV2(data: {
   refType: 'Group' | 'Private';
   refId: number;
   refLabel: string;
+  coachName?: string;
   answers: { questionId: number; rating?: number; text?: string }[];
 }): Promise<{ ok: boolean }> {
   return apiRequest<{ ok: boolean }>('/api/FeedbackV2/submit', {

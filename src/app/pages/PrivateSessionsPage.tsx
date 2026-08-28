@@ -41,7 +41,7 @@ export function PrivateSessionsPage() {
     requests.find((r) => Number(r.PrivateSessionId) === sessionId && String(r.Status) !== 'Rejected')
     ?? requests.find((r) => Number(r.PrivateSessionId) === sessionId);
 
-  // The DB stores only an attended bit — "upcoming" is any unattended
+  // The DB stores only an attended bit, "upcoming" is any unattended
   // session whose start is still in the future.
   const startOf = (s: PrivateSessionDto): Date | null => {
     if (!s.privateSessionDate) return null;
@@ -67,7 +67,7 @@ export function PrivateSessionsPage() {
     try {
       await respondCancelAlt(requestId, accept);
       loadRequests();
-      // Accepting reschedules the session — refresh the list too.
+      // Accepting reschedules the session, refresh the list too.
       if (accept && Number.isFinite(pid)) getPrivateSessions(pid).then(setSessions).catch(() => {});
     } catch {
       setFormError(t('cxl.altFail'));
@@ -307,7 +307,7 @@ export function PrivateSessionsPage() {
                                   ? t('cxl.altAccepted')
                                   : String(req?.AltStatus ?? '') === 'Declined' ? t('cxl.altDeclined') : t('cxl.approved'))
                               : status === 'Rejected' ? t('cxl.rejected') : t('cxl.pending')}
-                            {req && req.ReviewNote ? ` — ${String(req.ReviewNote)}` : ''}
+                            {req && req.ReviewNote ? `: ${String(req.ReviewNote)}` : ''}
                           </span>
                         </div>
 

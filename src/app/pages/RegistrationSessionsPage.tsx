@@ -171,7 +171,7 @@ export function RegistrationSessionsPage() {
                         <span className="text-[11px] font-bold"
                           style={{ color: (isAttended || isAbsent) ? white : status === 'Approved' ? '#059669' : status === 'Rejected' ? '#DC2626' : '#B45309' }}>
                           {status === 'Approved' ? t('abs.approved') : status === 'Rejected' ? t('abs.rejected') : t('abs.pending')}
-                          {n && n.ReviewNote ? ` — ${String(n.ReviewNote)}` : ''}
+                          {n && n.ReviewNote ? `: ${String(n.ReviewNote)}` : ''}
                         </span>
                       </div>
                     )}

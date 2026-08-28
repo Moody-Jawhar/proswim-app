@@ -11,7 +11,7 @@ import { t } from '../i18n';
 export function RegistrationsPage() {
   const [registrations, setRegistrations] = useState<RegistrationDto[]>([]);
   const [loading, setLoading] = useState(true);
-  // Courses this swimmer already rated — their star turns into a check.
+  // Courses this swimmer already rated, their star turns into a check.
   const [ratedRefs, setRatedRefs] = useState<Set<number>>(new Set());
   useEffect(() => {
     getMyFeedbackV2()
@@ -39,7 +39,7 @@ export function RegistrationsPage() {
 
   useEffect(() => {
     getGroupRegistrations()
-      // Only the swimmer's 3 most recent semesters — older history just
+      // Only the swimmer's 3 most recent semesters, older history just
       // buries the current one.
       .then((regs) => {
         setRegistrations(

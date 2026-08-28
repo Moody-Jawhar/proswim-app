@@ -105,14 +105,14 @@ export function getModel(): NeuralNet {
         return cached;
       }
     }
-  } catch { /* corrupt cache — retrain below */ }
+  } catch { /* corrupt cache, retrain below */ }
 
   cached = trainModel();
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(CACHE_KEY, JSON.stringify(cached.toJSON()));
     }
-  } catch { /* storage full/unavailable — model still works from memory */ }
+  } catch { /* storage full/unavailable, model still works from memory */ }
   return cached;
 }
 

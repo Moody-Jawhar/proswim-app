@@ -8,7 +8,7 @@ import { Newspaper, AlertCircle, ChevronRight, X } from 'lucide-react';
 import { getNews, type NewsItemDto } from '../api/pswmApi';
 import { t, dateLocale } from '../i18n';
 
-// Brand logo paths (24x24 viewBox) — same set as the About page.
+// Brand logo paths (24x24 viewBox), same set as the About page.
 const SOCIAL_BUTTONS = [
   {
     key: 'newsWhatsappURL' as const, label: 'WhatsApp', color: '#25D366',
@@ -37,7 +37,7 @@ function isPdf(url: string | null): boolean {
   return !!url && url.toLowerCase().split('?')[0].endsWith('.pdf');
 }
 
-/** Full-screen article reader — big image, full text. */
+/** Full-screen article reader, big image, full text. */
 function NewsReader({ item, onClose }: { item: NewsItemDto; onClose: () => void }) {
   // The reader owns the screen; keep the page behind it from scrolling.
   useEffect(() => {

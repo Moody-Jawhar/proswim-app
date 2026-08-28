@@ -74,7 +74,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* Hero image — photo inside a card, text lives below it */}
+      {/* Hero image, photo inside a card, text lives below it */}
       <div className="px-4 pt-4">
         <div className="relative rounded-3xl overflow-hidden" style={{ height: 240 }}>
           <img src={SLIDE(1)} alt="Swimming" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />

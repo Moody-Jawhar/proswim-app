@@ -1,4 +1,4 @@
-// Feedback survey — 15 questions about the coach and the experience for one
+// Feedback survey, 15 questions about the coach and the experience for one
 // group registration or private package. Ratings are 1–5 stars; the final
 // question is free text. One submission per course per swimmer.
 

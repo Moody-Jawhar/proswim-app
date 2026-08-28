@@ -41,7 +41,7 @@ export function SchedulePage() {
       try {
         setLoading(true);
 
-        // Local date, not toISOString() — UTC could still be "yesterday".
+        // Local date, not toISOString(). UTC could still be "yesterday".
         const now = new Date();
         const fromDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -71,7 +71,7 @@ export function SchedulePage() {
   // Active registrations (not stopped)
   const activeRegs = registrations.filter(r => !r.registrationStudentStopped);
 
-  // Upcoming sessions — compare date-only to avoid timezone/time-of-day mismatches
+  // Upcoming sessions, compare date-only to avoid timezone/time-of-day mismatches
   const upcoming = [...groupSessions, ...privateSessions]
     .filter(s => {
       const d = 'sessionDate' in s ? s.sessionDate : (s as PrivateSessionDto).privateSessionDate;
@@ -108,7 +108,7 @@ export function SchedulePage() {
           </div>
         )}
 
-        {/* My Classes — from registrations */}
+        {/* My Classes, from registrations */}
         {activeRegs.length > 0 && (
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">{t('sched.myClasses')}</p>
@@ -161,7 +161,7 @@ export function SchedulePage() {
           </div>
         )}
 
-        {/* Empty state — only when nothing at all */}
+        {/* Empty state, only when nothing at all */}
         {activeRegs.length === 0 && upcoming.length === 0 && !error && (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <div className="w-14 h-14 rounded-2xl bg-[#e8f0f8] flex items-center justify-center">

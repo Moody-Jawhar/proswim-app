@@ -1,7 +1,7 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.VITE_BUILD_TARGET === "capacitor"
-    ? // Native builds ignore the Vite proxy — this is what an installed app hits.
+    ? // Native builds ignore the Vite proxy, this is what an installed app hits.
       // V27_API = unified-auth test build. Point store builds back at
       // https://admin.proswim-lb.com/Proswim_API once the new API is promoted.
       "https://admin.proswim-lb.com/V27_API"
@@ -62,12 +62,12 @@ async function apiRequest<T>(
       headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
     }),
     new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new ApiError("Request timed out — check your connection.", 0)), 20000)
+      setTimeout(() => reject(new ApiError("Request timed out, check your connection.", 0)), 20000)
     ),
   ]);
 
   // A 401 on an authenticated call means the session is gone (expired, or the
-  // server stopped honouring old tokens) — sign out and return to sign-in.
+  // server stopped honouring old tokens), sign out and return to sign-in.
   if (res.status === 401 && requiresAuth) {
     clearAuth();
     if (import.meta.env.VITE_BUILD_TARGET === "capacitor") {
@@ -527,7 +527,7 @@ export function formatMoney(amount: number, currency?: string | null): string {
   return `${amount.toLocaleString()} ${effectiveCurrency(amount, currency)}`;
 }
 
-// Mirror of the server password policy — check before calling the API.
+// Mirror of the server password policy, check before calling the API.
 export function validatePasswordPolicy(pw: string): string | null {
   if (pw.length < 8) return "Password must be at least 8 characters.";
   if (!/[^A-Za-z0-9]/.test(pw)) return "Password must contain at least one symbol (e.g. ! @ # $ % & *).";
@@ -613,7 +613,7 @@ export async function createAbsenceNotice(data: { sessionId: number; reason: str
   });
 }
 
-// Swimmer sets their own profile picture. Base64 JSON body — Capacitor's
+// Swimmer sets their own profile picture. Base64 JSON body. Capacitor's
 // native HTTP layer doesn't reliably carry multipart FormData files.
 export async function uploadMyPhoto(fileName: string, base64: string): Promise<{ url: string }> {
   return apiRequest<{ url: string }>("/api/Profile/photo", {
@@ -646,7 +646,7 @@ export async function updatePersonalInfo(data: PersonalInfoUpdateDto): Promise<v
   await apiRequest<void>("/api/Profile/PersonalInfo", { method: "PUT", body: JSON.stringify(data) });
 }
 
-// Changing the main phone/email is a request that ProSwim staff approve —
+// Changing the main phone/email is a request that ProSwim staff approve.
 // the value only changes after approval (security rule).
 export interface ContactChangeRequestDto {
   requestId: number;

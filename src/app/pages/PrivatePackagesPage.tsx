@@ -9,9 +9,9 @@ import { PageHero } from '../components/PageHero';
 import { t, dateLocale } from '../i18n';
 
 function fmtDay(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
+  return isNaN(d.getTime()) ? '-' : d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function PrivatePackagesPage() {
@@ -61,7 +61,7 @@ export function PrivatePackagesPage() {
     }
   }
   const [loading, setLoading] = useState(true);
-  // Courses this swimmer already rated — their star turns into a check.
+  // Courses this swimmer already rated, their star turns into a check.
   const [ratedRefs, setRatedRefs] = useState<Set<number>>(new Set());
   useEffect(() => {
     getMyFeedbackV2()
@@ -72,7 +72,7 @@ export function PrivatePackagesPage() {
 
   useEffect(() => {
     getPrivatePackages()
-      // Only the 3 most recent packages — older ones just add noise.
+      // Only the 3 most recent packages, older ones just add noise.
       .then((pkgs) => {
         setPackages(
         [...pkgs]
@@ -87,7 +87,7 @@ export function PrivatePackagesPage() {
     loadFreezes();
     getPrivateRulesStatus()
       .then((r) => setRulesAccepted(r.accepted))
-      .catch(() => setRulesAccepted(true)); // fail open — never lock parents out on a network error
+      .catch(() => setRulesAccepted(true)); // fail open, never lock parents out on a network error
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -235,12 +235,12 @@ export function PrivatePackagesPage() {
                 {(() => {
                   const reqs = freezes.filter((f) => Number(f.PackageId) === pkg.packageId);
                   // No new request while one is pending OR an approved freeze
-                  // is still current/upcoming — the package is already frozen.
+                  // is still current/upcoming, the package is already frozen.
                   const today = new Date(); today.setHours(0, 0, 0, 0);
                   const open = reqs.find((f) =>
                     String(f.Status) === 'Pending'
                     || (String(f.Status) === 'Approved' && f.FreezeTo != null && new Date(String(f.FreezeTo)) >= today));
-                  const fmtD = (v: unknown) => v ? fmtDay(String(v)) : '—';
+                  const fmtD = (v: unknown) => v ? fmtDay(String(v)) : '-';
                   return (
                     <div className="mt-2">
                       {reqs.slice(0, 2).map((f) => {

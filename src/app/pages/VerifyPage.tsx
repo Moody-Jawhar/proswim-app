@@ -53,7 +53,7 @@ export function VerifyPage() {
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : t('verify.failed');
-      // These outcomes invalidate the code — user must request a new one.
+      // These outcomes invalidate the code, user must request a new one.
       if (/new code|new one/i.test(msg)) {
         setStep('send');
         setInfo(msg);

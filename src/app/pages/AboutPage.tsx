@@ -137,7 +137,7 @@ export function AboutPage() {
                 <summary className="flex items-center justify-between select-none [&::-webkit-details-marker]:hidden">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold tracking-widest" style={{ color: item.color }}>{item.k}</span>
-                    <span className="text-xs text-slate-400">—</span>
+                    <span className="text-xs text-slate-400">-</span>
                     <span className="text-sm font-medium text-slate-900">{item.v}</span>
                   </div>
                   <span className="text-slate-400 text-xs group-open:hidden">+</span>

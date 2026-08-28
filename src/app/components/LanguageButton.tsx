@@ -3,12 +3,12 @@ import { createPortal } from 'react-dom';
 import { Languages, Check } from 'lucide-react';
 import { getLocale, setLocale, LOCALES, t } from '../i18n';
 
-// Globe button in the header — on every screen. Tapping opens a bottom sheet;
+// Globe button in the header, on every screen. Tapping opens a bottom sheet;
 // picking a language saves it (web + native store) and reloads the app in it.
 //
 // The sheet is rendered through a PORTAL into <body>: the header uses
 // backdrop-filter, which turns it into the containing block for
-// position:fixed children — without the portal the sheet gets clamped
+// position:fixed children, without the portal the sheet gets clamped
 // inside the header bar (cut off at the top of the screen).
 export function LanguageButton() {
   const [open, setOpen] = useState(false);

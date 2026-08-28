@@ -144,7 +144,7 @@ export function PaymentsHistoryPage() {
             <p className="text-sm font-semibold text-slate-900 mb-2">{t('payov.title')}</p>
             <div className="space-y-2.5">
               {overview.map((o, i) => {
-                // Enrollments older than 2 years: listed for the record only —
+                // Enrollments older than 2 years: listed for the record only.
                 // no amounts, no deadline, no payment status.
                 if (o.Old === 1 || o.Old === true) {
                   return (

@@ -76,7 +76,7 @@ export function MyProfilePage() {
   };
 
   // On device the WebView's <input type="file"> camera path crashes
-  // (no iOS usage strings, flaky Samsung camera intent) — go through the
+  // (no iOS usage strings, flaky Samsung camera intent), go through the
   // native Camera plugin instead. The browser keeps the plain file input.
   const pickPhoto = async () => {
     if (uploading) return;
@@ -209,7 +209,7 @@ export function MyProfilePage() {
                   <span className="font-display text-[#1e5c97] font-bold" style={{ fontSize: 21 }}>{initials}</span>
                 )}
               </button>
-              {/* Camera badge — signals the avatar is tappable */}
+              {/* Camera badge, signals the avatar is tappable */}
               <div
                 className="absolute rounded-full flex items-center justify-center pointer-events-none"
                 style={{
@@ -221,7 +221,7 @@ export function MyProfilePage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 leading-snug">{fullName}</p>
-                {age !== null && <p className="text-slate-500 text-xs mt-0.5">{t('profile.age', { n: age })} • {student.studentGender || '—'}</p>}
+                {age !== null && <p className="text-slate-500 text-xs mt-0.5">{t('profile.age', { n: age })} • {student.studentGender || '-'}</p>}
                 {student.studentActive && (
                   <span className="mt-1.5 inline-block px-3 py-0.5 text-xs font-bold rounded-full text-white"
                     style={{ background: '#22C55E' }}>
@@ -237,10 +237,10 @@ export function MyProfilePage() {
 
           <div className="grid grid-cols-3 divide-x divide-slate-100 -mt-5 bg-white mx-3 rounded-xl shadow-sm border border-slate-100 relative z-10">
             <StatChip label={t('profile.since')} value={student.studentStartingDate
-              ? new Date(student.studentStartingDate).getFullYear().toString() : '—'}
+              ? new Date(student.studentStartingDate).getFullYear().toString() : '-'}
               color="#3B82F6" />
-            <StatChip label={t('profile.groupClasses')} value={groupCount != null ? groupCount.toString() : '—'} color="#10B981" />
-            <StatChip label={t('profile.privatePackages')} value={privateCount != null ? privateCount.toString() : '—'} color="#8B5CF6" />
+            <StatChip label={t('profile.groupClasses')} value={groupCount != null ? groupCount.toString() : '-'} color="#10B981" />
+            <StatChip label={t('profile.privatePackages')} value={privateCount != null ? privateCount.toString() : '-'} color="#8B5CF6" />
           </div>
           <div className="h-4" />
         </div>
@@ -342,7 +342,7 @@ export function MyProfilePage() {
                   <p className="text-xs" style={{ color: '#64748B' }}>
                     {lv.levelDateFrom
                       ? new Date(lv.levelDateFrom).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
-                      : '—'}
+                      : '-'}
                     {' – '}
                     {!lv.levelDateTo || new Date(lv.levelDateTo).getFullYear() > 2090
                       ? 'present'

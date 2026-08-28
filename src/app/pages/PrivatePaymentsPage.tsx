@@ -45,7 +45,7 @@ export function PrivatePaymentsPage() {
     }
   };
 
-  // Payments can be in different currencies — total per currency, never mix.
+  // Payments can be in different currencies, total per currency, never mix.
   const totalsByCurrency = payments.reduce<Record<string, number>>((acc, p) => {
     const cur = effectiveCurrency(p.privatePaymentPaidAmount, p.privatePaymentPaidCurrency);
     acc[cur] = (acc[cur] || 0) + p.privatePaymentPaidAmount;

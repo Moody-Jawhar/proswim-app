@@ -32,15 +32,15 @@ export function InsightsPage() {
   const tiles = s ? [
     {
       label: t('ins.scores.attendance'),
-      value: s.groupSessionCount ? `${Math.round(s.attOverall * 100)}%` : '—',
+      value: s.groupSessionCount ? `${Math.round(s.attOverall * 100)}%` : '-',
     },
     {
       label: t('ins.scores.skills'),
-      value: s.hasChecklist ? `${s.checklistDone}/${s.checklistTotal}` : '—',
+      value: s.hasChecklist ? `${s.checklistDone}/${s.checklistTotal}` : '-',
     },
     {
       label: t('ins.scores.momentum'),
-      value: report ? `${Math.round(report.scores.momentum * 100)}` : '—',
+      value: report ? `${Math.round(report.scores.momentum * 100)}` : '-',
     },
   ] : [];
 

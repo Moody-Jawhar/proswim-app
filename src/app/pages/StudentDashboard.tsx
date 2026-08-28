@@ -278,7 +278,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
               <div>
                 <p className="text-sm font-bold" style={{ color: '#B91C1C' }}>{t('home.outstanding')}</p>
                 <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
-                  {(payments!.totalGroupDue > 0 ? ['group'] : []).concat(payments!.totalPrivateDue > 0 ? ['private'] : []).join(' + ')} payments pending — tap for details
+                  {(payments!.totalGroupDue > 0 ? ['group'] : []).concat(payments!.totalPrivateDue > 0 ? ['private'] : []).join(' + ')} payments pending, tap for details
                 </p>
               </div>
               <p className="num-stat text-2xl font-bold" style={{ color: '#B91C1C', flexShrink: 0 }}>
@@ -377,7 +377,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
           </Link>
         </div>
 
-        {/* Contact us — same WhatsApp line as the booking action */}
+        {/* Contact us, same WhatsApp line as the booking action */}
         <button
           onClick={() => window.open('https://wa.me/96178949498?text=' + encodeURIComponent('Hello ProSwim, I would like more information.'))}
           className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl mb-4 active:scale-[0.98] transition-transform"

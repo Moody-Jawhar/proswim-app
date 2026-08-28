@@ -8,7 +8,7 @@ import type {
 
 export const N_FEATURES = 14;
 
-/** Raw, interpretable numbers — everything an explanation might cite. */
+/** Raw, interpretable numbers, everything an explanation might cite. */
 export interface StudentStats {
   // Group attendance (sessions where attendance was actually taken)
   groupSessionCount: number;

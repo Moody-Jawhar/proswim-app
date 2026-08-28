@@ -13,7 +13,7 @@ const str = (r: PortfolioRow, k: string) => (r[k] == null ? '' : String(r[k]));
 const num = (r: PortfolioRow, k: string) => Number(r[k] ?? 0);
 
 function fmtMs(ms: number): string {
-  if (!ms || ms <= 0) return '—';
+  if (!ms || ms <= 0) return '-';
   const m = Math.floor(ms / 60000);
   const s = (ms % 60000) / 1000;
   return m > 0 ? `${m}:${s.toFixed(2).padStart(5, '0')}` : s.toFixed(2);
@@ -302,7 +302,7 @@ function MiniChart({ points }: { points: { date: number; ms: number }[] }) {
             fill={p.ms === yMin ? '#10B981' : '#1e5c97'} />
         ))}
       </svg>
-      <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>Lower is faster — the green dot is your best time.</p>
+      <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>Lower is faster, the green dot is your best time.</p>
     </div>
   );
 }

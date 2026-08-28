@@ -22,7 +22,7 @@ interface PaperReceiptProps {
 const toneColor = (l: ReceiptLine) =>
   l.tone === 'paid' ? '#047857' : l.tone === 'due' ? '#DC2626' : l.strong ? '#047857' : '#0f172a';
 
-/** The on-screen receipt: styled like the printed ProSwim receipt —
+/** The on-screen receipt: styled like the printed ProSwim receipt.
  *  logo header, dashed rules, label/value lines, thank-you footer. */
 export function PaperReceipt({ serial, location, lines }: PaperReceiptProps) {
   const [busy, setBusy] = useState(false);
@@ -34,7 +34,7 @@ export function PaperReceipt({ serial, location, lines }: PaperReceiptProps) {
         <div className="flex flex-col items-center pt-5 pb-3 px-4">
           <img src={logoUrl} alt="ProSwim" style={{ height: 34, width: 'auto' }} />
           <p className="text-[11px] mt-1.5" style={{ color: '#64748B' }}>
-            {location ? `ProSwim — ${location}` : 'ProSwim Swimming Academy'}
+            {location ? `ProSwim: ${location}` : 'ProSwim Swimming Academy'}
           </p>
           <p className="text-[11px] font-bold mt-0.5" style={{ color: '#334155', letterSpacing: '0.08em' }}>
             {t('receipt.heading')} {serial}
@@ -72,7 +72,7 @@ export function PaperReceipt({ serial, location, lines }: PaperReceiptProps) {
   );
 }
 
-/** Renders the same receipt on a canvas and hands the PNG to the user —
+/** Renders the same receipt on a canvas and hands the PNG to the user.
  *  the iOS share sheet when available (Save to Files/Photos, WhatsApp…),
  *  otherwise a plain browser download. */
 async function downloadReceiptImage(serial: string, location: string | null, lines: ReceiptLine[]) {
@@ -93,7 +93,7 @@ async function downloadReceiptImage(serial: string, location: string | null, lin
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, W, H);
 
-  // logo (bundled asset — same origin, canvas stays clean)
+  // logo (bundled asset, same origin, canvas stays clean)
   const logo = new Image();
   await new Promise<void>((resolve, reject) => {
     logo.onload = () => resolve();
@@ -107,7 +107,7 @@ async function downloadReceiptImage(serial: string, location: string | null, lin
   ctx.textAlign = 'center';
   ctx.fillStyle = '#64748B';
   ctx.font = '11px -apple-system, Helvetica, Arial';
-  ctx.fillText(location ? `ProSwim — ${location}` : 'ProSwim Swimming Academy', W / 2, 62);
+  ctx.fillText(location ? `ProSwim: ${location}` : 'ProSwim Swimming Academy', W / 2, 62);
   ctx.fillStyle = '#334155';
   ctx.font = 'bold 12px -apple-system, Helvetica, Arial';
   ctx.fillText(`${t('receipt.heading')} ${serial}`, W / 2, 80);
@@ -143,7 +143,7 @@ async function downloadReceiptImage(serial: string, location: string | null, lin
   const fileName = `ProSwim-Receipt-${serial.replace(/[^A-Za-z0-9-]/g, '')}.png`;
 
   // Native (iOS/Android): the WebView can neither navigator.share files nor
-  // honor <a download> on a blob URL — write the PNG to the app cache and
+  // honor <a download> on a blob URL, write the PNG to the app cache and
   // hand it to the system share sheet (Save to Files/Photos, WhatsApp…).
   if (Capacitor.isNativePlatform()) {
     const base64 = canvas.toDataURL('image/png').split(',')[1];
@@ -163,7 +163,7 @@ async function downloadReceiptImage(serial: string, location: string | null, lin
     try {
       await nav.share({ files: [file], title: 'ProSwim Receipt' });
       return;
-    } catch { /* user closed the sheet or share failed — fall through */ }
+    } catch { /* user closed the sheet or share failed, fall through */ }
   }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);

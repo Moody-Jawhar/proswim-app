@@ -91,7 +91,7 @@ export async function initPushNotifications(): Promise<void> {
 
     await LocalNotifications.requestPermissions();
 
-    // Foreground message — store it AND show a system banner
+    // Foreground message, store it AND show a system banner
     FirebaseMessaging.addListener('notificationReceived', async (event) => {
       const n = event.notification;
       addNotification({

@@ -1,4 +1,4 @@
-/* Build input for the pre-generated tailwind.css — NOT imported at runtime.
+/* Build input for the pre-generated tailwind.css. NOT imported at runtime.
    Regenerate with:
    npx @tailwindcss/cli -i src/styles/tw-input.css -o src/styles/tailwind.css --minify=false */
 @import "tailwindcss";

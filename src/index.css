@@ -5,14 +5,14 @@
 @import "./styles/tailwind.css";
 @import "./styles/theme.css";
 
-/* Numeric font — big stats align on tabular digits */
+/* Numeric font, big stats align on tabular digits */
 .num-stat {
   font-family: 'Sora', 'Manrope', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
-/* Display face — hero titles and big headings, not small labels. */
+/* Display face, hero titles and big headings, not small labels. */
 .font-display {
   font-family: 'Sora', 'Manrope', sans-serif;
   letter-spacing: -0.02em;
@@ -27,7 +27,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Override Vite defaults — let Tailwind control all colors */
+/* Override Vite defaults, let Tailwind control all colors */
 a {
   color: inherit;
   text-decoration: none;
@@ -39,7 +39,7 @@ button {
 }
 
 html {
-  /* Never trap vertical scroll. (No -webkit-overflow-scrolling here — on the
+  /* Never trap vertical scroll. (No -webkit-overflow-scrolling here, on the
      root element it can freeze window scrolling in Safari.) */
   overflow-y: auto;
 }
@@ -48,8 +48,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* Soft branded canvas — the portal's aqua wash instead of flat grey.
-     NOTE: no background-attachment: fixed — iOS Safari renders it with
+  /* Soft branded canvas, the portal's aqua wash instead of flat grey.
+     NOTE: no background-attachment: fixed, iOS Safari renders it with
      broken/janky scrolling. */
   background:
     radial-gradient(1200px 600px at 100% -5%, rgba(45, 125, 196, 0.10), transparent 60%),
@@ -112,7 +112,7 @@ body {
 /* ── Missing Tailwind utilities ──────────────────────────────────
    The checked-in tailwind.css is a frozen dump; any class not in it
    silently does nothing. Every utility below is used somewhere in the
-   app but absent from the dump (audited 2026-08-14) — spacing looked
+   app but absent from the dump (audited 2026-08-14), spacing looked
    cramped because margins/paddings never applied. Values match
    Tailwind's scale (0.25rem unit). */
 .-mt-5 { margin-top: -1.25rem; }
@@ -155,7 +155,7 @@ body {
 .divide-slate-100 > * + * { border-color: #f1f5f9; }
 .whitespace-pre-line { white-space: pre-line; }
 
-/* Arbitrary text sizes used in the code — absent from the frozen dump, so
+/* Arbitrary text sizes used in the code, absent from the frozen dump, so
    they rendered at the 16px default. */
 .text-\[10px\] { font-size: 10px; line-height: 1.4; }
 .text-\[11px\] { font-size: 11px; line-height: 1.4; }

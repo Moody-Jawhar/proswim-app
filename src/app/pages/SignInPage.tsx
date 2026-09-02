@@ -21,6 +21,12 @@ export function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [welcoming, setWelcoming] = useState(false);
+  // A green-bubble beat before landing on the dashboard.
+  const welcomeThen = (to: string, state?: object) => {
+    setWelcoming(true);
+    setTimeout(() => navigate(to, state ? { state } : undefined), 1100);
+  };
   const navigate = useNavigate();
 
   const handleSubmit = async (e: { preventDefault(): void }) => {
@@ -33,7 +39,7 @@ export function SignInPage() {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('currentUser', JSON.stringify(mockUser));
       setLoading(false);
-      navigate('/dashboard');
+      welcomeThen('/dashboard');
       return;
     }
 
@@ -53,7 +59,7 @@ export function SignInPage() {
           // never verified sees the code screen.
           navigate('/verify');
         } else {
-          navigate('/dashboard');
+          welcomeThen('/dashboard');
         }
       } else {
         setError(res.message || t('signin.invalid'));
@@ -68,6 +74,12 @@ export function SignInPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-20 relative overflow-hidden">
       <Bubbles tint="green" overlay />
+      {welcoming && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#f7f9fc' }}>
+          <Bubbles tint="green" speed={3} />
+          <p className="text-xl font-bold text-slate-700">{t('home.welcome')}</p>
+        </div>
+      )}
 
       {/* Top brand area */}
       <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>

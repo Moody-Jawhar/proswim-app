@@ -46,7 +46,7 @@ jobs:
         run: npm run build:cap
 
       - name: Sync Capacitor iOS
-        run: npx cap sync ios
+        run: node node_modules/@capacitor/cli/bin/capacitor sync ios
 
       # Unique, always-increasing build number so TestFlight accepts every upload.
       # Offset keeps it safely above the current build (55).
@@ -131,7 +131,7 @@ jobs:
         run: npm run build:cap
 
       - name: Sync Capacitor Android
-        run: npx cap sync android
+        run: node node_modules/@capacitor/cli/bin/capacitor sync android
 
       # Decode the upload keystore and write a keystore.properties that points to
       # it, so android/app/build.gradle's release signingConfig picks it up.

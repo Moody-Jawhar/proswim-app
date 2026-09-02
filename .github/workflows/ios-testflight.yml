@@ -1,8 +1,9 @@
-name: iOS → TestFlight
+name: Mobile Release (TestFlight + Play Store)
 
-# Push to main (or run manually) → build web app, sync Capacitor iOS,
-# archive with Xcode, and upload to TestFlight. Runs entirely on a
-# GitHub-hosted macOS runner — nothing iOS-related runs on your PC.
+# Push to main (or run manually) → build the web app, then in parallel:
+#   • iOS:     macOS runner → Xcode archive → upload to TestFlight
+#   • Android: ubuntu runner → signed AAB → upload to Google Play (internal track)
+# Nothing mobile-related runs on your PC.
 on:
   push:
     branches: [ main ]
@@ -102,3 +103,69 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
         # NOTE: ExportOptions.plist has destination=upload, so this step both
         # exports the .ipa and pushes it to App Store Connect / TestFlight.
+
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Java (JDK 21)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build web app (capacitor target)
+        run: npm run build:cap
+
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      # Decode the upload keystore and write a keystore.properties that points to
+      # it, so android/app/build.gradle's release signingConfig picks it up.
+      - name: Prepare signing keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -eo pipefail
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload.jks
+          cat > android/keystore.properties <<EOF
+          storeFile=upload.jks
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
+          EOF
+
+      # Unique, always-increasing versionCode (offset keeps it above current 54).
+      - name: Build signed AAB
+        run: |
+          set -eo pipefail
+          VERSION_CODE=$(( 1000 + GITHUB_RUN_NUMBER ))
+          echo "Using versionCode $VERSION_CODE"
+          cd android
+          chmod +x ./gradlew
+          ./gradlew bundleRelease -PversionCodeOverride=$VERSION_CODE --no-daemon
+
+      - name: Upload to Google Play (internal testing track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.proswimlb.app
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed

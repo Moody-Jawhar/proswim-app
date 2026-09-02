@@ -24,7 +24,7 @@ android {
         applicationId "com.proswimlb.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 54
+        versionCode (project.hasProperty('versionCodeOverride') ? project.versionCodeOverride.toInteger() : 54)
         versionName "1.6.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

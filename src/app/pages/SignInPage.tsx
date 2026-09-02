@@ -67,7 +67,7 @@ export function SignInPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-20 relative overflow-hidden">
-      <Bubbles tint="green" />
+      <Bubbles tint="green" overlay />
 
       {/* Top brand area */}
       <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>

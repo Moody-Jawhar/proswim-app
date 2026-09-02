@@ -170,7 +170,7 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
 
   return (
     <div className="min-h-screen bg-transparent pb-nav relative">
-      <Bubbles tint="blue" />
+      <Bubbles tint="blue" overlay />
       <MobileHeader title={t('home.title')} showBack={false} showSignOut showBell />
 
       <div className="px-4 pt-4 relative">

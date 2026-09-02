@@ -16,13 +16,15 @@ const TINTS = {
   red: { border: 'rgba(220,38,38,0.35)', fill: 'rgba(239,68,68,0.06)' },
 } as const;
 
-export function Bubbles({ tint = 'blue', speed = 1 }: {
+export function Bubbles({ tint = 'blue', speed = 1, overlay = false }: {
   tint?: keyof typeof TINTS;
-  speed?: number;
+  speed?: number; // >1 = faster rise (sign-out uses this)
+  /** Float above the page content (still click-through) so cards can't hide the bubbles. */
+  overlay?: boolean;
 }) {
   const c = TINTS[tint];
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+    <div className={`${overlay ? 'fixed z-40' : 'absolute'} inset-0 overflow-hidden pointer-events-none`} aria-hidden>
       <style>{`
         @keyframes bubble-rise {
           0% { transform: translateY(0) scale(1); opacity: 0; }
@@ -39,6 +41,7 @@ export function Bubbles({ tint = 'blue', speed = 1 }: {
             width: b.size,
             height: b.size,
             border: `1.5px solid ${c.border}`,
+            boxShadow: overlay ? `inset 0 0 6px ${c.fill}` : undefined,
             background: c.fill,
             ['--o' as never]: b.opacity as never,
             animation: `bubble-rise ${b.duration / speed}s linear ${b.delay / speed}s infinite`,

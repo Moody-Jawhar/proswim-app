@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Bubbles } from '../components/Bubbles';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { MobileNav } from '../components/MobileNav';
@@ -65,7 +66,8 @@ export function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pb-20">
+    <div className="min-h-screen bg-white flex flex-col pb-20 relative overflow-hidden">
+      <Bubbles tint="green" />
 
       {/* Top brand area */}
       <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>

@@ -92,6 +92,7 @@ const en: Record<string, string> = {
   'home.privateWith': 'Private with {name}',
   'home.urgent': 'Urgent',
   'home.announcement': 'Announcement',
+  'home.seeYouSoon': 'See you soon!',
 
   'switch.trigger': 'Switch swimmer',
   'switch.title': 'My swimmers',
@@ -649,6 +650,7 @@ const fr: Record<string, string> = {
   'home.privateWith': 'Privé avec {name}',
   'home.urgent': 'Urgent',
   'home.announcement': 'Annonce',
+  'home.seeYouSoon': 'À bientôt !',
 
   'switch.trigger': 'Changer de nageur',
   'switch.title': 'Mes nageurs',
@@ -1206,6 +1208,7 @@ const ar: Record<string, string> = {
   'home.privateWith': 'خاص مع {name}',
   'home.urgent': 'عاجل',
   'home.announcement': 'إعلان',
+  'home.seeYouSoon': 'إلى اللقاء!',
 
   'switch.trigger': 'تبديل السباح',
   'switch.title': 'سباحيّ',

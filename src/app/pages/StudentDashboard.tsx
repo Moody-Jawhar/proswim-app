@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
 import { InsightsCard } from '../components/InsightsCard';
+import { Bubbles } from '../components/Bubbles';
 import { MobileNav } from '../components/MobileNav';
 import { PageLoader } from '../components/PageLoader';
 import { SwimmerSwitcher } from '../components/SwimmerSwitcher';
@@ -168,10 +169,11 @@ export function StudentDashboard({ userName }: { userName: string; userEmail?: s
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-nav">
+    <div className="min-h-screen bg-transparent pb-nav relative">
+      <Bubbles tint="blue" />
       <MobileHeader title={t('home.title')} showBack={false} showSignOut showBell />
 
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-4 relative">
         {/* ── Hero: identity, calm and compact ── */}
         <div className="rounded-2xl relative overflow-hidden mb-4" style={{ minHeight: 116 }}>
           <img src={SLIDE(3)} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />

@@ -3,6 +3,7 @@ import { LogOut, ArrowLeft, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getUnreadCount, unsubscribeFromStudentTopic } from '../utils/notifications';
 import { LanguageButton } from './LanguageButton';
+import { Bubbles } from './Bubbles';
 import { t } from '../i18n';
 
 const proswimLogo = 'https://www.proswim-lb.com/Gallery/_Website/Logo/ProSwimLogo.png';
@@ -38,16 +39,30 @@ export function MobileHeader({
     return () => clearInterval(interval);
   }, [showBell]);
 
+  const [signingOut, setSigningOut] = useState(false);
   const handleSignOut = () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      if (user.studentId) unsubscribeFromStudentTopic(user.studentId);
-    } catch { /* ignore */ }
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('authToken');
-    navigate('/');
+    if (signingOut) return;
+    setSigningOut(true); // a red-bubble beat on the way out
+    setTimeout(() => {
+      try {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (user.studentId) unsubscribeFromStudentTopic(user.studentId);
+      } catch { /* ignore */ }
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+      navigate('/');
+    }, 1100);
   };
+
+  if (signingOut) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#f7f9fc' }}>
+        <Bubbles tint="red" speed={3} />
+        <p className="text-xl font-bold text-slate-700">{t('home.seeYouSoon')}</p>
+      </div>
+    );
+  }
 
   return (
     <header

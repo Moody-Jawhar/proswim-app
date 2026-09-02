@@ -1,0 +1,104 @@
+name: iOS → TestFlight
+
+# Push to main (or run manually) → build web app, sync Capacitor iOS,
+# archive with Xcode, and upload to TestFlight. Runs entirely on a
+# GitHub-hosted macOS runner — nothing iOS-related runs on your PC.
+on:
+  push:
+    branches: [ main ]
+    # Skip runs that only touch docs / android / the workflow itself is fine to keep.
+  workflow_dispatch:
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: macos-15
+    timeout-minutes: 40
+
+    env:
+      # Bundle id must match capacitor.config.ts / Xcode project.
+      BUNDLE_ID: com.proswimlb.app
+      TEAM_ID: SJUV7N2435
+      SCHEME: App
+      XCODE_PROJECT: ios/App/App.xcodeproj
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_16.4.app
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build web app (capacitor target)
+        run: npm run build:cap
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      # Unique, always-increasing build number so TestFlight accepts every upload.
+      # Offset keeps it safely above the current build (55).
+      - name: Set build number
+        run: |
+          BUILD_NUMBER=$(( 1000 + GITHUB_RUN_NUMBER ))
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+          echo "Using build number $BUILD_NUMBER"
+
+      # Write the App Store Connect API key (.p8) that Xcode uses to sign in the
+      # cloud (creates/downloads the distribution cert + provisioning profile)
+      # and to authenticate the TestFlight upload.
+      - name: Prepare App Store Connect API key
+        env:
+          ASC_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          KEY_DIR="$HOME/private_keys"
+          mkdir -p "$KEY_DIR"
+          echo "$ASC_KEY_P8" > "$KEY_DIR/AuthKey.p8"
+          echo "ASC_KEY_PATH=$KEY_DIR/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Archive
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -eo pipefail
+          xcodebuild -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            archive
+
+      - name: Export & upload to TestFlight
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -eo pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist ios/App/ExportOptions.plist \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+        # NOTE: ExportOptions.plist has destination=upload, so this step both
+        # exports the .ipa and pushes it to App Store Connect / TestFlight.

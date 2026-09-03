@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ShieldCheck, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { MobileHeader } from '../components/MobileHeader';
-import { sendVerificationCode, verifyCode } from '../api/pswmApi';
+import { sendVerificationCode, verifyCode, getPendingToken, setStoredToken, clearPendingToken } from '../api/pswmApi';
 import { t } from '../i18n';
 
 export function VerifyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mustChangePassword = Boolean((location.state as { mustChangePassword?: boolean } | null)?.mustChangePassword);
 
   const [step, setStep] = useState<'send' | 'enter'>('send');
   const [phone, setPhone] = useState('');
@@ -17,6 +19,7 @@ export function VerifyPage() {
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [done, setDone] = useState(false);
+  const autoSent = useRef(false);
 
   const handleSend = async () => {
     setError('');
@@ -39,6 +42,14 @@ export function VerifyPage() {
     }
   };
 
+  // Auto-send the code once when the screen opens, so no button tap is needed.
+  useEffect(() => {
+    if (autoSent.current) return;
+    autoSent.current = true;
+    handleSend();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleVerify = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     setError('');
@@ -46,8 +57,17 @@ export function VerifyPage() {
     try {
       const res = await verifyCode(code.trim());
       if (res.verified) {
+        // Verified: promote the pending token to the real session token and
+        // mark the device logged in, then continue.
+        const pending = getPendingToken();
+        if (pending) setStoredToken(pending);
+        clearPendingToken();
+        localStorage.setItem('isAuthenticated', 'true');
         setDone(true);
-        setTimeout(() => navigate('/dashboard', { replace: true }), 1200);
+        setTimeout(() => {
+          if (mustChangePassword) navigate('/change-password', { replace: true, state: { required: true } });
+          else navigate('/dashboard', { replace: true });
+        }, 1200);
       } else {
         setError(res.message || t('verify.incorrect'));
       }

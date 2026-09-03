@@ -3,7 +3,7 @@ import { Bubbles } from '../components/Bubbles';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { MobileNav } from '../components/MobileNav';
-import { login, setStoredToken } from '../api/pswmApi';
+import { login, setStoredToken, setPendingToken } from '../api/pswmApi';
 import { subscribeToStudentTopic } from '../utils/notifications';
 import { t } from '../i18n';
 
@@ -46,20 +46,26 @@ export function SignInPage() {
     try {
       const res = await login(username, password);
       if (res.success && res.token) {
-        setStoredToken(res.token);
-        localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('currentUser', JSON.stringify({
           name: res.studentFullName, email: username, role: 'student', studentId: res.studentId,
         }));
         if (res.studentId) subscribeToStudentTopic(res.studentId);
-        if (res.mustChangePassword) {
-          navigate('/change-password', { state: { required: true, deviceVerified: res.deviceVerified } });
-        } else if (res.deviceVerified === false) {
-          // Once-per-DEVICE WhatsApp verification: only a device that has
-          // never verified sees the code screen.
-          navigate('/verify');
+        if (res.deviceVerified === false) {
+          // First login on THIS device: require WhatsApp verification before we
+          // grant access. Hold the token in a pending slot (used only by the
+          // verify calls) instead of logging in, so the step can't be skipped.
+          // After a correct code it's promoted to the real token; once verified
+          // the device is remembered server-side and never asked again.
+          setPendingToken(res.token);
+          navigate('/verify', { state: { mustChangePassword: res.mustChangePassword } });
         } else {
-          welcomeThen('/dashboard');
+          setStoredToken(res.token);
+          localStorage.setItem('isAuthenticated', 'true');
+          if (res.mustChangePassword) {
+            navigate('/change-password', { state: { required: true } });
+          } else {
+            welcomeThen('/dashboard');
+          }
         }
       } else {
         setError(res.message || t('signin.invalid'));

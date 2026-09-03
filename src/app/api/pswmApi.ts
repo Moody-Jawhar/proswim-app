@@ -21,8 +21,22 @@ export function setStoredToken(token: string): void {
   localStorage.setItem("authToken", token);
 }
 
+// Token held only between login and a successful WhatsApp device verification.
+// Kept separate from the real session token so an unverified device can call
+// the verify endpoints WITHOUT counting as logged in (prevents skipping verify).
+export function setPendingToken(token: string): void {
+  localStorage.setItem("pendingAuthToken", token);
+}
+export function getPendingToken(): string | null {
+  return localStorage.getItem("pendingAuthToken");
+}
+export function clearPendingToken(): void {
+  localStorage.removeItem("pendingAuthToken");
+}
+
 export function clearAuth(): void {
   localStorage.removeItem("authToken");
+  localStorage.removeItem("pendingAuthToken");
   localStorage.removeItem("isAuthenticated");
   localStorage.removeItem("currentUser");
 }
@@ -507,13 +521,20 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 }
 
 export async function sendVerificationCode(): Promise<SendCodeResponse> {
-  return apiRequest<SendCodeResponse>("/api/Auth/SendVerificationCode", { method: "POST" });
+  // Use the pending token: at this point the device is not yet "logged in".
+  const pending = getPendingToken();
+  return apiRequest<SendCodeResponse>("/api/Auth/SendVerificationCode", {
+    method: "POST",
+    ...(pending ? { headers: { Authorization: `Bearer ${pending}` } } : {}),
+  });
 }
 
 export async function verifyCode(code: string): Promise<VerifyCodeResponse> {
+  const pending = getPendingToken();
   return apiRequest<VerifyCodeResponse>("/api/Auth/VerifyCode", {
     method: "POST",
     body: JSON.stringify({ code, deviceId: getDeviceId() }),
+    ...(pending ? { headers: { Authorization: `Bearer ${pending}` } } : {}),
   });
 }
 

@@ -165,6 +165,15 @@ jobs:
           chmod +x ./gradlew
           ./gradlew bundleRelease -PversionCodeOverride=$VERSION_CODE --no-daemon
 
+      # Save the signed .aab so it can be downloaded from the run and uploaded to
+      # Play by hand (the first upload to a draft app can't go through the API).
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
       - name: Upload to Google Play (internal testing track)
         uses: r0adkll/upload-google-play@v1
         with:

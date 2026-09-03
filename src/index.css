@@ -14,8 +14,13 @@
 .font-display {
   font-family: 'Fredoka', sans-serif;
   letter-spacing: -0.02em;
-  font-weight: 700;
+  font-weight: 600;
 }
+
+/* Fredoka's 700 reads very heavy, so step the bold utilities down app-wide
+   (unlayered rules here override Tailwind's utility layer). */
+.font-bold { font-weight: 600; }
+.font-extrabold { font-weight: 700; }
 
 :root {
   font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

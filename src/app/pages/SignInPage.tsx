@@ -73,7 +73,6 @@ export function SignInPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-20 relative overflow-hidden">
-      <Bubbles tint="green" overlay />
       {welcoming && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#f7f9fc' }}>
           <Bubbles tint="green" speed={3} />
@@ -85,7 +84,7 @@ export function SignInPage() {
       <div className="bg-white px-6 pt-14 pb-10 text-center border-b border-slate-100" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 40px)' }}>
         <img src={proswimLogo} alt="ProSwim" className="h-16 w-auto mx-auto mb-6" />
         <p className="text-2xl font-bold text-slate-900">{t('signin.welcome')}</p>
-        <p className="mt-1.5 text-slate-500" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: 14, fontStyle: 'italic' }}>{t('signin.tagline')}</p>
+        <p className="mt-1.5 text-slate-500" style={{ fontSize: 14, fontStyle: 'italic' }}>{t('signin.tagline')}</p>
       </div>
 
       <div className="flex-1 px-4 pt-6 space-y-3">

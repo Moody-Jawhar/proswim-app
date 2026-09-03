@@ -1,26 +1,26 @@
-/* Premium pairing: Sora (geometric, confident) for display and numbers,
-   Manrope (clean, professional) for body text. Replaces Mulish + Yanone
-   Kaffeesatz, which read as cheap at large sizes. */
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* App-wide typeface: Fredoka (rounded, friendly) used everywhere. */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
 @import "./styles/tailwind.css";
 @import "./styles/theme.css";
 
 /* Numeric font, big stats align on tabular digits */
 .num-stat {
-  font-family: 'Sora', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Fredoka', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
 /* Display face, hero titles and big headings, not small labels. */
 .font-display {
-  font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   letter-spacing: -0.02em;
   font-weight: 700;
 }
 
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Also drive Tailwind's font-sans utility + base html font so every element uses Fredoka. */
+  --font-sans: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

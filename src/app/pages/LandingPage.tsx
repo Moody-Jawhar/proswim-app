@@ -97,7 +97,7 @@ export function LandingPage() {
           <Link
             to="/dashboard"
             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl font-bold text-sm"
-            style={{ background: 'rgba(30,92,151,0.60)', color: '#ffffff', fontFamily: "'Abadi MT Condensed Extra Bold', 'Abadi MT Condensed', 'Abadi', 'Century Gothic', 'Futura', sans-serif", letterSpacing: '0.04em' }}>
+            style={{ background: 'rgba(30,92,151,0.60)', color: '#ffffff', letterSpacing: '0.04em' }}>
             {t('landing.continue', { name: userName || t('landing.swimmer') })}
             <ArrowRight className="size-6" style={{ color: "#ffffff" }} />
           </Link>

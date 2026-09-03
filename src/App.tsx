@@ -1,7 +1,8 @@
 import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
+import { Bubbles } from "./app/components/Bubbles";
 
 const isCapacitor = import.meta.env.VITE_BUILD_TARGET === "capacitor";
 const Router = isCapacitor ? HashRouter : BrowserRouter;
@@ -57,9 +58,34 @@ import { NewsPage } from "./app/pages/NewsPage";
 import { LocationDetailPage } from "./app/pages/LocationDetailPage";
 import { PageTransition } from "./app/components/PageTransition";
 
+// Blue bubble flash shown once each time the app is launched (cold start).
+function LaunchIntro() {
+  const [show, setShow] = useState(true);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const fade = setTimeout(() => setFading(true), 1400);
+    const hide = setTimeout(() => setShow(false), 1900);
+    return () => { clearTimeout(fade); clearTimeout(hide); };
+  }, []);
+
+  if (!show) return null;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-500"
+      style={{ background: "#f7f9fc", opacity: fading ? 0 : 1 }}
+      aria-hidden
+    >
+      <Bubbles tint="blue" speed={3} />
+      <p className="font-display text-3xl text-slate-800">ProSwim</p>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <Router {...(!isCapacitor && { basename: "/Mobilev1" })}>
+      <LaunchIntro />
       <AndroidBackHandler />
       <PageTransition>
       <Routes>

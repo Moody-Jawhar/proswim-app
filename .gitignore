@@ -32,10 +32,8 @@ ios/App/Pods/
 *.xcuserstate
 DerivedData/
 
-# Firebase iOS config — never commit
-ios/App/App/GoogleService-Info.plist
-GoogleService-Info.plist
-android/app/google-services.json
+# Firebase client configs are committed so CI can build (not secrets — they ship in the app binary).
+# The service-account key below IS a real secret and stays ignored.
 firebase-service-account.json
 
 # Local scratch: raw SQL result dumps (contain live student data)

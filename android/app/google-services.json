@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "768083135781",
+    "project_id": "proswim-f23ca",
+    "storage_bucket": "proswim-f23ca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768083135781:android:109dd6e2dbaf08fab75ecc",
+        "android_client_info": {
+          "package_name": "com.proswimlb.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUWryW6amP0eScdkIjTm96wVP6Oi-1KSI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
